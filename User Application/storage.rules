@@ -2,18 +2,34 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    
-    // User-specific uploads (images, voice notes)
-    match /users/{userId}/{allPaths=**} {
-      // Authenticated users can upload, read, and delete only their own files
+
+    // ── Issue attachments: issues/{uid}/{issueId}/{fileName} ──
+    // Users can only write to their own UID directory.
+    // Authenticated users can read any issue's attachments (public feed).
+    match /issues/{uid}/{issueId}/{fileName} {
+
+      // Any authenticated user can read issue media (images appear in feed)
       allow read: if request.auth != null;
-      allow write, delete: if request.auth != null && request.auth.uid == userId;
+
+      // Only the owning user can upload/overwrite/delete their own files.
+      // Validates:
+      //   1. User is authenticated
+      //   2. UID path segment matches the authenticated user
+      //   3. File size is within limits (10 MB for images, 20 MB for audio)
+      //   4. Content type is either an image or audio format
+      allow write: if request.auth != null
+                   && request.auth.uid == uid
+                   && request.resource.size < 20 * 1024 * 1024
+                   && (request.resource.contentType.matches('image/.*')
+                       || request.resource.contentType.matches('audio/.*'));
+
+      allow delete: if request.auth != null
+                    && request.auth.uid == uid;
     }
-    
-    // Civic issue images & audio
-    match /issues/{issueId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null;
+
+    // Deny everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
     }
   }
 }

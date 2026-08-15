@@ -2,23 +2,59 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // User profile documents
-    match /users/{userId} {
-      // User can read and write only their own profile
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // ── Helper: check if the caller is an admin ──
+    // Currently returns false for everyone. When you add an admin system,
+    // create an "admins" collection and check membership here.
+    function isAdmin() {
+      return false;
+      // Future: return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
-    
-    // Reported civic issues
+
+    // ── User profiles: users/{userId} ──
+    match /users/{userId} {
+      // A user can only read their own profile.
+      // Admins can read any profile (once isAdmin() is implemented).
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+
+      // A user can create their own profile.
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.uid == userId;
+
+      // A user can update their own profile but cannot change the uid field.
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.uid == resource.data.uid;
+
+      // Users cannot delete their own profile from the client.
+      allow delete: if false;
+    }
+
+    // ── Civic issues: issues/{issueId} ──
     match /issues/{issueId} {
-      // Any authenticated citizen can view civic issues
+      // Any authenticated user can read civic issues (public feed).
+      // Admins can also read.
       allow read: if request.auth != null;
-      
-      // An authenticated user can create an issue if the reporter UID matches their UID
-      allow create: if request.auth != null && request.resource.data.reporterUid == request.auth.uid;
-      
-      // Only the reporter can update or delete their issue
-      allow update, delete: if request.auth != null && resource.data.reporterUid == request.auth.uid;
+
+      // An authenticated user can create an issue only if the userId
+      // field in the new document matches their Firebase UID.
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+
+      // The issue creator can update their own issue, but cannot
+      // change the userId or createdAt fields.
+      // Admins can update any issue (for status changes).
+      allow update: if request.auth != null
+                    && (
+                      (resource.data.userId == request.auth.uid
+                       && request.resource.data.userId == resource.data.userId)
+                      || isAdmin()
+                    );
+
+      // Only the creator or an admin can delete an issue.
+      allow delete: if request.auth != null
+                    && (resource.data.userId == request.auth.uid || isAdmin());
     }
   }
 }

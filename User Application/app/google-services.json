@@ -12,7 +12,20 @@
           "package_name": "com.example.kartavya"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1064941845712-kqmdil3pbcjm6q47m8gfl95qs7ltm7n7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.kartavya",
+            "certificate_hash": "34149125a4c6eeb61dea308bd4d98c187265d04a"
+          }
+        },
+        {
+          "client_id": "1064941845712-migk22e4kntpmitog2krrftd9ds0nvs7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD4zqD3CZPPaWoDeCWSKEXnA0OpCLWi3Yk"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064941845712-migk22e4kntpmitog2krrftd9ds0nvs7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

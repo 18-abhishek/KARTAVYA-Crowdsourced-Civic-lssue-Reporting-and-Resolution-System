@@ -57,8 +57,12 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
 
-    // Google Sign-In & Coroutines Play Services
-    implementation(libs.play.services.auth)
+    // Credential Manager (modern Google Sign-In replacement)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
+
+    // Coroutines Play Services & Image Loading
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.coil.compose)
 
