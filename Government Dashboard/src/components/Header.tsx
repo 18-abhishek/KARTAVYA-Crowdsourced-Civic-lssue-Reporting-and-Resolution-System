@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TabType, UserProfile } from '../types';
 import { LayoutGrid, Calendar, ListOrdered, Bell, ChevronDown, Shield, LogOut, CheckCircle2, User, Globe } from 'lucide-react';
+import logoImg from '../assets/logo.jpeg';
 
 interface HeaderProps {
   activeTab: TabType;
@@ -24,11 +25,12 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         {/* Left Zone: Brand and State emblem */}
         <div className="flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center text-amber-800 shadow-2xs">
-            {/* Ashoka / Government Emblem Motif */}
-            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current text-[#b45309]" stroke="currentColor" strokeWidth="0.5">
-              <path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4zm0 2.2l7 3.11v4.69c0 4.54-3.03 8.79-7 9.94-3.97-1.15-7-5.4-7-9.94V7.31l7-3.11zM11 7h2v6h-2V7zm0 8h2v2h-2v-2z" />
-            </svg>
+          <div className="w-10 h-10 rounded-lg overflow-hidden bg-white border border-stone-200 flex items-center justify-center shadow-xs shrink-0 p-0.5">
+            <img
+              src={logoImg}
+              alt="Government of Jharkhand Emblem"
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">

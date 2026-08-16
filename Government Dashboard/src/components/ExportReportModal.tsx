@@ -1,6 +1,7 @@
 import React from 'react';
 import { Download, Printer, X, CheckCircle, Shield, FileText } from 'lucide-react';
 import { topDistrictsComparison, departmentStats } from '../data/mockData';
+import logoImg from '../assets/logo.jpeg';
 
 interface ExportReportModalProps {
   onClose: () => void;
@@ -41,8 +42,12 @@ export const ExportReportModal: React.FC<ExportReportModalProps> = ({ onClose })
         <div className="p-8 space-y-6 text-stone-800 text-xs">
           {/* Government Official Letterhead */}
           <div className="border-b-2 border-amber-800/30 pb-4 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-stone-100 border border-stone-300 text-amber-800 font-bold mb-2">
-              <Shield className="w-6 h-6 text-[#9a3412]" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white border border-stone-300 shadow-xs mb-2 p-1">
+              <img
+                src={logoImg}
+                alt="Government of Jharkhand Emblem"
+                className="w-full h-full object-contain"
+              />
             </div>
             <h1 className="text-base font-extrabold uppercase tracking-wide text-stone-900 font-serif">
               Government of Jharkhand
