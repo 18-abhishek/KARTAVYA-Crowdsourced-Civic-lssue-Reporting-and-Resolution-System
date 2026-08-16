@@ -1,0 +1,6 @@
+{
+  "name": "Jharkhand Civic Admin - State Governance & Grievance Triage",
+  "description": "Comprehensive civic issue governance platform for Jharkhand with real-time district map analytics, issue triage workflow, audio voice note playback, and SLA escalation control center.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
