@@ -212,10 +212,22 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </button>
       </div>
 
-      {/* SVG Canvas Map Surface with clean pure white background */}
-      <div className="flex-1 w-full h-full relative overflow-hidden select-none bg-white">
+      {/* Map Surface with Realistic Aerial Green Land Blurred & Whitened Backdrop */}
+      <div className="flex-1 w-full h-full relative overflow-hidden select-none bg-stone-50">
+        {/* Sharp & Whitened Aerial Countryside Terrain Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <img
+            src="/terrain_bg.jpg"
+            alt="Terrain Background"
+            className="w-full h-full object-cover opacity-70"
+          />
+          {/* Whitened light wash overlay */}
+          <div className="absolute inset-0 bg-white/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/50 via-transparent to-white/30" />
+        </div>
+
         <div
-          className="w-full h-full transition-transform duration-300 ease-out origin-center"
+          className="w-full h-full transition-transform duration-300 ease-out origin-center relative z-10"
           style={{
             transform: `scale(${zoomLevel}) translate(${mapCenter.x}px, ${mapCenter.y}px)`,
           }}
@@ -224,11 +236,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             ref={svgRef}
             viewBox="0 0 1000 650"
             className="w-full h-full"
+            style={{ filter: 'drop-shadow(0 10px 28px rgba(15, 23, 42, 0.09))' }}
             onMouseMove={handleMouseMove}
           >
-            {/* Pure white background */}
-            <rect width="1000" height="650" fill="#ffffff" />
-
             {/* ─── District Polygons from GeoJSON ─── */}
             {allGeoKeys.map((geoKey) => {
               const pathD = districtPaths[geoKey];
