@@ -345,26 +345,20 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         )}
       </div>
 
-      {/* Bottom Left Legend */}
-      <div className="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-xs p-3.5 rounded-xl border border-stone-200 shadow-sm w-48 pointer-events-auto">
-        <h4 className="text-xs font-bold text-stone-900 mb-2">Issue Density</h4>
-        <div className="space-y-1.5 text-xs text-stone-600">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-sm bg-[#fecaca] border border-[#ef4444] shrink-0" />
-            <span className="font-medium text-stone-700">High (500+)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-sm bg-[#ffedd5] border border-[#f97316] shrink-0" />
-            <span className="font-medium text-stone-700">Medium (100–500)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-sm bg-[#dcfce7] border border-[#22c55e] shrink-0" />
-            <span className="font-medium text-stone-700">Low (&lt;100)</span>
-          </div>
+      {/* Minimized Bottom Left Legend Bar - Compact horizontal layout ensuring Simdega is 100% visible */}
+      <div className="absolute bottom-3.5 left-3.5 z-20 bg-white/95 backdrop-blur-xs px-3.5 py-1.5 rounded-xl border border-stone-200 shadow-sm pointer-events-auto flex items-center gap-3.5 text-xs">
+        <span className="font-bold text-stone-900 text-[11px]">Issue Density:</span>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-xs bg-[#fecaca] border border-[#ef4444] shrink-0" />
+          <span className="font-medium text-stone-700 text-[11px]">High (500+)</span>
         </div>
-        <div className="mt-2.5 pt-2 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500 font-medium">
-          <span>Total Districts:</span>
-          <span className="font-bold text-stone-900">24</span>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-xs bg-[#ffedd5] border border-[#f97316] shrink-0" />
+          <span className="font-medium text-stone-700 text-[11px]">Med (100–500)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-xs bg-[#dcfce7] border border-[#22c55e] shrink-0" />
+          <span className="font-medium text-stone-700 text-[11px]">Low (&lt;100)</span>
         </div>
       </div>
 
