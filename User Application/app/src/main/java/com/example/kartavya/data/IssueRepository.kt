@@ -68,11 +68,10 @@ object IssueRepository {
      * @return [ListenerRegistration] that the caller must remove on dispose.
      */
     fun observeRecentIssues(
-        limit: Long = 20,
+        limit: Long = 50,
         onUpdate: (List<CivicIssue>) -> Unit
     ): ListenerRegistration {
         return db.collection(COLLECTION)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
             .limit(limit)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
@@ -82,8 +81,13 @@ object IssueRepository {
                 }
                 if (snapshot != null && !snapshot.isEmpty) {
                     val list = snapshot.documents.mapNotNull { doc ->
-                        doc.toObject(CivicIssue::class.java)
-                    }
+                        try {
+                            CivicIssue.fromDocument(doc)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to parse issue doc ${doc.id}", e)
+                            null
+                        }
+                    }.sortedByDescending { it.createdAt?.seconds ?: it.updatedAt?.seconds ?: 0L }
                     onUpdate(list)
                 } else {
                     onUpdate(emptyList())
@@ -98,14 +102,54 @@ object IssueRepository {
         return try {
             val snapshot = db.collection(COLLECTION)
                 .whereEqualTo("userId", uid)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .await()
-            snapshot.documents.mapNotNull { it.toObject(CivicIssue::class.java) }
+            snapshot.documents.mapNotNull { doc ->
+                try {
+                    CivicIssue.fromDocument(doc)
+                } catch (e: Exception) {
+                    null
+                }
+            }.sortedByDescending { it.createdAt?.seconds ?: it.updatedAt?.seconds ?: 0L }
         } catch (e: Exception) {
             Log.w(TAG, "Failed to get user issues", e)
             emptyList()
         }
+    }
+
+    /**
+     * Observe issues created by a specific user in real-time.
+     */
+    fun observeUserIssues(
+        uid: String,
+        onUpdate: (List<CivicIssue>) -> Unit
+    ): ListenerRegistration? {
+        if (uid.isBlank()) {
+            onUpdate(emptyList())
+            return null
+        }
+        return db.collection(COLLECTION)
+            .whereEqualTo("userId", uid)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.w(TAG, "User issues listen error", error)
+                    onUpdate(emptyList())
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val list = snapshot.documents.mapNotNull { doc ->
+                        try {
+                            CivicIssue.fromDocument(doc)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Failed to parse user issue doc ${doc.id}", e)
+                            null
+                        }
+                    }.sortedByDescending { it.createdAt?.seconds ?: it.updatedAt?.seconds ?: 0L }
+                    onUpdate(list)
+                } else {
+                    onUpdate(emptyList())
+                }
+            }
     }
 
     /**
@@ -122,6 +166,44 @@ object IssueRepository {
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update issue status", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Toggle upvote for a real Firestore civic issue.
+     */
+    suspend fun toggleUpvote(issueId: String, uid: String): Result<Unit> {
+        return try {
+            val effectiveUid = uid.ifBlank { "demo_user" }
+            if (issueId.isBlank()) return Result.success(Unit)
+            val docRef = db.collection(COLLECTION).document(issueId)
+            db.runTransaction { transaction ->
+                val snapshot = transaction.get(docRef)
+                if (snapshot.exists()) {
+                    val upvotedBy = (snapshot.get("upvotedBy") as? List<*>)?.mapNotNull { it?.toString() } ?: emptyList()
+                    val hasUpvoted = upvotedBy.contains(effectiveUid)
+                    
+                    val updates = mutableMapOf<String, Any>()
+                    if (hasUpvoted) {
+                        updates["upvotedBy"] = FieldValue.arrayRemove(effectiveUid)
+                        updates["upvotes"] = FieldValue.increment(-1)
+                        if (snapshot.contains("upvoteCount")) {
+                            updates["upvoteCount"] = FieldValue.increment(-1)
+                        }
+                    } else {
+                        updates["upvotedBy"] = FieldValue.arrayUnion(effectiveUid)
+                        updates["upvotes"] = FieldValue.increment(1)
+                        if (snapshot.contains("upvoteCount")) {
+                            updates["upvoteCount"] = FieldValue.increment(1)
+                        }
+                    }
+                    transaction.update(docRef, updates)
+                }
+            }.await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to toggle upvote for $issueId", e)
             Result.failure(e)
         }
     }

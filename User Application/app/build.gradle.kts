@@ -17,6 +17,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Supabase configuration (anon key is safe to embed in client)
+        buildConfigField("String", "SUPABASE_URL", "\"https://ychjdmrqjiyylhhhsbrn.supabase.co\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"sb_publishable_wY2gp0GHtQJWbq1Ufd31-w_oZkJBLIJ\"")
     }
 
     buildTypes {
@@ -37,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
