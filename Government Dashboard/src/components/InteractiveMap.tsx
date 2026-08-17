@@ -123,22 +123,63 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [containerSize, setContainerSize] = useState({ width: 900, height: 550 });
   const [mapCenter, setMapCenter] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const initialCenterRef = useRef({ x: 0, y: 0 });
+  const hasDraggedRef = useRef(false);
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.25, 3));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.25, 0.75));
-  const handleResetZoom = () => { setZoomLevel(1); setMapCenter({ x: 0, y: 0 }); };
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.3, 4));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.3, 0.6));
+  const handleResetZoom = () => {
+    setZoomLevel(1);
+    setMapCenter({ x: 0, y: 0 });
+  };
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<SVGElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    setContainerSize({ width: rect.width, height: rect.height });
-    setTooltipPos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+  // Mouse wheel zoom support
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+    setZoomLevel((prev) => Math.min(Math.max(prev * zoomFactor, 0.6), 4));
   }, []);
+
+  // Mouse drag pan support (Up, Down, Left, Right)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return; // only left click
+    setIsDragging(true);
+    hasDraggedRef.current = false;
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    initialCenterRef.current = { ...mapCenter };
+  };
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setContainerSize({ width: rect.width, height: rect.height });
+      setTooltipPos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    }
+
+    if (isDragging) {
+      const dx = e.clientX - dragStartRef.current.x;
+      const dy = e.clientY - dragStartRef.current.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        hasDraggedRef.current = true;
+      }
+      setMapCenter({
+        x: initialCenterRef.current.x + dx,
+        y: initialCenterRef.current.y + dy,
+      });
+    }
+  }, [isDragging]);
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
 
   // Calculate boundary-safe tooltip coordinates so it never gets cut off
   const tooltipWidth = 250;
@@ -166,7 +207,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs h-[520px] lg:h-[580px] flex flex-col"
+      className="relative bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs h-[520px] lg:h-[580px] flex flex-col select-none"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       {/* Top Header info bar */}
       <div className="absolute top-4 left-4 z-20 bg-white/95 backdrop-blur-xs px-4 py-2.5 rounded-xl border border-stone-200 shadow-sm pointer-events-auto">
@@ -175,7 +219,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <Info className="w-3.5 h-3.5 text-stone-400 cursor-help" />
         </div>
         <p className="text-xs text-stone-500 font-medium mt-0.5">
-          Live issue density &amp; status across all 24 districts
+          Live issue density &amp; status across all 24 districts • Drag to pan
         </p>
       </div>
 
@@ -212,8 +256,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </button>
       </div>
 
-      {/* Map Surface with Realistic Aerial Green Land Blurred & Whitened Backdrop */}
-      <div className="flex-1 w-full h-full relative overflow-hidden select-none bg-stone-50">
+      {/* Map Surface with Realistic Aerial Green Land Backdrop */}
+      <div
+        className={`flex-1 w-full h-full relative overflow-hidden bg-stone-50 ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
+        onMouseDown={handleMouseDown}
+        onWheel={handleWheel}
+      >
         {/* Sharp & Whitened Aerial Countryside Terrain Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <img
@@ -226,10 +276,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-white/50 via-transparent to-white/30" />
         </div>
 
+        {/* 2D Panning & Zooming Map Canvas */}
         <div
-          className="w-full h-full transition-transform duration-300 ease-out origin-center relative z-10"
+          className={`w-full h-full origin-center relative z-10 ${
+            isDragging ? 'transition-none' : 'transition-transform duration-200 ease-out'
+          }`}
           style={{
-            transform: `scale(${zoomLevel}) translate(${mapCenter.x}px, ${mapCenter.y}px)`,
+            transform: `translate(${mapCenter.x}px, ${mapCenter.y}px) scale(${zoomLevel})`,
           }}
         >
           <svg
@@ -237,7 +290,6 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             viewBox="0 0 1000 650"
             className="w-full h-full"
             style={{ filter: 'drop-shadow(0 10px 28px rgba(15, 23, 42, 0.09))' }}
-            onMouseMove={handleMouseMove}
           >
             {/* ─── District Polygons from GeoJSON ─── */}
             {allGeoKeys.map((geoKey) => {
@@ -259,8 +311,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 <g
                   key={geoKey}
                   className="cursor-pointer"
-                  onClick={() => district && onSelectDistrict(district)}
-                  onMouseEnter={() => district && setHoveredDistrict(district)}
+                  onClick={() => {
+                    if (hasDraggedRef.current) return; // Ignore clicks if dragging/panning
+                    if (district) onSelectDistrict(district);
+                  }}
+                  onMouseEnter={() => {
+                    if (!isDragging && district) setHoveredDistrict(district);
+                  }}
                   onMouseLeave={() => setHoveredDistrict(null)}
                 >
                   {/* District polygon shape */}
