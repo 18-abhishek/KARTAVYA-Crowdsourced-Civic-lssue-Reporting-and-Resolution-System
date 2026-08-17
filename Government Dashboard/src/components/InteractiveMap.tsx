@@ -121,7 +121,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const [zoomLevel, setZoomLevel] = useState(1);
   const [hoveredDistrict, setHoveredDistrict] = useState<DistrictMetric | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [containerSize, setContainerSize] = useState({ width: 900, height: 550 });
   const [mapCenter, setMapCenter] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.25, 3));
@@ -129,13 +131,27 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const handleResetZoom = () => { setZoomLevel(1); setMapCenter({ x: 0, y: 0 }); };
 
   const handleMouseMove = useCallback((e: React.MouseEvent<SVGElement>) => {
-    if (!svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setContainerSize({ width: rect.width, height: rect.height });
     setTooltipPos({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     });
   }, []);
+
+  // Calculate boundary-safe tooltip coordinates so it never gets cut off
+  const tooltipWidth = 250;
+  const tooltipHeight = 175;
+  const showOnLeft = tooltipPos.x + tooltipWidth + 24 > containerSize.width;
+  const tooltipLeft = showOnLeft
+    ? Math.max(16, tooltipPos.x - tooltipWidth - 14)
+    : Math.min(containerSize.width - tooltipWidth - 16, tooltipPos.x + 14);
+
+  const showBelow = tooltipPos.y - tooltipHeight - 16 < 0;
+  const tooltipTop = showBelow
+    ? Math.min(containerSize.height - tooltipHeight - 16, tooltipPos.y + 16)
+    : Math.max(16, tooltipPos.y - tooltipHeight - 14);
 
   // Build a lookup: geoJSON key -> district metric
   const districtByGeoKey: Record<string, DistrictMetric> = {};
@@ -148,7 +164,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const allGeoKeys = Object.keys(districtPaths);
 
   return (
-    <div className="relative bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs h-[520px] lg:h-[580px] flex flex-col">
+    <div
+      ref={containerRef}
+      className="relative bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs h-[520px] lg:h-[580px] flex flex-col"
+    >
       {/* Top Header info bar */}
       <div className="absolute top-4 left-4 z-20 bg-white/95 backdrop-blur-xs px-4 py-2.5 rounded-xl border border-stone-200 shadow-sm pointer-events-auto">
         <div className="flex items-center gap-1.5">
@@ -279,37 +298,37 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           </svg>
         </div>
 
-        {/* Hover Tooltip */}
+        {/* Hover Tooltip with Smart Boundary Collision Handling */}
         {hoveredDistrict && (
           <div
-            className="absolute z-30 bg-stone-900/95 text-white p-3 rounded-xl shadow-xl pointer-events-none text-xs w-56 backdrop-blur-xs"
+            className="absolute z-30 bg-stone-900/95 text-white p-3.5 rounded-xl shadow-xl pointer-events-none text-xs w-[250px] backdrop-blur-xs transition-all duration-75 border border-stone-800/80"
             style={{
-              left: Math.min(tooltipPos.x + 14, window.innerWidth - 240),
-              top: Math.max(tooltipPos.y - 110, 10),
+              left: `${tooltipLeft}px`,
+              top: `${tooltipTop}px`,
             }}
           >
-            <div className="flex items-center justify-between border-b border-stone-700 pb-1.5 mb-1.5">
+            <div className="flex items-center justify-between border-b border-stone-700/80 pb-2 mb-2">
               <span className="font-bold text-sm text-amber-400">{hoveredDistrict.name}</span>
               <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getDensityBadge(hoveredDistrict.density)}`}>
                 {hoveredDistrict.density}
               </span>
             </div>
-            <div className="space-y-1">
-              <div className="flex justify-between">
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center">
                 <span className="text-stone-400">Open Grievances:</span>
                 <span className="font-bold text-white">{hoveredDistrict.openIssuesCount.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-stone-400">Resolution Rate:</span>
                 <span className="font-semibold text-emerald-400">{hoveredDistrict.resolutionRate}%</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span className="text-stone-400">Critical Issues:</span>
                 <span className="font-semibold text-red-400">{hoveredDistrict.criticalIssuesCount}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-stone-400">Top Issue:</span>
-                <span className="font-medium text-stone-300 text-right max-w-[120px]">{hoveredDistrict.topDepartmentIssue}</span>
+              <div className="flex justify-between items-start pt-0.5">
+                <span className="text-stone-400 shrink-0">Top Issue:</span>
+                <span className="font-medium text-stone-300 text-right pl-2 leading-tight">{hoveredDistrict.topDepartmentIssue}</span>
               </div>
             </div>
           </div>
