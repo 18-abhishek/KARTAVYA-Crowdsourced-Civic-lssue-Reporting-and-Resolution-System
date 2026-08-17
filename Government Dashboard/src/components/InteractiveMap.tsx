@@ -179,8 +179,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </p>
       </div>
 
-      {/* Left Map Controls */}
-      <div className="absolute top-20 left-4 z-20 flex flex-col gap-1 bg-white/95 backdrop-blur-xs p-1 rounded-xl border border-stone-200 shadow-sm">
+      {/* Top Right Map Controls - Sleek horizontal bar leaving all districts completely unobstructed */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-1 bg-white/95 backdrop-blur-xs p-1 rounded-xl border border-stone-200 shadow-sm pointer-events-auto">
         <button
           onClick={handleZoomIn}
           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-stone-100 text-stone-700 transition-colors"
@@ -195,7 +195,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         >
           <Minus className="w-4 h-4" />
         </button>
-        <div className="h-px bg-stone-200 my-0.5 mx-1" />
+        <div className="w-px h-5 bg-stone-200 mx-0.5" />
         <button
           onClick={() => alert('Full screen view mode activated')}
           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-stone-100 text-stone-700 transition-colors"
