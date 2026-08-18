@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { citizenRatings } from '../data/mockData';
+import { citizenRatings, districtList } from '../data/mockData';
 import {
   LayoutDashboard,
   Inbox,
@@ -17,6 +17,7 @@ import {
   History,
   MapPin,
   Layers,
+  ArrowRightLeft,
 } from 'lucide-react';
 
 interface WeeklyReportViewProps {
@@ -47,7 +48,6 @@ interface CityReportData {
   citizenScore: number;
   positiveRatingPercent: number;
   wards: WardData[];
-  dailyBreakdown: { day: string; reported: number; resolved: number }[];
   deptStats: { name: string; count: number; percentage: number; color: string }[];
   slaPoints: { day: string; avgHours: number }[];
 }
@@ -71,7 +71,6 @@ interface WeeklyReportOption {
   avgSlaHours: number;
   citizenScore: number;
   positiveRatingPercent: number;
-  topDistricts: { district: string; reported: number; resolved: number; rate: string }[];
   deptStats: { name: string; count: number; percentage: number; color: string }[];
   slaPoints: { day: string; avgHours: number }[];
 }
@@ -100,15 +99,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 35 (Doranda)', reported: 380, resolved: 340, rate: '89.4%' },
       { name: 'Ward 4 (Bariatu)', reported: 320, resolved: 300, rate: '93.7%' },
       { name: 'Ward 22 (Lalpur)', reported: 230, resolved: 200, rate: '86.9%' },
-    ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 380, resolved: 350 },
-      { day: 'Tue', reported: 390, resolved: 360 },
-      { day: 'Wed', reported: 340, resolved: 320 },
-      { day: 'Thu', reported: 320, resolved: 300 },
-      { day: 'Fri', reported: 330, resolved: 310 },
-      { day: 'Sat', reported: 290, resolved: 270 },
-      { day: 'Sun', reported: 250, resolved: 190 },
     ],
     deptStats: [
       { name: 'Roadways / Potholes', count: 782, percentage: 34, color: '#78716c' },
@@ -150,15 +140,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 32 (Katras)', reported: 250, resolved: 210, rate: '84.0%' },
       { name: 'Ward 19 (Govindpur)', reported: 140, resolved: 120, rate: '85.7%' },
     ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 330, resolved: 280 },
-      { day: 'Tue', reported: 350, resolved: 300 },
-      { day: 'Wed', reported: 300, resolved: 260 },
-      { day: 'Thu', reported: 280, resolved: 240 },
-      { day: 'Fri', reported: 290, resolved: 250 },
-      { day: 'Sat', reported: 250, resolved: 210 },
-      { day: 'Sun', reported: 200, resolved: 160 },
-    ],
     deptStats: [
       { name: 'Electricity & Lighting', count: 620, percentage: 31, color: '#d97706' },
       { name: 'Waste Management', count: 580, percentage: 29, color: '#c2410c' },
@@ -198,15 +179,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 22 (Sonari)', reported: 340, resolved: 280, rate: '82.3%' },
       { name: 'Ward 9 (Telco)', reported: 210, resolved: 170, rate: '80.9%' },
       { name: 'Ward 18 (Mango)', reported: 90, resolved: 60, rate: '66.6%' },
-    ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 290, resolved: 240 },
-      { day: 'Tue', reported: 310, resolved: 260 },
-      { day: 'Wed', reported: 270, resolved: 230 },
-      { day: 'Thu', reported: 250, resolved: 210 },
-      { day: 'Fri', reported: 260, resolved: 220 },
-      { day: 'Sat', reported: 230, resolved: 190 },
-      { day: 'Sun', reported: 190, resolved: 150 },
     ],
     deptStats: [
       { name: 'Waste Management', count: 648, percentage: 36, color: '#c2410c' },
@@ -248,15 +220,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 3 (Sec 12)', reported: 150, resolved: 140, rate: '93.3%' },
       { name: 'Ward 18 (Kundi)', reported: 80, resolved: 70, rate: '87.5%' },
     ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 240, resolved: 225 },
-      { day: 'Tue', reported: 260, resolved: 245 },
-      { day: 'Wed', reported: 230, resolved: 215 },
-      { day: 'Thu', reported: 210, resolved: 195 },
-      { day: 'Fri', reported: 220, resolved: 205 },
-      { day: 'Sat', reported: 190, resolved: 180 },
-      { day: 'Sun', reported: 150, resolved: 135 },
-    ],
     deptStats: [
       { name: 'Sewage & Drainage', count: 450, percentage: 30, color: '#0284c7' },
       { name: 'Roadways / Potholes', count: 420, percentage: 28, color: '#78716c' },
@@ -296,15 +259,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 19 (Jasidih)', reported: 140, resolved: 120, rate: '85.7%' },
       { name: 'Ward 3 (Rohini)', reported: 80, resolved: 70, rate: '87.5%' },
       { name: 'Ward 16 (Kunda)', reported: 40, resolved: 30, rate: '75.0%' },
-    ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 150, resolved: 135 },
-      { day: 'Tue', reported: 160, resolved: 145 },
-      { day: 'Wed', reported: 140, resolved: 125 },
-      { day: 'Thu', reported: 130, resolved: 115 },
-      { day: 'Fri', reported: 135, resolved: 120 },
-      { day: 'Sat', reported: 110, resolved: 100 },
-      { day: 'Sun', reported: 75, resolved: 60 },
     ],
     deptStats: [
       { name: 'Waste Management', count: 378, percentage: 42, color: '#c2410c' },
@@ -346,15 +300,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 7 (Dipugarha)', reported: 50, resolved: 40, rate: '80.0%' },
       { name: 'Ward 21 (Hurhuru)', reported: 30, resolved: 25, rate: '83.3%' },
     ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 100, resolved: 88 },
-      { day: 'Tue', reported: 110, resolved: 96 },
-      { day: 'Wed', reported: 95, resolved: 82 },
-      { day: 'Thu', reported: 90, resolved: 80 },
-      { day: 'Fri', reported: 95, resolved: 84 },
-      { day: 'Sat', reported: 80, resolved: 70 },
-      { day: 'Sun', reported: 50, resolved: 40 },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 217, percentage: 35, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 186, percentage: 30, color: '#78716c' },
@@ -394,15 +339,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 16 (Beniadih)', reported: 90, resolved: 75, rate: '83.3%' },
       { name: 'Ward 20 (Sirsiya)', reported: 40, resolved: 35, rate: '87.5%' },
       { name: 'Ward 6 (Bhandaridih)', reported: 20, resolved: 15, rate: '75.0%' },
-    ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 85, resolved: 74 },
-      { day: 'Tue', reported: 90, resolved: 78 },
-      { day: 'Wed', reported: 80, resolved: 70 },
-      { day: 'Thu', reported: 75, resolved: 65 },
-      { day: 'Fri', reported: 78, resolved: 68 },
-      { day: 'Sat', reported: 65, resolved: 55 },
-      { day: 'Sun', reported: 37, resolved: 30 },
     ],
     deptStats: [
       { name: 'Roadways / Potholes', count: 178, percentage: 35, color: '#78716c' },
@@ -444,15 +380,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 14 (Chitarpur)', reported: 30, resolved: 26, rate: '86.6%' },
       { name: 'Ward 7 (Kothar)', reported: 15, resolved: 14, rate: '93.3%' },
     ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 62, resolved: 56 },
-      { day: 'Tue', reported: 68, resolved: 61 },
-      { day: 'Wed', reported: 58, resolved: 52 },
-      { day: 'Thu', reported: 55, resolved: 50 },
-      { day: 'Fri', reported: 58, resolved: 52 },
-      { day: 'Sat', reported: 48, resolved: 43 },
-      { day: 'Sun', reported: 31, resolved: 26 },
-    ],
     deptStats: [
       { name: 'Roadways / Potholes', count: 133, percentage: 35, color: '#78716c' },
       { name: 'Waste Management', count: 114, percentage: 30, color: '#c2410c' },
@@ -492,15 +419,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 10 (Bandhabpara)', reported: 50, resolved: 44, rate: '88.0%' },
       { name: 'Ward 13 (Kurwa)', reported: 20, resolved: 18, rate: '90.0%' },
       { name: 'Ward 6 (Dangalpada)', reported: 10, resolved: 8, rate: '80.0%' },
-    ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 48, resolved: 43 },
-      { day: 'Tue', reported: 52, resolved: 47 },
-      { day: 'Wed', reported: 44, resolved: 40 },
-      { day: 'Thu', reported: 42, resolved: 38 },
-      { day: 'Fri', reported: 44, resolved: 39 },
-      { day: 'Sat', reported: 38, resolved: 34 },
-      { day: 'Sun', reported: 22, resolved: 19 },
     ],
     deptStats: [
       { name: 'Waste Management', count: 101, percentage: 35, color: '#c2410c' },
@@ -542,15 +460,6 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 16 (Sudarshan)', reported: 15, resolved: 12, rate: '80.0%' },
       { name: 'Ward 10 (Redma)', reported: 10, resolved: 8, rate: '80.0%' },
     ],
-    dailyBreakdown: [
-      { day: 'Mon', reported: 42, resolved: 36 },
-      { day: 'Tue', reported: 46, resolved: 39 },
-      { day: 'Wed', reported: 40, resolved: 34 },
-      { day: 'Thu', reported: 38, resolved: 32 },
-      { day: 'Fri', reported: 39, resolved: 33 },
-      { day: 'Sat', reported: 34, resolved: 29 },
-      { day: 'Sun', reported: 21, resolved: 17 },
-    ],
     deptStats: [
       { name: 'Roadways / Potholes', count: 91, percentage: 35, color: '#78716c' },
       { name: 'Waste Management', count: 78, percentage: 30, color: '#c2410c' },
@@ -591,13 +500,6 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     avgSlaHours: 28.4,
     citizenScore: 4.2,
     positiveRatingPercent: 84,
-    topDistricts: [
-      { district: 'Ranchi', reported: 2300, resolved: 2100, rate: '91.3%' },
-      { district: 'Dhanbad', reported: 2000, resolved: 1700, rate: '85.0%' },
-      { district: 'Jamshedpur', reported: 1800, resolved: 1500, rate: '83.3%' },
-      { district: 'Bokaro', reported: 1500, resolved: 1400, rate: '93.3%' },
-      { district: 'Deoghar', reported: 900, resolved: 800, rate: '88.8%' },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 2983, percentage: 38, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 2120, percentage: 27, color: '#78716c' },
@@ -632,13 +534,6 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     avgSlaHours: 32.1,
     citizenScore: 4.1,
     positiveRatingPercent: 81,
-    topDistricts: [
-      { district: 'Ranchi', reported: 2450, resolved: 2010, rate: '82.0%' },
-      { district: 'Dhanbad', reported: 2180, resolved: 1680, rate: '77.1%' },
-      { district: 'Jamshedpur', reported: 1920, resolved: 1540, rate: '80.2%' },
-      { district: 'Bokaro', reported: 1580, resolved: 1390, rate: '87.9%' },
-      { district: 'Deoghar', reported: 980, resolved: 810, rate: '82.6%' },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 2840, percentage: 34, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 2680, percentage: 32, color: '#78716c' },
@@ -673,13 +568,6 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     avgSlaHours: 34.8,
     citizenScore: 4.0,
     positiveRatingPercent: 79,
-    topDistricts: [
-      { district: 'Ranchi', reported: 2280, resolved: 1810, rate: '79.3%' },
-      { district: 'Dhanbad', reported: 2090, resolved: 1530, rate: '73.2%' },
-      { district: 'Jamshedpur', reported: 1860, resolved: 1460, rate: '78.5%' },
-      { district: 'Bokaro', reported: 1510, resolved: 1280, rate: '84.8%' },
-      { district: 'Deoghar', reported: 910, resolved: 720, rate: '79.1%' },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 3100, percentage: 39, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 2140, percentage: 27, color: '#78716c' },
@@ -714,13 +602,6 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     avgSlaHours: 36.8,
     citizenScore: 3.9,
     positiveRatingPercent: 77,
-    topDistricts: [
-      { district: 'Ranchi', reported: 2510, resolved: 1890, rate: '75.3%' },
-      { district: 'Dhanbad', reported: 2210, resolved: 1580, rate: '71.5%' },
-      { district: 'Jamshedpur', reported: 1980, resolved: 1490, rate: '75.2%' },
-      { district: 'Bokaro', reported: 1620, resolved: 1310, rate: '80.8%' },
-      { district: 'Deoghar', reported: 940, resolved: 710, rate: '75.5%' },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 2870, percentage: 34, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 2535, percentage: 30, color: '#78716c' },
@@ -755,13 +636,6 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     avgSlaHours: 38.2,
     citizenScore: 3.9,
     positiveRatingPercent: 78,
-    topDistricts: [
-      { district: 'Ranchi', reported: 2210, resolved: 1690, rate: '76.5%' },
-      { district: 'Dhanbad', reported: 1980, resolved: 1420, rate: '71.7%' },
-      { district: 'Jamshedpur', reported: 1810, resolved: 1390, rate: '76.8%' },
-      { district: 'Bokaro', reported: 1490, resolved: 1220, rate: '81.9%' },
-      { district: 'Deoghar', reported: 1100, resolved: 880, rate: '80.0%' },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 3225, percentage: 42, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 1996, percentage: 26, color: '#78716c' },
@@ -796,13 +670,6 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     avgSlaHours: 39.5,
     citizenScore: 3.8,
     positiveRatingPercent: 76,
-    topDistricts: [
-      { district: 'Ranchi', reported: 2150, resolved: 1590, rate: '74.0%' },
-      { district: 'Dhanbad', reported: 1930, resolved: 1360, rate: '70.5%' },
-      { district: 'Jamshedpur', reported: 1780, resolved: 1320, rate: '74.2%' },
-      { district: 'Bokaro', reported: 1440, resolved: 1160, rate: '80.6%' },
-      { district: 'Deoghar', reported: 880, resolved: 670, rate: '76.1%' },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 2932, percentage: 39, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 2030, percentage: 27, color: '#78716c' },
@@ -837,13 +704,6 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     avgSlaHours: 41.0,
     citizenScore: 3.8,
     positiveRatingPercent: 75,
-    topDistricts: [
-      { district: 'Ranchi', reported: 2090, resolved: 1520, rate: '72.7%' },
-      { district: 'Dhanbad', reported: 1880, resolved: 1300, rate: '69.1%' },
-      { district: 'Jamshedpur', reported: 1720, resolved: 1260, rate: '73.3%' },
-      { district: 'Bokaro', reported: 1400, resolved: 1110, rate: '79.3%' },
-      { district: 'Deoghar', reported: 850, resolved: 630, rate: '74.1%' },
-    ],
     deptStats: [
       { name: 'Waste Management', count: 2850, percentage: 39, color: '#c2410c' },
       { name: 'Roadways / Potholes', count: 1973, percentage: 27, color: '#78716c' },
@@ -866,7 +726,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
   const [sidebarTab, setSidebarTab] = useState<'overview' | 'inflow' | 'resolution' | 'sla' | 'departments' | 'feedback' | 'comparative'>('overview');
   const [viewScope, setViewScope] = useState<'state' | 'city'>('state');
   const [selectedCity, setSelectedCity] = useState<string>('Ranchi');
-  const [selectedTopDistrictsCount, setSelectedTopDistrictsCount] = useState('Top 5 Districts');
+  const [selectedTopDistrictsCount, setSelectedTopDistrictsCount] = useState<string>('Top 5 Districts');
   const [selectedWeekId, setSelectedWeekId] = useState<string>('w33');
   const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
@@ -911,6 +771,33 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
   const displayCitizenScore = isCityMode ? activeCityData.citizenScore : currentReport.citizenScore;
   const displayPositivePercent = isCityMode ? activeCityData.positiveRatingPercent : currentReport.positiveRatingPercent;
 
+  // Build All 24 Districts dataset proportional to the active week
+  const weekRatio = currentReport.totalReported / 7850;
+  const all24DistrictsData = districtList.map((d) => {
+    const rawReported = d.reportedThisWeek || Math.round(d.totalIssues * 0.6);
+    const rawResolved = d.resolved || Math.round(d.totalIssues * 0.5);
+    const adjustedReported = Math.max(20, Math.round(rawReported * weekRatio));
+    const adjustedResolved = Math.max(15, Math.round(rawResolved * weekRatio));
+    const rate = ((adjustedResolved / adjustedReported) * 100).toFixed(1);
+    return {
+      district: d.name.replace(/ \(.*?\)/, ''), // e.g. "Jamshedpur", "Palamu", "West Singhbhum"
+      reported: adjustedReported,
+      resolved: adjustedResolved,
+      rate: `${rate}%`,
+    };
+  });
+
+  // Filter district list based on selectedTopDistrictsCount dropdown
+  let stateDistrictItems = all24DistrictsData;
+  if (selectedTopDistrictsCount === 'Top 5 Districts') {
+    stateDistrictItems = all24DistrictsData.slice(0, 5);
+  } else if (selectedTopDistrictsCount === 'Top 10 Districts') {
+    stateDistrictItems = all24DistrictsData.slice(0, 10);
+  } else {
+    // All 24 Districts
+    stateDistrictItems = all24DistrictsData;
+  }
+
   // Active Bar Chart Dataset (Districts in State Mode vs Wards in City Mode)
   const barChartItems = isCityMode
     ? activeCityData.wards.map((w) => ({
@@ -919,18 +806,44 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
         resolved: w.resolved,
         rate: w.rate,
       }))
-    : currentReport.topDistricts.map((d) => ({
+    : stateDistrictItems.map((d) => ({
         label: d.district,
         reported: d.reported,
         resolved: d.resolved,
         rate: d.rate,
       }));
 
-  // Dynamic bar chart scaling factor
+  const totalBarsCount = barChartItems.length;
+
+  // Dynamic bar chart layout dimensions
   const maxBarValue = Math.max(...barChartItems.map((item) => item.reported), 100);
   const barScaleCeiling = isCityMode
     ? Math.ceil(maxBarValue / 100) * 100 + 50
-    : 2600;
+    : Math.max(2500, Math.ceil(maxBarValue / 500) * 500);
+
+  // SVG total width and spacing calculation for 5, 10, or 24 bars
+  let svgCanvasWidth = 500;
+  let barSpacing = 85;
+  let barWidth = 24;
+  let gapBetweenBars = 27;
+
+  if (totalBarsCount <= 5) {
+    svgCanvasWidth = 500;
+    barSpacing = 85;
+    barWidth = 24;
+    gapBetweenBars = 27;
+  } else if (totalBarsCount <= 10) {
+    svgCanvasWidth = 780;
+    barSpacing = 72;
+    barWidth = 20;
+    gapBetweenBars = 22;
+  } else {
+    // 24 districts
+    svgCanvasWidth = 1720;
+    barSpacing = 68;
+    barWidth = 16;
+    gapBetweenBars = 18;
+  }
 
   const sidebarItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -1120,7 +1033,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
               </button>
             </div>
 
-            {/* 1. City Selector Dropdown (Active when City View is chosen) */}
+            {/* City Selector Dropdown (Active when City View is chosen) */}
             {isCityMode && (
               <div className="relative animate-in fade-in zoom-in-95" ref={cityDropdownRef}>
                 <button
@@ -1229,7 +1142,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
           {/* 1. Comparative Bar Chart (District-wise in State View VS Ward-wise in City View) */}
           <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between pb-3">
+              <div className="flex items-center justify-between pb-3 flex-wrap gap-2">
                 <div>
                   <div className="flex items-center gap-1.5">
                     <h3 className="text-sm font-bold text-stone-900">
@@ -1242,7 +1155,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                   <p className="text-xs text-stone-500 font-medium mt-0.5">
                     {isCityMode
                       ? `Issue resolution performance across municipal wards in ${selectedCity}`
-                      : 'Comparison across top districts'}
+                      : `Comparison across ${selectedTopDistrictsCount.toLowerCase()}`}
                   </p>
                 </div>
 
@@ -1251,68 +1164,79 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                     <select
                       value={selectedTopDistrictsCount}
                       onChange={(e) => setSelectedTopDistrictsCount(e.target.value)}
-                      className="appearance-none bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1 text-[11px] font-semibold text-stone-700 pr-6 focus:outline-none"
+                      className="appearance-none bg-stone-50 hover:bg-stone-100 border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-bold text-stone-800 pr-7 focus:outline-none focus:ring-2 focus:ring-[#c2410c]/20 cursor-pointer shadow-2xs transition-all"
                     >
                       <option value="Top 5 Districts">Top 5 Districts</option>
                       <option value="Top 10 Districts">Top 10 Districts</option>
                       <option value="All 24 Districts">All 24 Districts</option>
                     </select>
-                    <ChevronDown className="w-3 h-3 text-stone-400 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-3.5 h-3.5 text-stone-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1 text-[11px] font-semibold text-[#c2410c] bg-[#fff5ee] border border-[#fed7aa] px-2 py-0.5 rounded-lg">
+                  <div className="flex items-center gap-1 text-[11px] font-semibold text-[#c2410c] bg-[#fff5ee] border border-[#fed7aa] px-2.5 py-1 rounded-lg">
                     <Layers className="w-3 h-3" />
-                    <span>Key Wards</span>
+                    <span>{barChartItems.length} Municipal Wards</span>
                   </div>
                 )}
               </div>
 
-              {/* Chart Legend */}
-              <div className="flex items-center gap-4 text-xs font-medium text-stone-600 mt-2 mb-4">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-xs bg-[#c2410c]" />
-                  <span>Reported Issues</span>
+              {/* Chart Legend & Horizontal Scroll Indicator */}
+              <div className="flex items-center justify-between text-xs font-medium text-stone-600 mt-2 mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-xs bg-[#c2410c]" />
+                    <span>Reported Issues</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-xs bg-[#78716c]" />
+                    <span>Resolved Issues</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded-xs bg-[#78716c]" />
-                  <span>Resolved Issues</span>
-                </div>
+
+                {!isCityMode && totalBarsCount > 5 && (
+                  <span className="text-[11px] text-stone-400 font-normal flex items-center gap-1">
+                    <ArrowRightLeft className="w-3 h-3" />
+                    <span>Scroll horizontally to view all ({totalBarsCount})</span>
+                  </span>
+                )}
               </div>
 
-              {/* Interactive SVG Bar Chart */}
-              <div className="h-56 w-full relative">
-                <svg viewBox="0 0 500 220" className="w-full h-full">
+              {/* Interactive SVG Bar Chart with Horizontal Scroll Container */}
+              <div className="h-56 w-full relative overflow-x-auto custom-scrollbar pb-2">
+                <svg
+                  viewBox={`0 0 ${svgCanvasWidth} 220`}
+                  style={{ width: `${svgCanvasWidth}px`, minWidth: `${svgCanvasWidth}px`, height: '220px' }}
+                  className="block"
+                >
                   {/* Horizontal Grid lines */}
-                  <line x1="35" y1="20" x2="480" y2="20" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="35" y1="20" x2={svgCanvasWidth - 20} y2="20" stroke="#f1f5f9" strokeWidth="1" />
                   <text x="5" y="24" fill="#94a3b8" fontSize="9">
                     {isCityMode ? Math.round(barScaleCeiling) : '2.5K'}
                   </text>
 
-                  <line x1="35" y1="65" x2="480" y2="65" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="35" y1="65" x2={svgCanvasWidth - 20} y2="65" stroke="#f1f5f9" strokeWidth="1" />
                   <text x="5" y="69" fill="#94a3b8" fontSize="9">
                     {isCityMode ? Math.round(barScaleCeiling * 0.75) : '2.0K'}
                   </text>
 
-                  <line x1="35" y1="110" x2="480" y2="110" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="35" y1="110" x2={svgCanvasWidth - 20} y2="110" stroke="#f1f5f9" strokeWidth="1" />
                   <text x="5" y="114" fill="#94a3b8" fontSize="9">
                     {isCityMode ? Math.round(barScaleCeiling * 0.5) : '1.5K'}
                   </text>
 
-                  <line x1="35" y1="155" x2="480" y2="155" stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1="35" y1="155" x2={svgCanvasWidth - 20} y2="155" stroke="#f1f5f9" strokeWidth="1" />
                   <text x="10" y="159" fill="#94a3b8" fontSize="9">
                     {isCityMode ? Math.round(barScaleCeiling * 0.25) : '500'}
                   </text>
 
-                  <line x1="35" y1="190" x2="480" y2="190" stroke="#cbd5e1" strokeWidth="1" />
+                  <line x1="35" y1="190" x2={svgCanvasWidth - 20} y2="190" stroke="#cbd5e1" strokeWidth="1" />
                   <text x="25" y="193" fill="#94a3b8" fontSize="9">0</text>
 
-                  {/* Dynamic Items (Districts or Wards) */}
+                  {/* Dynamic Items (5, 10, or All 24 Districts / City Wards) */}
                   {barChartItems.map((item, idx) => {
-                    const totalBars = barChartItems.length;
-                    const spacing = totalBars > 5 ? 70 : 85;
-                    const startX = 45 + idx * spacing;
-                    const reportedHeight = Math.min((item.reported / barScaleCeiling) * 170, 165);
-                    const resolvedHeight = Math.min((item.resolved / barScaleCeiling) * 170, 165);
+                    const startX = 40 + idx * barSpacing;
+                    const reportedHeight = Math.min((item.reported / barScaleCeiling) * 165, 160);
+                    const resolvedHeight = Math.min((item.resolved / barScaleCeiling) * 165, 160);
                     const isHovered = hoveredBarIndex === idx;
 
                     return (
@@ -1320,38 +1244,77 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                         key={item.label}
                         onMouseEnter={() => setHoveredBarIndex(idx)}
                         onMouseLeave={() => setHoveredBarIndex(null)}
-                        className="cursor-pointer"
+                        className="cursor-pointer group"
                       >
+                        {/* Hover Highlight Column Background */}
+                        {isHovered && (
+                          <rect
+                            x={startX - 6}
+                            y="15"
+                            width={gapBetweenBars + barWidth + 12}
+                            height="180"
+                            fill="#f8fafc"
+                            rx="6"
+                            opacity="0.9"
+                          />
+                        )}
+
                         {/* Reported Bar */}
                         <rect
                           x={startX}
                           y={190 - reportedHeight}
-                          width={totalBars > 5 ? '20' : '24'}
+                          width={barWidth}
                           height={reportedHeight}
-                          rx="2"
+                          rx="2.5"
                           fill={isHovered ? '#ea580c' : '#c2410c'}
                           className="transition-all duration-150"
                         />
+
                         {/* Resolved Bar */}
                         <rect
-                          x={startX + (totalBars > 5 ? 22 : 27)}
+                          x={startX + gapBetweenBars}
                           y={190 - resolvedHeight}
-                          width={totalBars > 5 ? '20' : '24'}
+                          width={barWidth}
                           height={resolvedHeight}
-                          rx="2"
+                          rx="2.5"
                           fill={isHovered ? '#57534e' : '#78716c'}
                           className="transition-all duration-150"
                         />
-                        {/* Label (District name or Ward label) */}
+
+                        {/* Hover Rate Pill Tooltip */}
+                        {isHovered && (
+                          <g>
+                            <rect
+                              x={startX - 10}
+                              y={Math.max(10, 190 - Math.max(reportedHeight, resolvedHeight) - 22)}
+                              width={gapBetweenBars + barWidth + 20}
+                              height="18"
+                              rx="4"
+                              fill="#0f172a"
+                            />
+                            <text
+                              x={startX + (gapBetweenBars + barWidth) / 2}
+                              y={Math.max(22, 190 - Math.max(reportedHeight, resolvedHeight) - 10)}
+                              textAnchor="middle"
+                              fill="#ffffff"
+                              fontSize="9"
+                              fontWeight="bold"
+                            >
+                              {item.rate}
+                            </text>
+                          </g>
+                        )}
+
+                        {/* Label (District or Ward name) */}
                         <text
-                          x={startX + (totalBars > 5 ? 20 : 25)}
+                          x={startX + (gapBetweenBars + barWidth) / 2}
                           y="208"
                           textAnchor="middle"
                           fill={isHovered ? '#0f172a' : '#475569'}
-                          fontSize={totalBars > 5 ? '9' : '10'}
+                          fontSize={totalBarsCount > 10 ? '9' : '10'}
                           fontWeight={isHovered ? '700' : '500'}
                         >
-                          {item.label.length > 12 ? `${item.label.slice(0, 11)}…` : item.label}
+                          {item.label.length > 11 ? `${item.label.slice(0, 10)}…` : item.label}
                         </text>
                       </g>
                     );

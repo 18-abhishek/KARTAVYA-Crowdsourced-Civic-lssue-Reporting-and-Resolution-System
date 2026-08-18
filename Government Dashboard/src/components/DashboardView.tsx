@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { CivicIssue, DistrictMetric, TabType } from '../types';
 import { InteractiveMap } from './InteractiveMap';
 import {
@@ -14,9 +14,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   ArrowRight,
-  SlidersHorizontal,
-  ChevronDown,
-  Calendar,
   Sparkles,
   RefreshCw,
   TrendingUp,
@@ -41,22 +38,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   setActiveTab,
   onSelectIssueForDetails,
 }) => {
-  const [filterDistrict, setFilterDistrict] = useState('All Districts');
-  const [filterCategory, setFilterCategory] = useState('All Categories');
-  const [filterPriority, setFilterPriority] = useState('All Priorities');
-  const [filterDateRange, setFilterDateRange] = useState('Last 7 Days');
-  const [filterAppliedToast, setFilterAppliedToast] = useState(false);
-
-  const handleApplyFilters = () => {
-    setFilterAppliedToast(true);
-    setTimeout(() => setFilterAppliedToast(false), 3000);
-    // If district filter is chosen, select it
-    if (filterDistrict !== 'All Districts') {
-      const d = districts.find((dist) => dist.name.toLowerCase().includes(filterDistrict.toLowerCase()));
-      if (d) onSelectDistrict(d);
-    }
-  };
-
   const getPriorityBadgeClass = (priority: string) => {
     switch (priority) {
       case 'High':
@@ -188,218 +169,88 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           />
         </div>
 
-        {/* Right Column: Live Issue Feed & Quick Filters */}
-        <div className="lg:col-span-4 space-y-6">
-          {/* Card 1: Live Issue Feed */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
-              <div>
-                <h3 className="text-sm font-bold text-stone-900">Live Issue Feed</h3>
-                <p className="text-xs text-stone-500 font-medium mt-0.5">Real-time incoming issues</p>
-              </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
-                Live
-              </span>
-            </div>
-
-            {/* Live Feed List */}
-            <div className="divide-y divide-stone-100 mt-2">
-              {/* Item 1 */}
-              <div
-                onClick={() => {
-                  onSelectIssueForDetails('#JH-9821');
-                  setActiveTab('details');
-                }}
-                className="py-3 group cursor-pointer hover:bg-stone-50/80 -mx-2 px-2 rounded-xl transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center shrink-0 mt-0.5">
-                    <Droplets className="w-4 h-4 text-red-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <h4 className="text-xs font-bold text-stone-900 truncate group-hover:text-[#ea580c] transition-colors">
-                        Water Supply Problem
-                      </h4>
-                      <span className="text-[10px] text-stone-400 shrink-0 whitespace-nowrap">2 min ago</span>
-                    </div>
-                    <p className="text-[11px] text-stone-500 truncate mt-0.5">
-                      Ranchi Municipal Corporation
-                    </p>
-                    <div className="mt-1.5">
-                      <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-100">
-                        High Priority
-                      </span>
-                    </div>
-                  </div>
+        {/* Right Column: Live Issue Feed */}
+        <div className="lg:col-span-4 h-[520px] lg:h-[580px] flex flex-col">
+          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex-1 flex flex-col justify-between overflow-hidden">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+                <div>
+                  <h3 className="text-sm font-bold text-stone-900">Live Issue Feed</h3>
+                  <p className="text-xs text-stone-500 font-medium mt-0.5">Real-time crowdsourced grievances</p>
                 </div>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                  Live
+                </span>
               </div>
 
-              {/* Item 2 */}
-              <div
-                onClick={() => {
-                  onSelectIssueForDetails('#JH-9530');
-                  setActiveTab('details');
-                }}
-                className="py-3 group cursor-pointer hover:bg-stone-50/80 -mx-2 px-2 rounded-xl transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-                    <Wrench className="w-4 h-4 text-amber-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <h4 className="text-xs font-bold text-stone-900 truncate group-hover:text-[#ea580c] transition-colors">
-                        Road Damage
-                      </h4>
-                      <span className="text-[10px] text-stone-400 shrink-0 whitespace-nowrap">5 min ago</span>
-                    </div>
-                    <p className="text-[11px] text-stone-500 truncate mt-0.5">
-                      Jamshedpur Notified Area
-                    </p>
-                    <div className="mt-1.5">
-                      <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-100">
-                        Medium Priority
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Live Feed List */}
+              <div className="divide-y divide-stone-100 overflow-y-auto max-h-[380px] lg:max-h-[420px] pr-1 custom-scrollbar mt-1">
+                {issues.slice(0, 6).map((issue) => {
+                  let IconComponent = Wrench;
+                  let iconBg = 'bg-amber-50 text-amber-600';
+                  if (issue.category === 'Water Supply') {
+                    IconComponent = Droplets;
+                    iconBg = 'bg-blue-50 text-blue-600';
+                  } else if (issue.category === 'Waste Management') {
+                    IconComponent = Trash2;
+                    iconBg = 'bg-orange-50 text-orange-600';
+                  } else if (issue.category === 'Electricity') {
+                    IconComponent = Zap;
+                    iconBg = 'bg-amber-50 text-amber-600';
+                  } else if (issue.category === 'Roadways') {
+                    IconComponent = Wrench;
+                    iconBg = 'bg-stone-100 text-stone-700';
+                  }
 
-              {/* Item 3 */}
-              <div
-                onClick={() => {
-                  onSelectIssueForDetails('#JH-9819');
-                  setActiveTab('details');
-                }}
-                className="py-3 group cursor-pointer hover:bg-stone-50/80 -mx-2 px-2 rounded-xl transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center shrink-0 mt-0.5">
-                    <Trash2 className="w-4 h-4 text-orange-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <h4 className="text-xs font-bold text-stone-900 truncate group-hover:text-[#ea580c] transition-colors">
-                        Garbage Collection Missed
-                      </h4>
-                      <span className="text-[10px] text-stone-400 shrink-0 whitespace-nowrap">7 min ago</span>
+                  return (
+                    <div
+                      key={issue.id}
+                      onClick={() => {
+                        onSelectIssueForDetails(issue.id);
+                        setActiveTab('details');
+                      }}
+                      className="py-3 group cursor-pointer hover:bg-stone-50/80 -mx-1 px-2 rounded-xl transition-colors"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${iconBg}`}>
+                          <IconComponent className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <h4 className="text-xs font-bold text-stone-900 truncate group-hover:text-[#ea580c] transition-colors">
+                              {issue.title}
+                            </h4>
+                            <span className="text-[10px] text-stone-400 shrink-0 whitespace-nowrap">{issue.timeAgo}</span>
+                          </div>
+                          <p className="text-[11px] text-stone-500 truncate mt-0.5">
+                            {issue.ward || issue.city}
+                          </p>
+                          <div className="mt-1.5 flex items-center gap-2">
+                            <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md border ${getPriorityBadgeClass(issue.priority)}`}>
+                              {issue.priority} Priority
+                            </span>
+                            <span className="text-[10px] font-mono text-stone-400">
+                              {issue.id}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-stone-500 truncate mt-0.5">
-                      Dhanbad Municipal Corporation
-                    </p>
-                    <div className="mt-1.5">
-                      <span className="inline-block text-[10px] font-semibold px-2 py-0.5 rounded-md bg-orange-50 text-orange-700 border border-orange-100">
-                        Low Priority
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
             </div>
 
             {/* Bottom View All Link */}
-            <div className="mt-3 pt-3 border-t border-stone-100 text-center">
+            <div className="pt-3 border-t border-stone-100 text-center shrink-0">
               <button
                 onClick={() => setActiveTab('details')}
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors"
               >
-                <span>View All Issues</span>
+                <span>View All Active Issues ({issues.length})</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-            </div>
-          </div>
-
-          {/* Card 2: Quick Filters */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-100">
-              <h3 className="text-sm font-bold text-stone-900">Quick Filters</h3>
-              <SlidersHorizontal className="w-4 h-4 text-stone-400" />
-            </div>
-
-            <div className="space-y-3 mt-3">
-              {/* Row 1: Districts & Categories */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="relative">
-                  <select
-                    value={filterDistrict}
-                    onChange={(e) => setFilterDistrict(e.target.value)}
-                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
-                  >
-                    <option value="All Districts">All Districts</option>
-                    {districts.map((d) => (
-                      <option key={d.id} value={d.name}>
-                        {d.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
-                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
-                  >
-                    <option value="All Categories">All Categories</option>
-                    <option value="Roadways">Roadways / Potholes</option>
-                    <option value="Electricity">Electricity & Lighting</option>
-                    <option value="Sewage">Sewage & Drainage</option>
-                    <option value="Waste Management">Waste Management</option>
-                    <option value="Water Supply">Water Supply</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Row 2: Priorities & Date */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="relative">
-                  <select
-                    value={filterPriority}
-                    onChange={(e) => setFilterPriority(e.target.value)}
-                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
-                  >
-                    <option value="All Priorities">All Priorities</option>
-                    <option value="Critical">Critical</option>
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-
-                <div className="relative">
-                  <select
-                    value={filterDateRange}
-                    onChange={(e) => setFilterDateRange(e.target.value)}
-                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
-                  >
-                    <option value="Last 7 Days">Last 7 Days</option>
-                    <option value="Today">Today (24 Hours)</option>
-                    <option value="Last 30 Days">Last 30 Days</option>
-                    <option value="This Quarter">This Quarter</option>
-                  </select>
-                  <Calendar className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Apply Filters Button */}
-              <button
-                onClick={handleApplyFilters}
-                className="w-full mt-2 py-2.5 px-4 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 active:scale-98"
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5" />
-                <span>Apply Filters</span>
-              </button>
-
-              {filterAppliedToast && (
-                <p className="text-[11px] font-semibold text-emerald-600 text-center animate-in fade-in">
-                  ✓ Filter criteria applied to live map & feeds
-                </p>
-              )}
             </div>
           </div>
         </div>
