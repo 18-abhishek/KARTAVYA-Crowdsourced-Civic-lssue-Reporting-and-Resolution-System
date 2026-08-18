@@ -419,23 +419,34 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     if (geoKey) districtByGeoKey[geoKey] = d;
   });
 
-  // All 24 GeoJSON keys
+  // All 24 GeoJSON keys sorted so active/selected/hovered district renders LAST (on top of adjacent paths)
   const allGeoKeys = Object.keys(districtPaths);
+  const sortedGeoKeys = [...allGeoKeys].sort((a, b) => {
+    const districtA = districtByGeoKey[a];
+    const districtB = districtByGeoKey[b];
+    const isSelectedA = districtA && selectedDistrict?.id === districtA.id;
+    const isSelectedB = districtB && selectedDistrict?.id === districtB.id;
+    const isHoveredA = districtA && hoveredDistrict?.id === districtA.id;
+    const isHoveredB = districtB && hoveredDistrict?.id === districtB.id;
+
+    if (isSelectedA || isHoveredA) return 1;
+    if (isSelectedB || isHoveredB) return -1;
+    return 0;
+  });
 
   return (
     <div
       ref={containerRef}
-      className="relative bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs h-[520px] lg:h-[580px] flex flex-col select-none"
+      className="relative bg-transparent h-[520px] lg:h-[580px] flex flex-col select-none"
       onMouseMove={handleMouseMove}
     >
       {/* ─── Top-Left Header ─── */}
-      <div className="absolute top-4 left-4 z-30 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-stone-200/80 shadow-xs pointer-events-auto">
+      <div className="absolute top-4 left-4 z-30 bg-white/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-stone-200/60 shadow-xs pointer-events-auto">
         <div className="flex items-center gap-1.5">
           <h2 className="text-sm font-extrabold text-stone-900 tracking-tight">Jharkhand Municipal Map</h2>
-          <Info
-            className="w-3.5 h-3.5 text-stone-400 hover:text-stone-700 cursor-pointer transition-colors"
-            title="Overview of civic issue density across Jharkhand districts"
-          />
+          <span title="Overview of civic issue density across Jharkhand districts">
+            <Info className="w-3.5 h-3.5 text-stone-400 hover:text-stone-700 cursor-pointer transition-colors" />
+          </span>
         </div>
         <p className="text-xs text-stone-500 font-medium mt-0.5">
           Live issue density &amp; status by district
@@ -443,7 +454,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       </div>
 
       {/* ─── Compact Bottom-Left Legend Pill (Minimized) ─── */}
-      <div className="absolute bottom-3 left-3 z-30 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-stone-200/80 shadow-xs pointer-events-auto flex items-center gap-3 text-[10px] text-stone-600 font-medium">
+      <div className="absolute bottom-3 left-3 z-30 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-stone-200/60 shadow-xs pointer-events-auto flex items-center gap-3 text-[10px] text-stone-600 font-medium">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-[#ef4444] shrink-0" />
           <span>High 500+</span>
@@ -466,68 +477,57 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       <div className="absolute bottom-3.5 right-3.5 z-30 pointer-events-auto">
         <button
           onClick={() => onOpenDistrictModal(selectedDistrict || undefined)}
-          className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/95 backdrop-blur-md hover:bg-stone-50 text-stone-800 border border-stone-200/90 rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all active:scale-98"
+          className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/90 backdrop-blur-md hover:bg-white text-stone-800 border border-stone-200/80 rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all active:scale-98"
         >
           <ClipboardList className="w-3.5 h-3.5 text-stone-600" />
           <span>View District Details</span>
         </button>
       </div>
 
-      {/* ─── Map Canvas with 3D Extruded Isometric Surface & Landscape ─── */}
-      <div className="flex-1 w-full h-full relative overflow-hidden bg-slate-50">
-        {/* Soft country landscape terrain background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <img
-            src="/terrain_bg.jpg"
-            alt="Terrain Landscape"
-            className="w-full h-full object-cover opacity-60"
-          />
-          <div className="absolute inset-0 bg-white/70 backdrop-blur-[0.5px]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-white/40" />
-        </div>
-
+      {/* ─── Map Canvas with 3D Extruded Isometric Surface (Transparent BG) ─── */}
+      <div className="flex-1 w-full h-full relative bg-transparent">
         {/* 3D Map Container */}
         <div className="w-full h-full origin-center relative z-10">
           <svg
-            viewBox="0 0 1000 650"
+            viewBox="-60 -35 1120 720"
             className="w-full h-full"
             style={{
-              filter: 'drop-shadow(0 20px 35px rgba(15, 23, 42, 0.16))',
+              filter: 'drop-shadow(0 14px 28px rgba(15, 23, 42, 0.12))',
             }}
           >
             <defs>
               {/* Radial Heatmap Glow Gradients */}
               <radialGradient id="glow-ranchi" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.55" />
-                <stop offset="35%" stopColor="#ef4444" stopOpacity="0.32" />
-                <stop offset="70%" stopColor="#ef4444" stopOpacity="0.10" />
+                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.25" />
+                <stop offset="35%" stopColor="#ef4444" stopOpacity="0.12" />
+                <stop offset="70%" stopColor="#ef4444" stopOpacity="0.04" />
                 <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
               </radialGradient>
 
               <radialGradient id="glow-dhanbad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.48" />
-                <stop offset="40%" stopColor="#f97316" stopOpacity="0.25" />
-                <stop offset="75%" stopColor="#f97316" stopOpacity="0.08" />
+                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.20" />
+                <stop offset="40%" stopColor="#f97316" stopOpacity="0.10" />
+                <stop offset="75%" stopColor="#f97316" stopOpacity="0.03" />
                 <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
               </radialGradient>
 
               <radialGradient id="glow-jamshedpur" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#f97316" stopOpacity="0.50" />
-                <stop offset="40%" stopColor="#f97316" stopOpacity="0.28" />
-                <stop offset="75%" stopColor="#f97316" stopOpacity="0.08" />
+                <stop offset="0%" stopColor="#f97316" stopOpacity="0.18" />
+                <stop offset="40%" stopColor="#f97316" stopOpacity="0.08" />
+                <stop offset="75%" stopColor="#f97316" stopOpacity="0.02" />
                 <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
               </radialGradient>
 
               <radialGradient id="glow-deoghar" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#f97316" stopOpacity="0.42" />
-                <stop offset="45%" stopColor="#f97316" stopOpacity="0.20" />
+                <stop offset="0%" stopColor="#f97316" stopOpacity="0.16" />
+                <stop offset="45%" stopColor="#f97316" stopOpacity="0.06" />
                 <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
               </radialGradient>
 
               <radialGradient id="glow-green-soft" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#22c55e" stopOpacity="0.45" />
-                <stop offset="35%" stopColor="#22c55e" stopOpacity="0.24" />
-                <stop offset="70%" stopColor="#22c55e" stopOpacity="0.07" />
+                <stop offset="0%" stopColor="#22c55e" stopOpacity="0.30" />
+                <stop offset="35%" stopColor="#22c55e" stopOpacity="0.15" />
+                <stop offset="70%" stopColor="#22c55e" stopOpacity="0.04" />
                 <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
               </radialGradient>
             </defs>
@@ -541,43 +541,50 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             </g>
 
             {/* Extruded Layer 5 (Deep Slate) */}
-            <g transform="translate(0, 18)">
+            <g transform="translate(0, 18)" fill="#94a3b8" stroke="#94a3b8" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
               {allGeoKeys.map((geoKey) => (
-                <path key={`ext5-${geoKey}`} d={districtPaths[geoKey]} fill="#94a3b8" />
+                <path key={`ext5-${geoKey}`} d={districtPaths[geoKey]} />
               ))}
             </g>
 
             {/* Extruded Layer 4 */}
-            <g transform="translate(0, 14)">
+            <g transform="translate(0, 14)" fill="#cbd5e1" stroke="#cbd5e1" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
               {allGeoKeys.map((geoKey) => (
-                <path key={`ext4-${geoKey}`} d={districtPaths[geoKey]} fill="#cbd5e1" />
+                <path key={`ext4-${geoKey}`} d={districtPaths[geoKey]} />
               ))}
             </g>
 
             {/* Extruded Layer 3 */}
-            <g transform="translate(0, 10)">
+            <g transform="translate(0, 10)" fill="#dbeafe" stroke="#dbeafe" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
               {allGeoKeys.map((geoKey) => (
-                <path key={`ext3-${geoKey}`} d={districtPaths[geoKey]} fill="#dbeafe" />
+                <path key={`ext3-${geoKey}`} d={districtPaths[geoKey]} />
               ))}
             </g>
 
             {/* Extruded Layer 2 */}
-            <g transform="translate(0, 6)">
+            <g transform="translate(0, 6)" fill="#e2e8f0" stroke="#e2e8f0" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
               {allGeoKeys.map((geoKey) => (
-                <path key={`ext2-${geoKey}`} d={districtPaths[geoKey]} fill="#e2e8f0" />
+                <path key={`ext2-${geoKey}`} d={districtPaths[geoKey]} />
               ))}
             </g>
 
             {/* Extruded Layer 1 (Just beneath surface) */}
-            <g transform="translate(0, 2)">
+            <g transform="translate(0, 2)" fill="#f1f5f9" stroke="#f1f5f9" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
               {allGeoKeys.map((geoKey) => (
-                <path key={`ext1-${geoKey}`} d={districtPaths[geoKey]} fill="#f1f5f9" />
+                <path key={`ext1-${geoKey}`} d={districtPaths[geoKey]} />
+              ))}
+            </g>
+
+            {/* ─── Seamless Base Landmass Silhouette (Prevents Gaps Between Districts) ─── */}
+            <g fill="#fafafa" stroke="#cbd5e1" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round">
+              {allGeoKeys.map((geoKey) => (
+                <path key={`base-${geoKey}`} d={districtPaths[geoKey]} />
               ))}
             </g>
 
             {/* ─── 2. Top Land Surface with Clean Subtle District Boundaries ─── */}
-            <g>
-              {allGeoKeys.map((geoKey) => {
+            <g strokeLinejoin="round" strokeLinecap="round">
+              {sortedGeoKeys.map((geoKey) => {
                 const pathD = districtPaths[geoKey];
                 const district = districtByGeoKey[geoKey];
                 const isSelected = district ? selectedDistrict?.id === district.id : false;
@@ -589,7 +596,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                     d={pathD}
                     fill={isSelected ? '#fef3c7' : isHovered ? '#f1f5f9' : '#fafafa'}
                     stroke={isSelected ? '#f59e0b' : '#cbd5e1'}
-                    strokeWidth={isSelected ? 1.8 : 1.1}
+                    strokeWidth={isSelected ? 2.2 : 1.1}
                     className="cursor-pointer transition-colors duration-150"
                     onClick={() => {
                       if (district) onSelectDistrict(district);
@@ -605,21 +612,21 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
             {/* ─── 3. Heatmap Radial Glow Overlays ─── */}
             {/* Ranchi Intensive Red Heatmap Rings directly over Ranchi centroid */}
-            <circle cx="450" cy="375" r="105" fill="url(#glow-ranchi)" pointerEvents="none" />
-            <circle cx="450" cy="375" r="60" fill="url(#glow-ranchi)" opacity="0.6" pointerEvents="none" />
+            <circle cx="450" cy="375" r="105" fill="url(#glow-ranchi)" opacity="0.6" pointerEvents="none" />
+            <circle cx="450" cy="375" r="60" fill="url(#glow-ranchi)" opacity="0.25" pointerEvents="none" />
 
             {/* Dhanbad Red/Orange Heatmap Rings */}
-            <circle cx="684" cy="275" r="75" fill="url(#glow-dhanbad)" pointerEvents="none" />
+            <circle cx="684" cy="275" r="75" fill="url(#glow-dhanbad)" opacity="0.5" pointerEvents="none" />
 
             {/* Jamshedpur Orange Heatmap Rings */}
-            <circle cx="687" cy="515" r="85" fill="url(#glow-jamshedpur)" pointerEvents="none" />
+            <circle cx="687" cy="515" r="85" fill="url(#glow-jamshedpur)" opacity="0.5" pointerEvents="none" />
 
             {/* Deoghar Orange Heatmap */}
-            <circle cx="740" cy="195" r="55" fill="url(#glow-deoghar)" pointerEvents="none" />
+            <circle cx="740" cy="195" r="55" fill="url(#glow-deoghar)" opacity="0.5" pointerEvents="none" />
 
             {/* Palamu & Hazaribagh Heatmap Overlays */}
-            <circle cx="190" cy="190" r="48" fill="url(#glow-deoghar)" opacity="0.65" pointerEvents="none" />
-            <circle cx="468" cy="235" r="50" fill="url(#glow-green-soft)" opacity="0.9" pointerEvents="none" />
+            <circle cx="190" cy="190" r="48" fill="url(#glow-deoghar)" opacity="0.3" pointerEvents="none" />
+            <circle cx="468" cy="235" r="50" fill="url(#glow-green-soft)" opacity="0.5" pointerEvents="none" />
 
             {/* Soft Green Glow Overlays for all Low Density Districts (Seamless Feather Edge) */}
             {DISTRICT_PINS.filter((p) => p.density === 'Low').map((pin) => (

@@ -15,6 +15,7 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.Locale
 import java.util.UUID
+import com.example.kartavya.config.AppConfig
 
 /**
  * Result data class for AI Complaint Processing endpoint: POST /ai/process-complaint
@@ -45,7 +46,7 @@ object SupabaseStorageRepository {
     // Single source of truth for backend Base URL.
     // For Android Emulator -> http://10.0.2.2:8080
     // For Physical Phone / Cloudflare Tunnel -> https://your-tunnel-name.trycloudflare.com
-    const val BACKEND_BASE_URL = "https://boulevard-anaheim-mail-gtk.trycloudflare.com"
+    val BACKEND_BASE_URL: String get() = AppConfig.BACKEND_BASE_URL
 
     private const val IMAGE_UPLOAD_PATH = "/upload/image"
     private const val AUDIO_UPLOAD_PATH = "/upload/audio"
