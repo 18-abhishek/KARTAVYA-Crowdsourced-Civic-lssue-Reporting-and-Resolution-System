@@ -4,13 +4,7 @@ import { districtPaths } from '../data/districtPaths';
 import {
   Info,
   MapPin,
-  ChevronRight,
-  Plus,
-  Minus,
-  Maximize2,
-  Crosshair,
   ClipboardList,
-  AlertCircle,
 } from 'lucide-react';
 
 interface InteractiveMapProps {
@@ -24,8 +18,6 @@ interface InteractiveMapProps {
 const DISTRICT_NAME_MAP: Record<string, string> = {
   'Ranchi': 'Ranchi',
   'Dhanbad': 'Dhanbad',
-  'Jamshedpur (East Singhbhum)': 'Purba Singhbhum',
-  'Purba Singhbhum': 'Purba Singhbhum',
   'Bokaro': 'Bokaro',
   'Deoghar': 'Deoghar',
   'Hazaribagh': 'Hazaribag',
@@ -35,8 +27,12 @@ const DISTRICT_NAME_MAP: Record<string, string> = {
   'Dumka': 'Dumka',
   'Palamu (Medininagar)': 'Palamu',
   'Palamu': 'Palamu',
+  'West Singhbhum': 'Pashchimi Singhbhum',
   'West Singhbhum (Chaibasa)': 'Pashchimi Singhbhum',
   'Pashchimi Singhbhum': 'Pashchimi Singhbhum',
+  'East Singhbhum': 'Purba Singhbhum',
+  'Jamshedpur (East Singhbhum)': 'Purba Singhbhum',
+  'Purba Singhbhum': 'Purba Singhbhum',
   'Godda': 'Godda',
   'Gumla': 'Gumla',
   'Simdega': 'Simdega',
@@ -69,6 +65,13 @@ interface DistrictPinConfig {
   cy: number;
   badgeWidth: number;
 }
+
+// Color logic: >500 is Red (#ef4444), 100-500 is Orange (#f97316), <100 is Green (#22c55e)
+const getPinSeverityColor = (count: number): string => {
+  if (count >= 500) return '#ef4444';
+  if (count >= 100) return '#f97316';
+  return '#22c55e';
+};
 
 const DISTRICT_PINS: DistrictPinConfig[] = [
   {
@@ -128,9 +131,9 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     name: 'Hazaribagh',
     count: '210',
     rawCount: 210,
-    density: 'Low',
-    pinColor: '#22c55e',
-    haloColor: 'rgba(34, 197, 94, 0.32)',
+    density: 'Medium',
+    pinColor: '#f97316',
+    haloColor: 'rgba(249, 115, 22, 0.32)',
     haloRadius: 48,
     cx: 468,
     cy: 235,
@@ -145,22 +148,22 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     pinColor: '#f97316',
     haloColor: 'rgba(249, 115, 22, 0.40)',
     haloRadius: 55,
-    cx: 749,
-    cy: 175,
+    cx: 740,
+    cy: 195,
     badgeWidth: 58,
   },
   {
     id: 'Dumka',
-    name: 'Deoghar',
-    count: '36',
-    rawCount: 36,
-    density: 'Medium',
-    pinColor: '#f97316',
-    haloColor: 'rgba(249, 115, 22, 0.28)',
-    haloRadius: 36,
-    cx: 864,
-    cy: 185,
-    badgeWidth: 58,
+    name: 'Dumka',
+    count: '60',
+    rawCount: 60,
+    density: 'Low',
+    pinColor: '#22c55e',
+    haloColor: 'rgba(34, 197, 94, 0.28)',
+    haloRadius: 40,
+    cx: 860,
+    cy: 200,
+    badgeWidth: 54,
   },
   {
     id: 'Godda',
@@ -172,8 +175,34 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     haloColor: 'rgba(34, 197, 94, 0.28)',
     haloRadius: 40,
     cx: 862,
-    cy: 78,
+    cy: 90,
     badgeWidth: 52,
+  },
+  {
+    id: 'Pakur',
+    name: 'Pakur',
+    count: '48',
+    rawCount: 48,
+    density: 'Low',
+    pinColor: '#22c55e',
+    haloColor: 'rgba(34, 197, 94, 0.28)',
+    haloRadius: 36,
+    cx: 942,
+    cy: 160,
+    badgeWidth: 52,
+  },
+  {
+    id: 'Sahibganj',
+    name: 'Sahebganj',
+    count: '52',
+    rawCount: 52,
+    density: 'Low',
+    pinColor: '#22c55e',
+    haloColor: 'rgba(34, 197, 94, 0.28)',
+    haloRadius: 38,
+    cx: 948,
+    cy: 60,
+    badgeWidth: 62,
   },
   {
     id: 'Latehar',
@@ -197,7 +226,7 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     pinColor: '#ef4444',
     haloColor: 'rgba(239, 68, 68, 0.45)',
     haloRadius: 95,
-    cx: 448,
+    cx: 450,
     cy: 375,
     badgeWidth: 56,
   },
@@ -224,7 +253,7 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     haloColor: 'rgba(34, 197, 94, 0.26)',
     haloRadius: 36,
     cx: 775,
-    cy: 250,
+    cy: 260,
     badgeWidth: 54,
   },
   {
@@ -241,6 +270,19 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     badgeWidth: 52,
   },
   {
+    id: 'Lohardaga',
+    name: 'Lohardaga',
+    count: '42',
+    rawCount: 42,
+    density: 'Low',
+    pinColor: '#22c55e',
+    haloColor: 'rgba(34, 197, 94, 0.26)',
+    haloRadius: 36,
+    cx: 295,
+    cy: 355,
+    badgeWidth: 60,
+  },
+  {
     id: 'Gumla',
     name: 'Gumla',
     count: '55',
@@ -249,8 +291,8 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     pinColor: '#22c55e',
     haloColor: 'rgba(34, 197, 94, 0.28)',
     haloRadius: 38,
-    cx: 261,
-    cy: 405,
+    cx: 255,
+    cy: 430,
     badgeWidth: 52,
   },
   {
@@ -262,8 +304,8 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     pinColor: '#22c55e',
     haloColor: 'rgba(34, 197, 94, 0.28)',
     haloRadius: 38,
-    cx: 429,
-    cy: 450,
+    cx: 430,
+    cy: 475,
     badgeWidth: 52,
   },
   {
@@ -306,8 +348,21 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     badgeWidth: 70,
   },
   {
+    id: 'Pashchimi Singhbhum',
+    name: 'West Singhbhum',
+    count: '48',
+    rawCount: 48,
+    density: 'Low',
+    pinColor: '#22c55e',
+    haloColor: 'rgba(34, 197, 94, 0.26)',
+    haloRadius: 40,
+    cx: 475,
+    cy: 565,
+    badgeWidth: 84,
+  },
+  {
     id: 'Purba Singhbhum',
-    name: 'Jamshedpur',
+    name: 'East Singhbhum',
     count: '320',
     rawCount: 320,
     density: 'Medium',
@@ -316,7 +371,7 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     haloRadius: 75,
     cx: 687,
     cy: 515,
-    badgeWidth: 72,
+    badgeWidth: 82,
   },
 ];
 
@@ -326,21 +381,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   onSelectDistrict,
   onOpenDistrictModal,
 }) => {
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [mapCenter, setMapCenter] = useState({ x: 0, y: 0 });
   const [hoveredDistrict, setHoveredDistrict] = useState<DistrictMetric | null>(null);
   const [hoveredPinId, setHoveredPinId] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [containerSize, setContainerSize] = useState({ width: 900, height: 550 });
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.25, 0.8));
-  const handleResetZoom = () => {
-    setZoomLevel(1);
-    setMapCenter({ x: 0, y: 0 });
-  };
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (containerRef.current) {
@@ -396,70 +442,31 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </p>
       </div>
 
-      {/* ─── Left-Side Floating Controls (Vertical Toolbar) ─── */}
-      <div className="absolute top-20 left-4 z-30 flex flex-col items-center bg-white/95 backdrop-blur-md rounded-2xl border border-stone-200/80 shadow-md p-1 space-y-1 pointer-events-auto">
-        <button
-          onClick={handleZoomIn}
-          className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 text-stone-700 transition-colors"
-          title="Zoom In"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
-        <button
-          onClick={handleZoomOut}
-          className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 text-stone-700 transition-colors"
-          title="Zoom Out"
-        >
-          <Minus className="w-4 h-4" />
-        </button>
-        <div className="w-5 h-px bg-stone-200 my-0.5" />
-        <button
-          onClick={() => alert('Full screen view mode activated')}
-          className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 text-stone-700 transition-colors"
-          title="Full Screen"
-        >
-          <Maximize2 className="w-3.5 h-3.5" />
-        </button>
-        <button
-          onClick={handleResetZoom}
-          className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 text-stone-700 transition-colors"
-          title="Recenter Map"
-        >
-          <Crosshair className="w-3.5 h-3.5" />
-        </button>
+      {/* ─── Compact Bottom-Left Legend Pill (Minimized) ─── */}
+      <div className="absolute bottom-3 left-3 z-30 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-stone-200/80 shadow-xs pointer-events-auto flex items-center gap-3 text-[10px] text-stone-600 font-medium">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[#ef4444] shrink-0" />
+          <span>High 500+</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[#f97316] shrink-0" />
+          <span>Medium 100-500</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[#22c55e] shrink-0" />
+          <span>Low &lt;100</span>
+        </div>
+        <div className="w-px h-3 bg-stone-200" />
+        <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[9.5px]">
+          24 Areas
+        </span>
       </div>
 
-      {/* ─── Bottom-Left Legend Card ─── */}
-      <div className="absolute bottom-4 left-4 z-30 bg-white/95 backdrop-blur-md px-4 py-3.5 rounded-2xl border border-stone-200/80 shadow-md pointer-events-auto min-w-[175px]">
-        <h4 className="text-xs font-bold text-stone-900 mb-2">Issue Density</h4>
-        <div className="space-y-1.5 text-xs text-stone-700">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444] shrink-0 ring-2 ring-red-100" />
-            <span className="font-medium text-[11px]">High (500+)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#f97316] shrink-0 ring-2 ring-orange-100" />
-            <span className="font-medium text-[11px]">Medium (100-500)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#22c55e] shrink-0 ring-2 ring-green-100" />
-            <span className="font-medium text-[11px]">Low (&lt;100)</span>
-          </div>
-        </div>
-
-        <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-2">
-          <span className="text-[11px] text-stone-500 font-medium">Total Municipal Areas:</span>
-          <span className="text-[11px] font-bold px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-200/60 rounded-lg">
-            24
-          </span>
-        </div>
-      </div>
-
-      {/* ─── Bottom-Center Floating Action Button ─── */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
+      {/* ─── Bottom-Right Floating Action Button ─── */}
+      <div className="absolute bottom-3.5 right-3.5 z-30 pointer-events-auto">
         <button
           onClick={() => onOpenDistrictModal(selectedDistrict || undefined)}
-          className="inline-flex items-center gap-2 px-5 py-2 bg-white hover:bg-stone-50 text-stone-800 border border-stone-200/90 rounded-2xl text-xs font-bold shadow-md hover:shadow-lg transition-all active:scale-98"
+          className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/95 backdrop-blur-md hover:bg-stone-50 text-stone-800 border border-stone-200/90 rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all active:scale-98"
         >
           <ClipboardList className="w-3.5 h-3.5 text-stone-600" />
           <span>View District Details</span>
@@ -479,13 +486,8 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-white/40" />
         </div>
 
-        {/* 3D Map Transform Container */}
-        <div
-          className="w-full h-full origin-center relative z-10 transition-transform duration-200 ease-out"
-          style={{
-            transform: `translate(${mapCenter.x}px, ${mapCenter.y}px) scale(${zoomLevel})`,
-          }}
-        >
+        {/* 3D Map Container */}
+        <div className="w-full h-full origin-center relative z-10">
           <svg
             viewBox="0 0 1000 650"
             className="w-full h-full"
@@ -522,9 +524,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
               </radialGradient>
 
-              <radialGradient id="glow-green-sm" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#22c55e" stopOpacity="0.35" />
-                <stop offset="50%" stopColor="#22c55e" stopOpacity="0.15" />
+              <radialGradient id="glow-green-soft" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#22c55e" stopOpacity="0.45" />
+                <stop offset="35%" stopColor="#22c55e" stopOpacity="0.24" />
+                <stop offset="70%" stopColor="#22c55e" stopOpacity="0.07" />
                 <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
               </radialGradient>
             </defs>
@@ -601,31 +604,31 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             </g>
 
             {/* ─── 3. Heatmap Radial Glow Overlays ─── */}
-            {/* Ranchi Intensive Red Heatmap Rings */}
-            <circle cx="448" cy="385" r="105" fill="url(#glow-ranchi)" pointerEvents="none" />
-            <circle cx="448" cy="385" r="60" fill="url(#glow-ranchi)" opacity="0.6" pointerEvents="none" />
+            {/* Ranchi Intensive Red Heatmap Rings directly over Ranchi centroid */}
+            <circle cx="450" cy="375" r="105" fill="url(#glow-ranchi)" pointerEvents="none" />
+            <circle cx="450" cy="375" r="60" fill="url(#glow-ranchi)" opacity="0.6" pointerEvents="none" />
 
             {/* Dhanbad Red/Orange Heatmap Rings */}
-            <circle cx="684" cy="280" r="75" fill="url(#glow-dhanbad)" pointerEvents="none" />
+            <circle cx="684" cy="275" r="75" fill="url(#glow-dhanbad)" pointerEvents="none" />
 
             {/* Jamshedpur Orange Heatmap Rings */}
-            <circle cx="687" cy="520" r="85" fill="url(#glow-jamshedpur)" pointerEvents="none" />
+            <circle cx="687" cy="515" r="85" fill="url(#glow-jamshedpur)" pointerEvents="none" />
 
             {/* Deoghar Orange Heatmap */}
-            <circle cx="749" cy="180" r="55" fill="url(#glow-deoghar)" pointerEvents="none" />
+            <circle cx="740" cy="195" r="55" fill="url(#glow-deoghar)" pointerEvents="none" />
 
             {/* Palamu & Hazaribagh Heatmap Overlays */}
-            <circle cx="190" cy="195" r="48" fill="url(#glow-deoghar)" opacity="0.65" pointerEvents="none" />
-            <circle cx="468" cy="240" r="50" fill="url(#glow-green-sm)" opacity="0.85" pointerEvents="none" />
+            <circle cx="190" cy="190" r="48" fill="url(#glow-deoghar)" opacity="0.65" pointerEvents="none" />
+            <circle cx="468" cy="235" r="50" fill="url(#glow-green-soft)" opacity="0.9" pointerEvents="none" />
 
-            {/* Green Low Density Area Halos */}
+            {/* Soft Green Glow Overlays for all Low Density Districts (Seamless Feather Edge) */}
             {DISTRICT_PINS.filter((p) => p.density === 'Low').map((pin) => (
               <circle
-                key={`halo-${pin.id}`}
+                key={`glow-green-${pin.id}`}
                 cx={pin.cx}
-                cy={pin.cy + 5}
-                r={pin.haloRadius}
-                fill={pin.haloColor}
+                cy={pin.cy - 5}
+                r={pin.haloRadius + 6}
+                fill="url(#glow-green-soft)"
                 pointerEvents="none"
               />
             ))}
@@ -635,11 +638,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               const district = districtByGeoKey[pin.id];
               const isHovered = hoveredPinId === pin.id || (district && hoveredDistrict?.id === district.id);
               const isSelected = district && selectedDistrict?.id === district.id;
+              const computedPinColor = getPinSeverityColor(pin.rawCount);
 
               return (
                 <g
                   key={`pin-${pin.id}`}
                   className="cursor-pointer group"
+                  transform={`translate(${pin.cx}, ${pin.cy})`}
                   onMouseEnter={() => {
                     setHoveredPinId(pin.id);
                     if (district) setHoveredDistrict(district);
@@ -652,31 +657,37 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                     if (district) onSelectDistrict(district);
                   }}
                 >
-                  {/* Pin Group */}
-                  <g
-                    transform={`translate(${pin.cx}, ${pin.cy - 12}) ${
-                      isHovered ? 'scale(1.18)' : isSelected ? 'scale(1.12)' : 'scale(1)'
-                    }`}
-                    className="transition-transform duration-150 origin-bottom"
-                  >
+                  {/* Pin Group (Anchor locked directly above badge - zero displacement on hover) */}
+                  <g transform="translate(0, -5)">
                     {/* Pin Drop Shadow */}
-                    <ellipse cx="0" cy="1" rx="5" ry="2" fill="#0f172a" opacity="0.3" />
+                    <ellipse
+                      cx="0"
+                      cy="1"
+                      rx={isHovered ? 5.5 : 4.5}
+                      ry={isHovered ? 2.2 : 1.8}
+                      fill="#0f172a"
+                      opacity={isHovered ? 0.45 : 0.3}
+                    />
 
                     {/* Teardrop Location Marker */}
                     <path
-                      d="M 0,-24 C -8,-24 -12,-18 -12,-10 C -12,-1 0,1 0,1 C 0,1 12,-1 12,-10 C 12,-18 8,-24 0,-24 Z"
-                      fill={pin.pinColor}
-                      filter="drop-shadow(0 3px 6px rgba(0,0,0,0.22))"
+                      d="M 0,0 C -2,-4 -12,-12 -12,-20 C -12,-27 -6,-33 0,-33 C 6,-33 12,-27 12,-20 C 12,-12 2,-4 0,0 Z"
+                      fill={computedPinColor}
+                      stroke={isHovered ? '#ffffff' : 'none'}
+                      strokeWidth={isHovered ? 1.5 : 0}
+                      filter={
+                        isHovered
+                          ? 'drop-shadow(0 4px 10px rgba(0,0,0,0.38))'
+                          : 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))'
+                      }
+                      className="transition-all duration-150"
                     />
                     {/* Inner White Center Dot */}
-                    <circle cx="0" cy="-12" r="3.5" fill="#ffffff" />
+                    <circle cx="0" cy="-20" r={isHovered ? 4.5 : 4} fill="#ffffff" />
                   </g>
 
-                  {/* Clean White Pill Badge underneath Pin */}
-                  <g
-                    transform={`translate(${pin.cx}, ${pin.cy + 2})`}
-                    className="transition-all duration-150"
-                  >
+                  {/* Clean White Pill Badge underneath Pin locked to same position */}
+                  <g transform="translate(0, 0)" className="transition-all duration-150">
                     {/* Badge Background */}
                     <rect
                       x={-(pin.badgeWidth / 2)}
@@ -685,7 +696,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                       height="26"
                       rx="6"
                       fill="#ffffff"
-                      stroke={isHovered ? pin.pinColor : '#e2e8f0'}
+                      stroke={isHovered ? computedPinColor : '#e2e8f0'}
                       strokeWidth={isHovered ? 1.5 : 1}
                       filter="drop-shadow(0 2px 5px rgba(15,23,42,0.14))"
                     />
