@@ -742,7 +742,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 <span className="truncate">{hoveredDistrict.name}</span>
               </div>
               <p className="text-[11px] text-stone-500 font-medium truncate mt-0.5">
-                {hoveredDistrict.headquarters} • {hoveredDistrict.nodalOfficer}
+                {hoveredDistrict.nodalOfficer?.name || 'Administrative DC'} • {hoveredDistrict.nodalOfficer?.designation || 'District HQ'}
               </p>
             </div>
             <span
@@ -762,20 +762,22 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             <div className="bg-stone-50 p-2 rounded-xl border border-stone-100">
               <span className="text-[10px] text-stone-500 font-semibold block">Total Issues</span>
               <span className="text-xs font-bold text-stone-900 font-mono">
-                {hoveredDistrict.totalIssues.toLocaleString()}
+                {hoveredDistrict.totalIssues?.toLocaleString() || 0}
               </span>
             </div>
             <div className="bg-stone-50 p-2 rounded-xl border border-stone-100">
               <span className="text-[10px] text-stone-500 font-semibold block">Resolved</span>
               <span className="text-xs font-bold text-emerald-700 font-mono">
-                {hoveredDistrict.resolved.toLocaleString()} ({hoveredDistrict.resolutionRate}%)
+                {hoveredDistrict.resolved?.toLocaleString() || 0} ({hoveredDistrict.resolutionRate || 0}%)
               </span>
             </div>
           </div>
 
           <div className="flex items-center justify-between text-[11px] pt-1 text-stone-600">
             <span className="font-semibold text-stone-500">Top Grievance:</span>
-            <span className="font-bold text-stone-800">{hoveredDistrict.topCategory}</span>
+            <span className="font-bold text-stone-800 truncate max-w-[140px]">
+              {hoveredDistrict.topDepartmentIssue || 'Civic Infrastructure'}
+            </span>
           </div>
         </div>
       )}
