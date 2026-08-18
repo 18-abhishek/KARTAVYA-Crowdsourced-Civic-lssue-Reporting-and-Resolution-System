@@ -71,12 +71,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       {/* Top 5 KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Issues Card */}
-        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs hover:border-stone-300 transition-colors flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#ea580c] shrink-0">
-            <FileText className="w-6 h-6" />
+        <div className="bg-white/95 backdrop-blur-md p-4.5 rounded-3xl border border-stone-200/50 transition-all hover:bg-white flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-[#ea580c] shrink-0">
+            <FileText className="w-5.5 h-5.5" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-500">Total Issues</p>
+            <p className="text-xs font-semibold text-stone-600">Total Issues</p>
             <h3 className="text-2xl font-bold text-stone-900 tracking-tight mt-0.5 font-mono">
               14,820
             </h3>
@@ -89,12 +89,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Resolved Card */}
-        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs hover:border-stone-300 transition-colors flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-            <CheckCircle className="w-6 h-6" />
+        <div className="bg-white/95 backdrop-blur-md p-4.5 rounded-3xl border border-stone-200/50 transition-all hover:bg-white flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-emerald-600 shrink-0">
+            <CheckCircle className="w-5.5 h-5.5" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-500">Resolved</p>
+            <p className="text-xs font-semibold text-stone-600">Resolved</p>
             <h3 className="text-2xl font-bold text-stone-900 tracking-tight mt-0.5 font-mono">
               11,240
             </h3>
@@ -107,12 +107,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* In Progress Card */}
-        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs hover:border-stone-300 transition-colors flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
-            <Clock className="w-6 h-6" />
+        <div className="bg-white/95 backdrop-blur-md p-4.5 rounded-3xl border border-stone-200/50 transition-all hover:bg-white flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-amber-600 shrink-0">
+            <Clock className="w-5.5 h-5.5" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-500">In Progress</p>
+            <p className="text-xs font-semibold text-stone-600">In Progress</p>
             <h3 className="text-2xl font-bold text-stone-900 tracking-tight mt-0.5 font-mono">
               3,580
             </h3>
@@ -125,12 +125,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Top Performer Card */}
-        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs hover:border-stone-300 transition-colors flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-            <Trophy className="w-6 h-6" />
+        <div className="bg-white/95 backdrop-blur-md p-4.5 rounded-3xl border border-stone-200/50 transition-all hover:bg-white flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-emerald-600 shrink-0">
+            <Trophy className="w-5.5 h-5.5" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-500">Top Performer</p>
+            <p className="text-xs font-semibold text-stone-600">Top Performer</p>
             <h3 className="text-2xl font-bold text-stone-900 tracking-tight mt-0.5">
               Bokaro
             </h3>
@@ -141,12 +141,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Critical Hotspot Card */}
-        <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs hover:border-stone-300 transition-colors flex items-start gap-4">
-          <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0">
-            <AlertTriangle className="w-6 h-6" />
+        <div className="bg-white/95 backdrop-blur-md p-4.5 rounded-3xl border border-stone-200/50 transition-all hover:bg-white flex items-start gap-3.5">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-red-600 shrink-0">
+            <AlertTriangle className="w-5.5 h-5.5" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-500">Critical Hotspot</p>
+            <p className="text-xs font-semibold text-stone-600">Critical Hotspot</p>
             <h3 className="text-2xl font-bold text-stone-900 tracking-tight mt-0.5">
               Ranchi
             </h3>
@@ -171,36 +171,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
         {/* Right Column: Live Issue Feed */}
         <div className="lg:col-span-4 h-[520px] lg:h-[580px] flex flex-col">
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex-1 flex flex-col justify-between overflow-hidden">
+          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-5 flex-1 flex flex-col justify-between overflow-hidden border border-stone-200/50">
             <div>
-              <div className="flex items-center justify-between pb-3 border-b border-stone-100">
+              <div className="flex items-center justify-between pb-3 border-b border-stone-900/10">
                 <div>
                   <h3 className="text-sm font-bold text-stone-900">Live Issue Feed</h3>
                   <p className="text-xs text-stone-500 font-medium mt-0.5">Real-time crowdsourced grievances</p>
                 </div>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold glass-pill text-emerald-700">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
                   Live
                 </span>
               </div>
 
               {/* Live Feed List */}
-              <div className="divide-y divide-stone-100 overflow-y-auto max-h-[380px] lg:max-h-[420px] pr-1 custom-scrollbar mt-1">
+              <div className="space-y-2 overflow-y-auto max-h-[380px] lg:max-h-[420px] pr-1 custom-scrollbar mt-3">
                 {issues.slice(0, 6).map((issue) => {
                   let IconComponent = Wrench;
-                  let iconBg = 'bg-amber-50 text-amber-600';
+                  let iconBg = 'bg-amber-500/10 text-amber-600';
                   if (issue.category === 'Water Supply') {
                     IconComponent = Droplets;
-                    iconBg = 'bg-blue-50 text-blue-600';
+                    iconBg = 'bg-blue-500/10 text-blue-600';
                   } else if (issue.category === 'Waste Management') {
                     IconComponent = Trash2;
-                    iconBg = 'bg-orange-50 text-orange-600';
+                    iconBg = 'bg-orange-500/10 text-orange-600';
                   } else if (issue.category === 'Electricity') {
                     IconComponent = Zap;
-                    iconBg = 'bg-amber-50 text-amber-600';
+                    iconBg = 'bg-amber-500/10 text-amber-600';
                   } else if (issue.category === 'Roadways') {
                     IconComponent = Wrench;
-                    iconBg = 'bg-stone-100 text-stone-700';
+                    iconBg = 'bg-stone-500/10 text-stone-700';
                   }
 
                   return (
@@ -210,10 +210,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         onSelectIssueForDetails(issue.id);
                         setActiveTab('details');
                       }}
-                      className="py-3 group cursor-pointer hover:bg-stone-50/80 -mx-1 px-2 rounded-xl transition-colors"
+                      className="p-3 group cursor-pointer glass-pill hover:bg-white/95 rounded-2xl transition-all"
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${iconBg}`}>
+                        <div className={`w-8.5 h-8.5 rounded-xl flex items-center justify-center shrink-0 mt-0.5 backdrop-blur-xs ${iconBg}`}>
                           <IconComponent className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -243,7 +243,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* Bottom View All Link */}
-            <div className="pt-3 border-t border-stone-100 text-center shrink-0">
+            <div className="pt-3 border-t border-stone-900/10 text-center shrink-0">
               <button
                 onClick={() => setActiveTab('details')}
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ea580c] hover:text-[#c2410c] transition-colors"
@@ -257,7 +257,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Bottom Summary Bar: Issue Summary This Week */}
-      <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex flex-col lg:flex-row items-center justify-between gap-6">
+      <div className="bg-white/95 backdrop-blur-md rounded-3xl p-5 flex flex-col lg:flex-row items-center justify-between gap-6 border border-stone-200/50">
         {/* Left Title */}
         <div className="shrink-0 text-center lg:text-left">
           <h3 className="text-sm font-bold text-stone-900">
@@ -269,10 +269,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* 4 Metric items */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full lg:w-auto lg:divide-x lg:divide-stone-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full lg:w-auto lg:divide-x lg:divide-stone-900/10">
           {/* New Issues */}
           <div className="flex items-center gap-3 lg:px-6">
-            <div className="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#ea580c] shrink-0">
+            <div className="w-10 h-10 rounded-2xl glass-pill flex items-center justify-center text-[#ea580c] shrink-0">
               <FileText className="w-5 h-5" />
             </div>
             <div>
@@ -286,7 +286,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Resolved */}
           <div className="flex items-center gap-3 lg:px-6">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+            <div className="w-10 h-10 rounded-2xl glass-pill flex items-center justify-center text-emerald-600 shrink-0">
               <CheckCircle className="w-5 h-5" />
             </div>
             <div>
@@ -300,7 +300,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Avg Resolution Time */}
           <div className="flex items-center gap-3 lg:px-6">
-            <div className="w-10 h-10 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700 shrink-0">
+            <div className="w-10 h-10 rounded-2xl glass-pill flex items-center justify-center text-stone-700 shrink-0">
               <RefreshCw className="w-5 h-5" />
             </div>
             <div>
@@ -314,7 +314,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
           {/* Escalated Issues */}
           <div className="flex items-center gap-3 lg:px-6">
-            <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shrink-0">
+            <div className="w-10 h-10 rounded-2xl glass-pill flex items-center justify-center text-red-600 shrink-0">
               <TrendingUp className="w-5 h-5" />
             </div>
             <div>

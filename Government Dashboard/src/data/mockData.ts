@@ -512,10 +512,10 @@ export const districtList: DistrictMetric[] = [
 ];
 
 export const departmentStats: DepartmentStat[] = [
-  { name: 'Waste Management', count: 2983, percentage: 38, color: '#c2410c', iconName: 'Trash2' },
-  { name: 'Roadways / Potholes', count: 2120, percentage: 27, color: '#78716c', iconName: 'Hammer' },
-  { name: 'Sewage & Drainage', count: 1570, percentage: 20, color: '#0284c7', iconName: 'Droplets' },
-  { name: 'Electricity & Lighting', count: 1177, percentage: 15, color: '#d97706', iconName: 'Zap' },
+  { name: 'Waste Management', count: 2983, percentage: 38, color: '#ec4899', iconName: 'Trash2' },
+  { name: 'Roadways / Potholes', count: 2120, percentage: 27, color: '#6366f1', iconName: 'Hammer' },
+  { name: 'Sewage & Drainage', count: 1570, percentage: 20, color: '#06b6d4', iconName: 'Droplets' },
+  { name: 'Electricity & Lighting', count: 1177, percentage: 15, color: '#f59e0b', iconName: 'Zap' },
 ];
 
 export const weeklySlaTrends: SLADataPoint[] = [
@@ -540,10 +540,10 @@ export const citizenRatings = {
   average: 4.2,
   totalResponses: 5840,
   breakdown: [
-    { stars: 5, label: '5 Star', percentage: 62, count: 3620, color: '#c2410c' },
-    { stars: 4, label: '4 Star', percentage: 23, count: 1343, color: '#78716c' },
-    { stars: 3, label: '3 Star', percentage: 10, count: 584, color: '#0284c7' },
-    { stars: 2, label: '2 Star', percentage: 3, count: 175, color: '#d97706' },
-    { stars: 1, label: '1 Star', percentage: 2, count: 118, color: '#dc2626' },
+    { stars: 5, label: '5 Star', percentage: 62, count: 3620, color: '#10b981' },
+    { stars: 4, label: '4 Star', percentage: 23, count: 1343, color: '#3b82f6' },
+    { stars: 3, label: '3 Star', percentage: 10, count: 584, color: '#8b5cf6' },
+    { stars: 2, label: '2 Star', percentage: 3, count: 175, color: '#f59e0b' },
+    { stars: 1, label: '1 Star', percentage: 2, count: 118, color: '#ef4444' },
   ],
 };

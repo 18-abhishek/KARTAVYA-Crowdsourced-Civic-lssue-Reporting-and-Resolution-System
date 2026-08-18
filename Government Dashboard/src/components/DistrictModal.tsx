@@ -28,8 +28,8 @@ export const DistrictModal: React.FC<DistrictModalProps> = ({
   if (!district) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-2xl max-w-2xl w-full overflow-hidden animate-in zoom-in-95">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
+      <div className="glass-modal rounded-3xl max-w-2xl w-full overflow-hidden animate-in zoom-in-95">
         {/* Header */}
         <div className="bg-stone-900 text-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">

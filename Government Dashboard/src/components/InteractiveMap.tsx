@@ -441,7 +441,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       onMouseMove={handleMouseMove}
     >
       {/* ─── Top-Left Header ─── */}
-      <div className="absolute top-4 left-4 z-30 bg-white/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-stone-200/60 shadow-xs pointer-events-auto">
+      <div className="absolute top-4 left-4 z-30 glass-pill px-4 py-2.5 rounded-2xl shadow-xs pointer-events-auto">
         <div className="flex items-center gap-1.5">
           <h2 className="text-sm font-extrabold text-stone-900 tracking-tight">Jharkhand Municipal Map</h2>
           <span title="Overview of civic issue density across Jharkhand districts">
@@ -454,7 +454,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       </div>
 
       {/* ─── Compact Bottom-Left Legend Pill (Minimized) ─── */}
-      <div className="absolute bottom-3 left-3 z-30 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-stone-200/60 shadow-xs pointer-events-auto flex items-center gap-3 text-[10px] text-stone-600 font-medium">
+      <div className="absolute bottom-3 left-3 z-30 glass-pill px-3 py-1.5 rounded-2xl shadow-xs pointer-events-auto flex items-center gap-3 text-[10px] text-stone-600 font-medium">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-[#ef4444] shrink-0" />
           <span>High 500+</span>
@@ -468,7 +468,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <span>Low &lt;100</span>
         </div>
         <div className="w-px h-3 bg-stone-200" />
-        <span className="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[9.5px]">
+        <span className="font-bold text-blue-600 bg-blue-50/80 backdrop-blur-xs px-1.5 py-0.5 rounded text-[9.5px]">
           24 Areas
         </span>
       </div>
@@ -477,7 +477,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
       <div className="absolute bottom-3.5 right-3.5 z-30 pointer-events-auto">
         <button
           onClick={() => onOpenDistrictModal(selectedDistrict || undefined)}
-          className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/90 backdrop-blur-md hover:bg-white text-stone-800 border border-stone-200/80 rounded-xl text-xs font-bold shadow-xs hover:shadow-md transition-all active:scale-98"
+          className="inline-flex items-center gap-2 px-4 py-2 glass-pill hover:bg-white/90 text-stone-800 rounded-2xl text-xs font-bold shadow-xs hover:shadow-md transition-all active:scale-98"
         >
           <ClipboardList className="w-3.5 h-3.5 text-stone-600" />
           <span>View District Details</span>
@@ -751,7 +751,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             width: `${tooltipWidth}px`,
             pointerEvents: 'none',
           }}
-          className="z-50 bg-white/95 backdrop-blur-md rounded-2xl border border-stone-200/90 shadow-2xl p-3.5 space-y-2.5 animate-in fade-in zoom-in-95 duration-150"
+          className="z-50 glass-modal rounded-3xl p-4 space-y-2.5 animate-in fade-in zoom-in-95 duration-150"
         >
           <div className="flex items-start justify-between gap-2.5 border-b border-stone-100 pb-2">
             <div className="min-w-0 flex-1">

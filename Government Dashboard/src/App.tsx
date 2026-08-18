@@ -112,7 +112,22 @@ export function App() {
   const unreadNotificationsCount = issues.filter((i) => i.timeElapsedPercent >= 80 && i.status !== 'Resolved').length;
 
   return (
-    <div className="min-h-screen bg-[#f8faf7] text-stone-900 flex flex-col font-sans selection:bg-[#ea580c]/20 selection:text-[#9a3412]">
+    <div className="min-h-screen bg-gradient-to-br from-[#fef4ec] via-[#fbeade] to-[#f3d4c3] text-stone-900 flex flex-col font-sans selection:bg-[#ea580c]/20 selection:text-[#9a3412] relative overflow-x-hidden">
+      {/* ─── Traditional Tribal Art Background with Soft Orange Blur & Transparency ─── */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0 opacity-25 mix-blend-multiply filter blur-[0.5px] bg-repeat bg-center"
+        style={{
+          backgroundImage: "url('/tribal_bg.png')",
+          backgroundSize: '750px auto',
+        }}
+      />
+
+      {/* ─── Ambient Warm Orange Glowing Blur Orbs ─── */}
+      <div className="fixed inset-0 bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-transparent pointer-events-none z-0" />
+      <div className="fixed -top-40 -left-40 w-[700px] h-[700px] bg-gradient-to-br from-orange-500/30 via-amber-400/25 to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed top-1/3 -right-40 w-[650px] h-[650px] bg-gradient-to-bl from-orange-400/35 via-rose-400/20 to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="fixed -bottom-40 left-1/4 w-[750px] h-[750px] bg-gradient-to-tr from-amber-400/25 via-orange-300/30 to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+
       {/* Top Header */}
       <Header
         activeTab={activeTab}
@@ -122,7 +137,7 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-[1750px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="flex-1 max-w-[1750px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-22 sm:pt-24 pb-6 sm:pb-8 relative z-10">
         {activeTab === 'dashboard' && (
           <DashboardView
             issues={issues}

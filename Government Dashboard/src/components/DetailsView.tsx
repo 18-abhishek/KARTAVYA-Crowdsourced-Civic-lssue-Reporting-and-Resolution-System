@@ -272,7 +272,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
         {/* Left Section (col-span-8 on lg) */}
         <div className="lg:col-span-8 space-y-5">
           {/* Top Filter Panel */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs">
+          <div className="bg-transparent p-2">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
               {/* Select City / ULB dropdown */}
               <div className="md:col-span-5">
@@ -286,7 +286,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                   <select
                     value={selectedCity}
                     onChange={(e) => setSelectedCity(e.target.value)}
-                    className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-8 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
+                    className="w-full appearance-none glass-pill rounded-xl pl-9 pr-8 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
                   >
                     <option value="Ranchi Municipal Corporation">
                       Ranchi Municipal Corporation
@@ -317,64 +317,50 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => toggleCategory('Electricity')}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border transition-all ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                         selectedCategories.includes('Electricity')
-                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-2xs'
-                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-xs'
+                          : 'glass-pill text-stone-700 hover:bg-white/90'
                       }`}
                     >
-                      <Zap className="w-3.5 h-3.5" />
+                      <Zap className="w-3.5 h-3.5 text-amber-500" />
                       <span>Electricity</span>
                     </button>
 
                     <button
                       onClick={() => toggleCategory('Roadways')}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border transition-all ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                         selectedCategories.includes('Roadways')
-                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-2xs'
-                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-xs'
+                          : 'glass-pill text-stone-700 hover:bg-white/90'
                       }`}
                     >
-                      <Hammer className="w-3.5 h-3.5" />
+                      <Hammer className="w-3.5 h-3.5 text-amber-600" />
                       <span>Roadways</span>
-                      {selectedCategories.includes('Roadways') && (
-                        <Check className="w-3 h-3 ml-0.5" />
-                      )}
-                    </button>
-
-                    <button
-                      onClick={() => toggleCategory('Sewage')}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border transition-all ${
-                        selectedCategories.includes('Sewage')
-                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-2xs'
-                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
-                      }`}
-                    >
-                      <Droplets className="w-3.5 h-3.5" />
-                      <span>Sewage</span>
-                    </button>
-
-                    <button
-                      onClick={() => toggleCategory('Waste Management')}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border transition-all ${
-                        selectedCategories.includes('Waste Management')
-                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-2xs'
-                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
-                      }`}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Waste Management</span>
                     </button>
 
                     <button
                       onClick={() => toggleCategory('Water Supply')}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                         selectedCategories.includes('Water Supply')
-                          ? 'bg-[#ea580c] text-white border-[#ea580c]'
-                          : 'bg-stone-100 text-stone-600 border-stone-200 hover:bg-stone-200'
+                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-xs'
+                          : 'glass-pill text-stone-700 hover:bg-white/90'
                       }`}
                     >
-                      <span>+1</span>
+                      <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                      <span>Water Supply</span>
+                    </button>
+
+                    <button
+                      onClick={() => toggleCategory('Waste Management')}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                        selectedCategories.includes('Waste Management')
+                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-xs'
+                          : 'glass-pill text-stone-700 hover:bg-white/90'
+                      }`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-orange-600" />
+                      <span>Waste Mgmt</span>
                     </button>
                   </div>
                 </div>
@@ -385,10 +371,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                     <span className="text-xs font-bold text-stone-700 mr-1">Status:</span>
                     <button
                       onClick={() => setSelectedStatus(selectedStatus === 'Open' ? 'All' : 'Open')}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${
                         selectedStatus === 'Open'
-                          ? 'bg-red-50 text-red-700 border-red-300 ring-1 ring-red-400'
-                          : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
+                          ? 'bg-red-50/80 text-red-700 border-red-300 ring-1 ring-red-400'
+                          : 'glass-pill text-stone-600 hover:bg-white/90'
                       }`}
                     >
                       <span className="w-2 h-2 rounded-full bg-red-500" />
@@ -397,10 +383,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
 
                     <button
                       onClick={() => setSelectedStatus(selectedStatus === 'In Progress' ? 'All' : 'In Progress')}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${
                         selectedStatus === 'In Progress'
-                          ? 'bg-amber-50 text-amber-800 border-amber-300 ring-1 ring-amber-400'
-                          : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
+                          ? 'bg-amber-50/80 text-amber-800 border-amber-300 ring-1 ring-amber-400'
+                          : 'glass-pill text-stone-600 hover:bg-white/90'
                       }`}
                     >
                       <span className="w-2 h-2 rounded-full bg-amber-500" />
@@ -409,10 +395,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
 
                     <button
                       onClick={() => setSelectedStatus(selectedStatus === 'Resolved' ? 'All' : 'Resolved')}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${
                         selectedStatus === 'Resolved'
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300 ring-1 ring-emerald-400'
-                          : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
+                          ? 'bg-emerald-50/80 text-emerald-700 border-emerald-300 ring-1 ring-emerald-400'
+                          : 'glass-pill text-stone-600 hover:bg-white/90'
                       }`}
                     >
                       <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -442,36 +428,31 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                 placeholder="Search by Issue ID, Location, or Keyword..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-stone-200 rounded-xl pl-9 pr-4 py-2 text-xs font-medium text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c] shadow-2xs"
+                className="w-full glass-pill rounded-xl pl-9 pr-4 py-2 text-xs font-medium text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
               />
             </div>
 
             <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-              <button className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 rounded-xl text-xs font-semibold shadow-2xs">
-                <SlidersHorizontal className="w-3.5 h-3.5 text-stone-500" />
-                <span>More Filters</span>
-              </button>
-
-              <span className="text-xs text-stone-500 font-medium">
-                Total Issues: <strong className="text-stone-900 font-mono">1,248</strong>
-              </span>
-
               <button
                 onClick={handleExportCSV}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-stone-50 text-stone-800 border border-stone-300 rounded-xl text-xs font-bold shadow-2xs transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 glass-pill hover:bg-white/90 text-stone-700 rounded-xl text-xs font-semibold shadow-xs"
               >
                 <Download className="w-3.5 h-3.5 text-stone-500" />
-                <span>Export</span>
+                <span>Export CSV</span>
               </button>
+
+              <span className="text-xs text-stone-500 font-semibold">
+                Total: <strong className="text-stone-900 font-mono">{filteredIssues.length}</strong>
+              </span>
             </div>
           </div>
 
-          {/* Main Data Table */}
-          <div className="bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden">
+          {/* Main Table Card */}
+          <div className="glass-card rounded-3xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-stone-50/80 border-b border-stone-200/80 text-[11px] font-bold text-stone-500 uppercase tracking-wider">
+                  <tr className="bg-white/40 border-b border-white/60 text-stone-500 font-bold uppercase text-[10px] tracking-wider">
                     <th className="py-3.5 px-4">Issue ID</th>
                     <th className="py-3.5 px-3">Photo</th>
                     <th className="py-3.5 px-3">Category</th>
@@ -486,17 +467,17 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                     <th className="py-3.5 px-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-100">
+                <tbody className="divide-y divide-white/50">
                   {filteredIssues.slice(0, rowsPerPage).map((issue) => {
                     const isSelected = selectedIssue?.id === issue.id;
                     return (
                       <tr
                         key={issue.id}
                         onClick={() => onSelectIssue(issue.id)}
-                        className={`cursor-pointer transition-colors ${
+                        className={`cursor-pointer transition-all ${
                           isSelected
-                            ? 'bg-[#fff7ed] hover:bg-[#ffedd5]'
-                            : 'hover:bg-stone-50/80'
+                            ? 'bg-orange-500/10 hover:bg-orange-500/15'
+                            : 'hover:bg-white/50'
                         }`}
                       >
                         {/* Issue ID */}
@@ -513,7 +494,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                               e.stopPropagation();
                               setFullscreenPhoto(issue.photoUrl);
                             }}
-                            className="w-12 h-9 rounded-lg object-cover ring-1 ring-stone-200 shadow-2xs hover:scale-105 transition-transform"
+                            className="w-12 h-9 rounded-lg object-cover ring-1 ring-white/60 shadow-2xs hover:scale-105 transition-transform"
                           />
                         </td>
 
@@ -621,7 +602,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
         {/* Right Section: Issue Details Panel (col-span-4 on lg) */}
         <div className="lg:col-span-4 space-y-4 sticky top-20">
           {selectedIssue ? (
-            <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm space-y-5 animate-in fade-in">
+            <div className="glass-panel rounded-3xl p-5 space-y-5 animate-in fade-in">
               {/* Drawer Top Header */}
               <div className="flex items-center justify-between pb-3 border-b border-stone-100">
                 <div className="flex items-center gap-2">

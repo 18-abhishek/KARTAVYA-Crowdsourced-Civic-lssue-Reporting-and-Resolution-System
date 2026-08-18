@@ -101,10 +101,10 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 22 (Lalpur)', reported: 230, resolved: 200, rate: '86.9%' },
     ],
     deptStats: [
-      { name: 'Roadways / Potholes', count: 782, percentage: 34, color: '#78716c' },
-      { name: 'Waste Management', count: 690, percentage: 30, color: '#c2410c' },
-      { name: 'Sewage & Drainage', count: 483, percentage: 21, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 345, percentage: 15, color: '#d97706' },
+      { name: 'Roadways / Potholes', count: 782, percentage: 34, color: '#6366f1' },
+      { name: 'Waste Management', count: 690, percentage: 30, color: '#ec4899' },
+      { name: 'Sewage & Drainage', count: 483, percentage: 21, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 345, percentage: 15, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 24.1 },
@@ -141,10 +141,10 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 19 (Govindpur)', reported: 140, resolved: 120, rate: '85.7%' },
     ],
     deptStats: [
-      { name: 'Electricity & Lighting', count: 620, percentage: 31, color: '#d97706' },
-      { name: 'Waste Management', count: 580, percentage: 29, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 500, percentage: 25, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 300, percentage: 15, color: '#0284c7' },
+      { name: 'Electricity & Lighting', count: 620, percentage: 31, color: '#f59e0b' },
+      { name: 'Waste Management', count: 580, percentage: 29, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 500, percentage: 25, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 300, percentage: 15, color: '#06b6d4' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 29.0 },
@@ -221,10 +221,10 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 18 (Kundi)', reported: 80, resolved: 70, rate: '87.5%' },
     ],
     deptStats: [
-      { name: 'Sewage & Drainage', count: 450, percentage: 30, color: '#0284c7' },
-      { name: 'Roadways / Potholes', count: 420, percentage: 28, color: '#78716c' },
-      { name: 'Waste Management', count: 390, percentage: 26, color: '#c2410c' },
-      { name: 'Electricity & Lighting', count: 240, percentage: 16, color: '#d97706' },
+      { name: 'Sewage & Drainage', count: 450, percentage: 30, color: '#06b6d4' },
+      { name: 'Roadways / Potholes', count: 420, percentage: 28, color: '#6366f1' },
+      { name: 'Waste Management', count: 390, percentage: 26, color: '#ec4899' },
+      { name: 'Electricity & Lighting', count: 240, percentage: 16, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 22.0 },
@@ -261,10 +261,10 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { name: 'Ward 16 (Kunda)', reported: 40, resolved: 30, rate: '75.0%' },
     ],
     deptStats: [
-      { name: 'Waste Management', count: 378, percentage: 42, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 234, percentage: 26, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 180, percentage: 20, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 108, percentage: 12, color: '#d97706' },
+      { name: 'Waste Management', count: 378, percentage: 42, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 234, percentage: 26, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 180, percentage: 20, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 108, percentage: 12, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 25.0 },
@@ -501,10 +501,10 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     citizenScore: 4.2,
     positiveRatingPercent: 84,
     deptStats: [
-      { name: 'Waste Management', count: 2983, percentage: 38, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 2120, percentage: 27, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 1570, percentage: 20, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 1177, percentage: 15, color: '#d97706' },
+      { name: 'Waste Management', count: 2983, percentage: 38, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 2120, percentage: 27, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 1570, percentage: 20, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 1177, percentage: 15, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 28.4 },
@@ -535,10 +535,10 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     citizenScore: 4.1,
     positiveRatingPercent: 81,
     deptStats: [
-      { name: 'Waste Management', count: 2840, percentage: 34, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 2680, percentage: 32, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 1670, percentage: 20, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 1180, percentage: 14, color: '#d97706' },
+      { name: 'Waste Management', count: 2840, percentage: 34, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 2680, percentage: 32, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 1670, percentage: 20, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 1180, percentage: 14, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 34.2 },
@@ -569,10 +569,10 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     citizenScore: 4.0,
     positiveRatingPercent: 79,
     deptStats: [
-      { name: 'Waste Management', count: 3100, percentage: 39, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 2140, percentage: 27, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 1430, percentage: 18, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 1270, percentage: 16, color: '#d97706' },
+      { name: 'Waste Management', count: 3100, percentage: 39, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 2140, percentage: 27, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 1430, percentage: 18, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 1270, percentage: 16, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 36.5 },
@@ -603,10 +603,10 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     citizenScore: 3.9,
     positiveRatingPercent: 77,
     deptStats: [
-      { name: 'Waste Management', count: 2870, percentage: 34, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 2535, percentage: 30, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 1945, percentage: 23, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 1100, percentage: 13, color: '#d97706' },
+      { name: 'Waste Management', count: 2870, percentage: 34, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 2535, percentage: 30, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 1945, percentage: 23, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 1100, percentage: 13, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 38.0 },
@@ -637,10 +637,10 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     citizenScore: 3.9,
     positiveRatingPercent: 78,
     deptStats: [
-      { name: 'Waste Management', count: 3225, percentage: 42, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 1996, percentage: 26, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 1382, percentage: 18, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 1077, percentage: 14, color: '#d97706' },
+      { name: 'Waste Management', count: 3225, percentage: 42, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 1996, percentage: 26, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 1382, percentage: 18, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 1077, percentage: 14, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 40.2 },
@@ -671,10 +671,10 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     citizenScore: 3.8,
     positiveRatingPercent: 76,
     deptStats: [
-      { name: 'Waste Management', count: 2932, percentage: 39, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 2030, percentage: 27, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 1428, percentage: 19, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 1130, percentage: 15, color: '#d97706' },
+      { name: 'Waste Management', count: 2932, percentage: 39, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 2030, percentage: 27, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 1428, percentage: 19, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 1130, percentage: 15, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 42.0 },
@@ -705,10 +705,10 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
     citizenScore: 3.8,
     positiveRatingPercent: 75,
     deptStats: [
-      { name: 'Waste Management', count: 2850, percentage: 39, color: '#c2410c' },
-      { name: 'Roadways / Potholes', count: 1973, percentage: 27, color: '#78716c' },
-      { name: 'Sewage & Drainage', count: 1388, percentage: 19, color: '#0284c7' },
-      { name: 'Electricity & Lighting', count: 1099, percentage: 15, color: '#d97706' },
+      { name: 'Waste Management', count: 2850, percentage: 39, color: '#ec4899' },
+      { name: 'Roadways / Potholes', count: 1973, percentage: 27, color: '#6366f1' },
+      { name: 'Sewage & Drainage', count: 1388, percentage: 19, color: '#06b6d4' },
+      { name: 'Electricity & Lighting', count: 1099, percentage: 15, color: '#f59e0b' },
     ],
     slaPoints: [
       { day: 'Mon', avgHours: 43.5 },
@@ -856,10 +856,10 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in duration-300">
-      {/* Left Secondary Sidebar (col-span-3 on lg) */}
-      <div className="lg:col-span-3 space-y-6">
-        <div className="bg-white rounded-2xl border border-stone-200 p-3 shadow-xs space-y-1">
+    <div className="flex flex-col lg:flex-row gap-6 items-start">
+      {/* Left Secondary Sidebar (100% Fixed top-24 on viewport, slim w-56 breadth) */}
+      <div className="w-full lg:fixed lg:top-24 lg:w-56 lg:z-30 space-y-4">
+        <div className="bg-white/95 backdrop-blur-md p-3 rounded-3xl space-y-1 border border-stone-200/50">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = sidebarTab === item.id;
@@ -867,13 +867,13 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
               <button
                 key={item.id}
                 onClick={() => setSidebarTab(item.id as any)}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-colors text-left ${
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all text-left ${
                   isActive
-                    ? 'bg-[#c2410c] text-white shadow-2xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
+                    ? 'bg-gradient-to-r from-[#ea580c] via-[#f97316] to-[#fb923c] text-white font-bold scale-[1.02]'
+                    : 'text-stone-700 hover:text-stone-900 hover:bg-stone-100/80'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-stone-400'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-stone-500'}`} />
                 <span className="truncate">{item.label}</span>
               </button>
             );
@@ -881,21 +881,21 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
         </div>
 
         {/* Bottom Data Insights Banner Card */}
-        <div className="bg-[#fffbf6] rounded-2xl border border-[#fed7aa]/60 p-4 shadow-xs">
-          <div className="flex items-center gap-2 text-[#ea580c] font-bold text-xs mb-1.5">
-            <Lightbulb className="w-4 h-4 text-[#ea580c]" />
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-4 border border-stone-200/50">
+          <div className="flex items-center gap-1.5 text-[#ea580c] font-bold text-xs mb-1">
+            <Lightbulb className="w-3.5 h-3.5 text-[#ea580c]" />
             <span>{isCityMode ? `${selectedCity} City Insights` : 'State Data Insights'}</span>
           </div>
-          <p className="text-xs text-stone-600 leading-relaxed font-medium">
+          <p className="text-[11px] text-stone-600 leading-relaxed font-medium">
             {displayDataInsight}
           </p>
         </div>
       </div>
 
-      {/* Main Analytics Content (col-span-9 on lg) */}
-      <div className="lg:col-span-9 space-y-6">
+      {/* Main Analytics Content (Offset by lg:pl-64 to clear fixed left sidebar) */}
+      <div className="w-full lg:pl-64 flex-1 min-w-0 space-y-6">
         {/* Top Controls Bar */}
-        <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-transparent p-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
               <h2 className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
@@ -907,11 +907,11 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                   <span>{activeCityData.corporationName}</span>
                 </span>
               ) : currentReport.isLatest ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100/80 text-emerald-800 border border-emerald-200/60 backdrop-blur-xs">
                   Live
                 </span>
               ) : (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100/80 text-amber-800 border border-amber-200/60 backdrop-blur-xs">
                   Archived
                 </span>
               )}
@@ -929,10 +929,10 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
               <button
                 type="button"
                 onClick={() => setIsDateDropdownOpen((prev) => !prev)}
-                className={`inline-flex items-center gap-2 px-3.5 py-1.5 border rounded-xl text-xs font-semibold transition-all shadow-2xs ${
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 glass-pill rounded-xl text-xs font-semibold transition-all shadow-xs ${
                   isDateDropdownOpen
-                    ? 'bg-stone-100 border-[#c2410c] text-stone-900 ring-2 ring-[#c2410c]/15'
-                    : 'bg-white hover:bg-stone-50 border-stone-300 text-stone-800'
+                    ? 'border-[#c2410c] text-stone-900 ring-2 ring-[#c2410c]/15'
+                    : 'text-stone-800 hover:bg-white/90'
                 }`}
                 title="Select report week"
               >
@@ -947,13 +947,13 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
 
               {/* Dropdown Menu Popup */}
               {isDateDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-stone-200 shadow-2xl z-50 p-2 animate-in fade-in zoom-in-95 origin-top-right">
-                  <div className="px-3 py-2 border-b border-stone-100 mb-1 flex items-center justify-between">
+                <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 glass-modal rounded-2xl z-50 p-2 animate-in fade-in zoom-in-95 origin-top-right">
+                  <div className="px-3 py-2 border-b border-white/60 mb-1 flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <History className="w-3.5 h-3.5 text-[#c2410c]" />
                       <h4 className="text-xs font-bold text-stone-900">Historical Weekly Audits</h4>
                     </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 bg-stone-100 text-stone-600 rounded-full">
+                    <span className="text-[10px] font-bold px-2 py-0.5 bg-white/70 text-stone-600 rounded-full">
                       {HISTORICAL_WEEKLY_REPORTS.length} Weeks
                     </span>
                   </div>
@@ -972,7 +972,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                           className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all ${
                             isSelected
                               ? 'bg-[#fff5ee] text-[#c2410c] font-bold border border-[#fed7aa]'
-                              : 'hover:bg-stone-50 text-stone-700 font-medium border border-transparent'
+                              : 'hover:bg-white/60 text-stone-700 font-medium border border-transparent'
                           }`}
                         >
                           <div className="space-y-0.5">
@@ -1140,7 +1140,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
         {/* Charts Grid: 2x2 Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* 1. Comparative Bar Chart (District-wise in State View VS Ward-wise in City View) */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex flex-col justify-between">
+          <div className="glass-panel rounded-3xl p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between pb-3 flex-wrap gap-2">
                 <div>
@@ -1184,12 +1184,12 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
               <div className="flex items-center justify-between text-xs font-medium text-stone-600 mt-2 mb-4">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-xs bg-[#c2410c]" />
-                    <span>Reported Issues</span>
+                    <span className="w-3 h-3 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 shadow-xs" />
+                    <span className="font-semibold text-stone-800">Reported Issues</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-xs bg-[#78716c]" />
-                    <span>Resolved Issues</span>
+                    <span className="w-3 h-3 rounded-full bg-gradient-to-tr from-emerald-600 to-emerald-400 shadow-xs" />
+                    <span className="font-semibold text-stone-800">Resolved Issues</span>
                   </div>
                 </div>
 
@@ -1208,6 +1208,17 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                   style={{ width: `${svgCanvasWidth}px`, minWidth: `${svgCanvasWidth}px`, height: '220px' }}
                   className="block"
                 >
+                  <defs>
+                    <linearGradient id="barReportedGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#818cf8" />
+                      <stop offset="100%" stopColor="#4f46e5" />
+                    </linearGradient>
+                    <linearGradient id="barResolvedGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#34d399" />
+                      <stop offset="100%" stopColor="#059669" />
+                    </linearGradient>
+                  </defs>
+
                   {/* Horizontal Grid lines */}
                   <line x1="35" y1="20" x2={svgCanvasWidth - 20} y2="20" stroke="#f1f5f9" strokeWidth="1" />
                   <text x="5" y="24" fill="#94a3b8" fontSize="9">
@@ -1265,8 +1276,8 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                           y={190 - reportedHeight}
                           width={barWidth}
                           height={reportedHeight}
-                          rx="2.5"
-                          fill={isHovered ? '#ea580c' : '#c2410c'}
+                          rx="3"
+                          fill={isHovered ? '#4338ca' : 'url(#barReportedGrad)'}
                           className="transition-all duration-150"
                         />
 
@@ -1276,8 +1287,8 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                           y={190 - resolvedHeight}
                           width={barWidth}
                           height={resolvedHeight}
-                          rx="2.5"
-                          fill={isHovered ? '#57534e' : '#78716c'}
+                          rx="3"
+                          fill={isHovered ? '#047857' : 'url(#barResolvedGrad)'}
                           className="transition-all duration-150"
                         />
 
@@ -1380,7 +1391,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
           </div>
 
           {/* 2. Department-wise Distribution (Donut Chart) */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex flex-col justify-between">
+          <div className="glass-panel rounded-3xl p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between pb-2">
                 <div className="flex items-center gap-1.5">
@@ -1418,10 +1429,10 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                             r="60"
                             fill="transparent"
                             stroke={dept.color}
-                            strokeWidth="22"
+                            strokeWidth="24"
                             strokeDasharray={dashArray}
                             strokeDashoffset={offset}
-                            className="cursor-pointer hover:opacity-85 transition-opacity"
+                            className="transition-all duration-500 hover:opacity-80 cursor-pointer"
                           />
                         );
                       });
@@ -1461,7 +1472,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
             </div>
 
             {/* Bottom Insight notice banner */}
-            <div className="mt-4 p-3 rounded-xl bg-[#fffbf6] border border-[#fed7aa]/50 flex items-start gap-2.5">
+            <div className="mt-4 p-3 rounded-xl bg-transparent flex items-start gap-2.5">
               <Info className="w-4 h-4 text-[#ea580c] shrink-0 mt-0.5" />
               <p className="text-xs text-stone-600 leading-relaxed font-medium">
                 <strong className="text-stone-900">{displayDeptStats[0].name}</strong> is the primary grievance driver in {isCityMode ? selectedCity : currentReport.weekNumber} ({displayDeptStats[0].percentage}% of local volume).
@@ -1470,7 +1481,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
           </div>
 
           {/* 3. SLA Performance (Average Resolution Time) (Line Chart) */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex flex-col justify-between">
+          <div className="glass-panel rounded-3xl p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between pb-2">
                 <div>
@@ -1491,11 +1502,11 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
               {/* Legend */}
               <div className="flex items-center gap-4 text-xs font-medium text-stone-600 mt-2 mb-3">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-0.5 bg-[#c2410c]" />
-                  <span>{isCityMode ? `${selectedCity} Avg (hrs)` : 'State Avg (hrs)'}</span>
+                  <span className="w-3.5 h-1 rounded-full bg-[#8b5cf6]" />
+                  <span className="font-semibold text-stone-800">{isCityMode ? `${selectedCity} Avg (hrs)` : 'State Avg (hrs)'}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-0.5 bg-[#dc2626] border-b border-dashed border-red-500" />
+                  <span className="w-3.5 h-0.5 bg-[#ef4444] border-b border-dashed border-red-500" />
                   <span className="text-red-700 font-semibold">SLA Limit (72 hrs)</span>
                 </div>
               </div>
@@ -1503,6 +1514,13 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
               {/* Line Graph SVG */}
               <div className="h-56 w-full relative">
                 <svg viewBox="0 0 500 200" className="w-full h-full">
+                  <defs>
+                    <linearGradient id="slaAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.25" />
+                      <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
+
                   {/* Grid Lines */}
                   <line x1="30" y1="20" x2="480" y2="20" stroke="#f1f5f9" strokeWidth="1" />
                   <text x="5" y="24" fill="#94a3b8" fontSize="9">100</text>
@@ -1511,8 +1529,8 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                   <text x="10" y="54" fill="#94a3b8" fontSize="9">80</text>
 
                   {/* 72 hrs SLA Threshold line (dashed red) */}
-                  <line x1="30" y1="62" x2="480" y2="62" stroke="#dc2626" strokeWidth="1.5" strokeDasharray="4,4" />
-                  <text x="482" y="65" fill="#dc2626" fontSize="9" fontWeight="700">72</text>
+                  <line x1="30" y1="62" x2="480" y2="62" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="4,4" />
+                  <text x="482" y="65" fill="#ef4444" fontSize="9" fontWeight="700">72</text>
 
                   <line x1="30" y1="80" x2="480" y2="80" stroke="#f1f5f9" strokeWidth="1" />
                   <text x="10" y="84" fill="#94a3b8" fontSize="9">60</text>
@@ -1526,11 +1544,17 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                   <line x1="30" y1="180" x2="480" y2="180" stroke="#cbd5e1" strokeWidth="1" />
                   <text x="15" y="184" fill="#94a3b8" fontSize="9">0</text>
 
+                  {/* Area Fill */}
+                  <polygon
+                    fill="url(#slaAreaGrad)"
+                    points={`60,180 ${displaySlaPoints.map((pt, i) => `${60 + i * 65},${180 - pt.avgHours * 1.6}`).join(' ')} ${60 + (displaySlaPoints.length - 1) * 65},180`}
+                  />
+
                   {/* Polyline Path for SLA trends */}
                   <polyline
                     fill="none"
-                    stroke="#c2410c"
-                    strokeWidth="3"
+                    stroke="#8b5cf6"
+                    strokeWidth="3.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     points={displaySlaPoints
@@ -1544,7 +1568,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                     const cy = 180 - pt.avgHours * 1.6;
                     return (
                       <g key={pt.day} className="cursor-pointer group">
-                        <circle cx={cx} cy={cy} r="5" fill="#c2410c" stroke="#ffffff" strokeWidth="2" />
+                        <circle cx={cx} cy={cy} r="5" fill="#8b5cf6" stroke="#ffffff" strokeWidth="2.5" />
                         <text x={cx} y="196" textAnchor="middle" fill="#64748b" fontSize="10" fontWeight="600">
                           {pt.day}
                         </text>
@@ -1557,7 +1581,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
           </div>
 
           {/* 4. Citizen Satisfaction Score (Radial Gauge & Ratings) */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs flex flex-col justify-between">
+          <div className="glass-panel rounded-3xl p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between pb-2">
                 <div className="flex items-center gap-1.5">
@@ -1579,6 +1603,13 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                 <div className="sm:col-span-5 flex flex-col items-center justify-center relative">
                   <div className="relative w-36 h-24 overflow-hidden">
                     <svg viewBox="0 0 140 80" className="w-full h-full">
+                      <defs>
+                        <linearGradient id="gaugeGaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#10b981" />
+                          <stop offset="50%" stopColor="#06b6d4" />
+                          <stop offset="100%" stopColor="#3b82f6" />
+                        </linearGradient>
+                      </defs>
                       {/* Background Arch */}
                       <path
                         d="M 15 75 A 55 55 0 0 1 125 75"
@@ -1591,7 +1622,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                       <path
                         d="M 15 75 A 55 55 0 0 1 125 75"
                         fill="none"
-                        stroke="#c2410c"
+                        stroke="url(#gaugeGaugeGrad)"
                         strokeWidth="16"
                         strokeDasharray="172 172"
                         strokeDashoffset={`${172 - (displayCitizenScore / 5) * 172}`}

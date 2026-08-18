@@ -112,8 +112,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
       {/* 4 SLA Tier Status Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Critical Card */}
-        <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-red-100/70 border border-red-200 flex items-center justify-center text-red-600 shrink-0">
+        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-red-600 shrink-0 shadow-xs">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
@@ -126,8 +126,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
         </div>
 
         {/* High Card */}
-        <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-amber-100/70 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
+        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-amber-600 shrink-0 shadow-xs">
             <Clock className="w-5 h-5" />
           </div>
           <div>
@@ -140,8 +140,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
         </div>
 
         {/* Medium Card */}
-        <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-yellow-100/70 border border-yellow-200 flex items-center justify-center text-yellow-700 shrink-0">
+        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-yellow-700 shrink-0 shadow-xs">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
@@ -154,8 +154,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
         </div>
 
         {/* Within SLA Card */}
-        <div className="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex items-center gap-4">
-          <div className="w-11 h-11 rounded-xl bg-emerald-100/70 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
+        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
+          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-emerald-600 shrink-0 shadow-xs">
             <CheckCircle className="w-5 h-5" />
           </div>
           <div>
@@ -173,28 +173,25 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
         {/* Left Column (col-span-4 on lg) */}
         <div className="lg:col-span-4 space-y-6">
           {/* Card 1: Alert Filters */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs space-y-4">
+          <div className="bg-transparent p-3 space-y-4">
             <h3 className="text-sm font-bold text-stone-900">Alert Filters</h3>
 
             {/* Department */}
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1">
+              <label className="block text-xs font-bold text-stone-700 mb-1.5">
                 Department
               </label>
-              <div className="relative">
-                <select
-                  value={selectedDeptFilter}
-                  onChange={(e) => setSelectedDeptFilter(e.target.value)}
-                  className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-                >
-                  <option value="All Departments">All Departments</option>
-                  <option value="Road Works">Road Works Department</option>
-                  <option value="Water & Sanitation">Water &amp; Sanitation Dept.</option>
-                  <option value="Electricity">Electricity &amp; Lighting</option>
-                  <option value="Sanitation">RMC (Sanitation)</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+              <select
+                value={selectedDeptFilter}
+                onChange={(e) => setSelectedDeptFilter(e.target.value)}
+                className="w-full glass-pill rounded-xl px-3 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+              >
+                <option value="All Departments">All Departments</option>
+                <option value="Road Works">Road Works Department</option>
+                <option value="Water & Sanitation">Water &amp; Sanitation Dept.</option>
+                <option value="Electricity">Electricity &amp; Lighting</option>
+                <option value="Waste Management">Waste Management</option>
+              </select>
             </div>
 
             {/* SLA Breach Level */}
@@ -206,7 +203,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                 <select
                   value={selectedBreachFilter}
                   onChange={(e) => setSelectedBreachFilter(e.target.value)}
-                  className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full appearance-none glass-pill rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none"
                 >
                   <option value="> 80% Time Elapsed">&gt; 80% Time Elapsed</option>
                   <option value="60% - 80% Time Elapsed">60% - 80% Time Elapsed</option>
@@ -225,7 +222,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                 <select
                   value={selectedStatusFilter}
                   onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                  className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full appearance-none glass-pill rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none"
                 >
                   <option value="All Status">All Status</option>
                   <option value="Assigned">Assigned</option>
@@ -253,7 +250,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
           </div>
 
           {/* Card 2: Department Escalation Summary */}
-          <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs space-y-3">
+          <div className="bg-transparent p-3 space-y-3">
             <h3 className="text-sm font-bold text-stone-900">
               Department Escalation Summary
             </h3>
@@ -262,10 +259,10 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               {/* Road Works */}
               <div
                 onClick={() => setSelectedDeptFilter('Road Works')}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-stone-50 transition-colors border border-stone-100 cursor-pointer group"
+                className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/60 transition-colors border border-white/50 cursor-pointer group glass-pill"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0 border border-emerald-500/20">
                     R
                   </div>
                   <div>
@@ -283,10 +280,10 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               {/* Water & Sanitation */}
               <div
                 onClick={() => setSelectedDeptFilter('Water & Sanitation')}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-stone-50 transition-colors border border-stone-100 cursor-pointer group"
+                className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/60 transition-colors border border-white/50 cursor-pointer group glass-pill"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0 border border-sky-500/20">
                     W
                   </div>
                   <div>
@@ -304,10 +301,10 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               {/* Electrical */}
               <div
                 onClick={() => setSelectedDeptFilter('Electricity')}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-stone-50 transition-colors border border-stone-100 cursor-pointer group"
+                className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/60 transition-colors border border-white/50 cursor-pointer group glass-pill"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0 border border-amber-500/20">
                     E
                   </div>
                   <div>
@@ -324,9 +321,9 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
             </div>
           </div>
 
-          {/* Need Support Callout Card */}
-          <div className="bg-stone-100/80 rounded-2xl border border-stone-200 p-4 shadow-2xs">
-            <p className="text-xs text-stone-500 font-medium">Need Support?</p>
+          {/* Emergency Helpline Card */}
+          <div className="glass-card rounded-3xl p-5 border-l-4 border-l-[#ea580c]">
+            <p className="text-xs font-semibold text-stone-500">24x7 Command Control</p>
             <h4 className="text-sm font-bold text-stone-900 mt-0.5">
               Contact Control Room
             </h4>
@@ -356,7 +353,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none bg-white border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-stone-700 pr-7 focus:outline-none shadow-2xs"
+                className="appearance-none glass-pill rounded-xl px-3 py-1.5 text-xs font-semibold text-stone-700 pr-7 focus:outline-none"
               >
                 <option value="Time Elapsed (High to Low)">
                   Sort by: Time Elapsed (High to Low)
@@ -382,7 +379,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               return (
                 <div
                   key={issue.id}
-                  className="bg-white rounded-2xl border-l-4 border-l-[#dc2626] border border-stone-200 p-5 shadow-xs hover:shadow-md transition-shadow"
+                  className="glass-card rounded-3xl border-l-4 border-l-[#dc2626] p-5 glass-card-hover"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
                     {/* Left details + Photo (col-span-5) */}
