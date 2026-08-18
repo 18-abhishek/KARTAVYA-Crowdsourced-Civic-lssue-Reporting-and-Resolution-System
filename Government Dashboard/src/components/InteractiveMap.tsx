@@ -400,7 +400,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   }, []);
 
   // Calculate boundary-safe tooltip coordinates so it never gets cut off
-  const tooltipWidth = 250;
+  const tooltipWidth = 280;
   const tooltipHeight = 175;
   const showOnLeft = tooltipPos.x + tooltipWidth + 24 > containerSize.width;
   const tooltipLeft = showOnLeft
@@ -746,9 +746,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           }}
           className="z-50 bg-white/95 backdrop-blur-md rounded-2xl border border-stone-200/90 shadow-2xl p-3.5 space-y-2.5 animate-in fade-in zoom-in-95 duration-150"
         >
-          <div className="flex items-start justify-between gap-2 border-b border-stone-100 pb-2">
-            <div>
-              <div className="flex items-center gap-1 text-stone-900 font-bold text-xs">
+          <div className="flex items-start justify-between gap-2.5 border-b border-stone-100 pb-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 text-stone-900 font-bold text-xs">
                 <MapPin className="w-3.5 h-3.5 text-[#ea580c] shrink-0" />
                 <span className="truncate">{hoveredDistrict.name}</span>
               </div>
@@ -757,7 +757,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               </p>
             </div>
             <span
-              className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md shrink-0 ${
+              className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md shrink-0 whitespace-nowrap ${
                 hoveredDistrict.density === 'High'
                   ? 'bg-red-50 text-red-700 border border-red-200'
                   : hoveredDistrict.density === 'Medium'
