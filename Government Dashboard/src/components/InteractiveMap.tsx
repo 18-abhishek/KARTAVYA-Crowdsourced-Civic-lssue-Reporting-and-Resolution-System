@@ -326,10 +326,10 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     name: 'Bokaro',
     count: '124',
     rawCount: 124,
-    density: 'Low',
-    pinColor: '#22c55e',
-    haloColor: 'rgba(34, 197, 94, 0.26)',
-    haloRadius: 38,
+    density: 'Medium',
+    pinColor: '#f97316',
+    haloColor: 'rgba(249, 115, 22, 0.32)',
+    haloRadius: 48,
     cx: 588,
     cy: 315,
     badgeWidth: 54,
@@ -339,10 +339,10 @@ const DISTRICT_PINS: DistrictPinConfig[] = [
     name: 'Seraikela\nKharsawan',
     count: '102',
     rawCount: 102,
-    density: 'Low',
-    pinColor: '#22c55e',
-    haloColor: 'rgba(34, 197, 94, 0.26)',
-    haloRadius: 38,
+    density: 'Medium',
+    pinColor: '#f97316',
+    haloColor: 'rgba(249, 115, 22, 0.32)',
+    haloRadius: 46,
     cx: 556,
     cy: 475,
     badgeWidth: 70,
@@ -524,6 +524,13 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                 <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
               </radialGradient>
 
+              <radialGradient id="glow-orange-soft" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#f97316" stopOpacity="0.34" />
+                <stop offset="35%" stopColor="#f97316" stopOpacity="0.18" />
+                <stop offset="70%" stopColor="#f97316" stopOpacity="0.05" />
+                <stop offset="100%" stopColor="#f97316" stopOpacity="0" />
+              </radialGradient>
+
               <radialGradient id="glow-green-soft" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="#22c55e" stopOpacity="0.30" />
                 <stop offset="35%" stopColor="#22c55e" stopOpacity="0.15" />
@@ -611,34 +618,37 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             </g>
 
             {/* ─── 3. Heatmap Radial Glow Overlays ─── */}
-            {/* Ranchi Intensive Red Heatmap Rings directly over Ranchi centroid */}
+            {/* Intensive Red Radial Overlays for Ranchi & Dhanbad */}
             <circle cx="450" cy="375" r="105" fill="url(#glow-ranchi)" opacity="0.6" pointerEvents="none" />
             <circle cx="450" cy="375" r="60" fill="url(#glow-ranchi)" opacity="0.25" pointerEvents="none" />
-
-            {/* Dhanbad Red/Orange Heatmap Rings */}
             <circle cx="684" cy="275" r="75" fill="url(#glow-dhanbad)" opacity="0.5" pointerEvents="none" />
 
-            {/* Jamshedpur Orange Heatmap Rings */}
-            <circle cx="687" cy="515" r="85" fill="url(#glow-jamshedpur)" opacity="0.5" pointerEvents="none" />
+            {/* Seamless Feather-Edged Glow Overlays matching each Pin's severity color */}
+            {DISTRICT_PINS.map((pin) => {
+              const isHigh = pin.rawCount >= 500;
+              const isMedium = pin.rawCount >= 100 && pin.rawCount < 500;
+              const glowUrl = isHigh
+                ? 'url(#glow-ranchi)'
+                : isMedium
+                ? 'url(#glow-orange-soft)'
+                : 'url(#glow-green-soft)';
+              const glowRadius = isHigh
+                ? pin.haloRadius || 90
+                : isMedium
+                ? pin.haloRadius || 48
+                : pin.haloRadius || 38;
 
-            {/* Deoghar Orange Heatmap */}
-            <circle cx="740" cy="195" r="55" fill="url(#glow-deoghar)" opacity="0.5" pointerEvents="none" />
-
-            {/* Palamu & Hazaribagh Heatmap Overlays */}
-            <circle cx="190" cy="190" r="48" fill="url(#glow-deoghar)" opacity="0.3" pointerEvents="none" />
-            <circle cx="468" cy="235" r="50" fill="url(#glow-green-soft)" opacity="0.5" pointerEvents="none" />
-
-            {/* Soft Green Glow Overlays for all Low Density Districts (Seamless Feather Edge) */}
-            {DISTRICT_PINS.filter((p) => p.density === 'Low').map((pin) => (
-              <circle
-                key={`glow-green-${pin.id}`}
-                cx={pin.cx}
-                cy={pin.cy - 5}
-                r={pin.haloRadius + 6}
-                fill="url(#glow-green-soft)"
-                pointerEvents="none"
-              />
-            ))}
+              return (
+                <circle
+                  key={`glow-${pin.id}`}
+                  cx={pin.cx}
+                  cy={pin.cy - 5}
+                  r={glowRadius + 6}
+                  fill={glowUrl}
+                  pointerEvents="none"
+                />
+              );
+            })}
 
             {/* ─── 4. Distinct 3D Pin Markers & District Labels ─── */}
             {DISTRICT_PINS.map((pin) => {
