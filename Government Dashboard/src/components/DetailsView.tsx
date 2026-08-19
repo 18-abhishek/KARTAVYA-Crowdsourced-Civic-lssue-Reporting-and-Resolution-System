@@ -56,7 +56,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
   const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const rowsPerPage = 10;
   const [copiedCoords, setCopiedCoords] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
@@ -545,55 +545,44 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
             {/* Table Pagination Footer */}
             <div className="p-4 border-t border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
               <div>
-                Showing <strong className="text-stone-900">1</strong> to{' '}
-                <strong className="text-stone-900">{Math.min(rowsPerPage, filteredIssues.length)}</strong> of{' '}
-                <strong className="text-stone-900 font-mono">1,248</strong> issues
+                Showing <strong className="text-stone-900">{(currentPage - 1) * 10 + 1}</strong> to{' '}
+                <strong className="text-stone-900">{Math.min(currentPage * 10, 50)}</strong> of{' '}
+                <strong className="text-stone-900 font-mono">50</strong> issues
               </div>
 
-              {/* Pagination controls */}
+              {/* Pagination controls: exactly 5 pages */}
               <div className="flex items-center gap-1">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 disabled:opacity-40"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 disabled:opacity-40 transition-colors"
+                  title="Previous Page"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
 
-                <button className="w-7 h-7 flex items-center justify-center rounded-lg bg-[#ea580c] text-white font-bold text-xs shadow-2xs">
-                  1
-                </button>
-                <button className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 font-medium text-xs">
-                  2
-                </button>
-                <button className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 font-medium text-xs">
-                  3
-                </button>
-                <span className="px-1 text-stone-400">...</span>
-                <button className="w-8 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 font-medium text-xs">
-                  125
-                </button>
+                {[1, 2, 3, 4, 5].map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${
+                      currentPage === pageNum
+                        ? 'bg-[#ea580c] text-white shadow-xs'
+                        : 'border border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
 
                 <button
-                  onClick={() => setCurrentPage((p) => p + 1)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700"
+                  disabled={currentPage === 5}
+                  onClick={() => setCurrentPage((p) => Math.min(p + 1, 5))}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 disabled:opacity-40 transition-colors"
+                  title="Next Page"
                 >
                   <ChevronRight className="w-3.5 h-3.5" />
                 </button>
-              </div>
-
-              {/* Rows per page selector */}
-              <div className="flex items-center gap-2">
-                <span>Rows per page:</span>
-                <select
-                  value={rowsPerPage}
-                  onChange={(e) => setRowsPerPage(Number(e.target.value))}
-                  className="bg-stone-50 border border-stone-200 rounded-lg px-2 py-1 text-xs font-semibold text-stone-800 focus:outline-none"
-                >
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                </select>
               </div>
             </div>
           </div>
