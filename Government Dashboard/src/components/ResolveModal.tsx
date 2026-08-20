@@ -19,7 +19,7 @@ export const ResolveModal: React.FC<ResolveModalProps> = ({
   );
   const [resolvedBy, setResolvedBy] = useState('Er. Sanjay Mishra (Assistant Engineer, PWD)');
   const [proofPhotoUrl, setProofPhotoUrl] = useState(
-    'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?w=600&auto=format&fit=crop&q=80'
+    '/resource/sewage 1.jpg'
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 

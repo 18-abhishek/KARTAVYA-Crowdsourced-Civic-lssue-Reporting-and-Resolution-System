@@ -155,7 +155,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94315 77123',
     status: 'In Progress',
     priority: 'Critical',
-    photoUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/sewage 1.jpg',
     coordinates: {
       lat: 23.3524,
       lng: 85.3045,
@@ -274,7 +274,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94319 88122',
     status: 'Assigned',
     priority: 'High',
-    photoUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/sewage 2.jpg',
     coordinates: {
       lat: 23.6693,
       lng: 86.1511,
@@ -348,7 +348,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94311 00214',
     status: 'In Progress',
     priority: 'Critical',
-    photoUrl: 'https://images.unsplash.com/photo-1541888946425-d0fbb186156f?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/water supply.jpeg',
     coordinates: {
       lat: 23.9934,
       lng: 85.3622,
