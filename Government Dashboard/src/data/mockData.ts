@@ -68,7 +68,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 98352 11902',
     status: 'In Progress',
     priority: 'Medium',
-    photoUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/streetlight.jpg',
     coordinates: {
       lat: 23.3601,
       lng: 85.3122,
@@ -200,7 +200,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94317 33901',
     status: 'In Progress',
     priority: 'Critical',
-    photoUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/streetlight.jpg',
     coordinates: {
       lat: 23.7957,
       lng: 86.4304,

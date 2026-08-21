@@ -11,7 +11,7 @@ object AppConfig {
     // 🌐 CLOUDFLARE TUNNEL / BACKEND BASE URL
     // =========================================================================
     // Paste your new Cloudflare URL below whenever you restart your tunnel:
-    // Example: "https://your-tunnel-name.trycloudflare.com"
+    // Example: "https://successful-scan-please-minimize.trycloudflare.com"
     // Local Emulator: "http://10.0.2.2:8080"
     
     const val CLOUDFLARE_URL = "https://lovers-printers-imperial-narrow.trycloudflare.com"

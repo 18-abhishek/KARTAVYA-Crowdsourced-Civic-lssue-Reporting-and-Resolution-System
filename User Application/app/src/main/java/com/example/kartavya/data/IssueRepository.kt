@@ -49,6 +49,9 @@ object IssueRepository {
                 "status" to IssueStatus.REPORTED.name,
                 "routingTo" to issue.routingTo,
                 "priority" to issue.priority,
+                "upvotes" to issue.upvotes,
+                "upvoteCount" to issue.upvotes,
+                "upvotedBy" to issue.upvotedBy,
                 "createdAt" to FieldValue.serverTimestamp(),
                 "updatedAt" to FieldValue.serverTimestamp()
             )
@@ -171,36 +174,57 @@ object IssueRepository {
     }
 
     /**
-     * Toggle upvote for a real Firestore civic issue.
+     * Toggle upvote for a civic issue directly in Firebase Firestore.
+     * Synchronizes in real-time across all user accounts.
      */
-    suspend fun toggleUpvote(issueId: String, uid: String): Result<Unit> {
+    suspend fun toggleUpvote(issueId: String, uid: String, fallbackIssue: CivicIssue? = null): Result<Unit> {
         return try {
             val effectiveUid = uid.ifBlank { "demo_user" }
-            if (issueId.isBlank()) return Result.success(Unit)
-            val docRef = db.collection(COLLECTION).document(issueId)
+            val cleanIssueId = issueId.ifBlank { fallbackIssue?.issueId ?: "demo_issue" }
+            val docRef = db.collection(COLLECTION).document(cleanIssueId)
+
             db.runTransaction { transaction ->
                 val snapshot = transaction.get(docRef)
                 if (snapshot.exists()) {
                     val upvotedBy = (snapshot.get("upvotedBy") as? List<*>)?.mapNotNull { it?.toString() } ?: emptyList()
                     val hasUpvoted = upvotedBy.contains(effectiveUid)
-                    
+
                     val updates = mutableMapOf<String, Any>()
                     if (hasUpvoted) {
                         updates["upvotedBy"] = FieldValue.arrayRemove(effectiveUid)
                         updates["upvotes"] = FieldValue.increment(-1)
-                        if (snapshot.contains("upvoteCount")) {
-                            updates["upvoteCount"] = FieldValue.increment(-1)
-                        }
+                        updates["upvoteCount"] = FieldValue.increment(-1)
                     } else {
                         updates["upvotedBy"] = FieldValue.arrayUnion(effectiveUid)
                         updates["upvotes"] = FieldValue.increment(1)
-                        if (snapshot.contains("upvoteCount")) {
-                            updates["upvoteCount"] = FieldValue.increment(1)
-                        }
+                        updates["upvoteCount"] = FieldValue.increment(1)
                     }
+                    updates["updatedAt"] = FieldValue.serverTimestamp()
                     transaction.update(docRef, updates)
+                } else if (fallbackIssue != null) {
+                    // Create issue doc in Firestore so upvote syncs live for all users
+                    val initialUpvotes = (fallbackIssue.upvotes + 1).coerceAtLeast(1)
+                    val newDoc = hashMapOf(
+                        "userId" to fallbackIssue.userId.ifBlank { effectiveUid },
+                        "reporterName" to fallbackIssue.reporterName.ifBlank { "Citizen" },
+                        "title" to fallbackIssue.title,
+                        "description" to fallbackIssue.description,
+                        "category" to fallbackIssue.category,
+                        "imageUrls" to fallbackIssue.imageUrls,
+                        "status" to fallbackIssue.status,
+                        "address" to fallbackIssue.address,
+                        "priority" to fallbackIssue.priority,
+                        "routingTo" to fallbackIssue.routingTo,
+                        "upvotes" to initialUpvotes,
+                        "upvoteCount" to initialUpvotes,
+                        "upvotedBy" to listOf(effectiveUid),
+                        "createdAt" to FieldValue.serverTimestamp(),
+                        "updatedAt" to FieldValue.serverTimestamp()
+                    )
+                    transaction.set(docRef, newDoc)
                 }
             }.await()
+            Log.i(TAG, "Successfully toggled upvote in Firebase for issue $cleanIssueId by $effectiveUid")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to toggle upvote for $issueId", e)

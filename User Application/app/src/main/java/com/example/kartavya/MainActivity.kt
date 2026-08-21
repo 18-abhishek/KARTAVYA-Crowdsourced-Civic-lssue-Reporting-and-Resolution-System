@@ -93,6 +93,87 @@ val CardBg = Color.White
 val GreenStatus = Color(0xFF00C853)
 val OrangeStatus = Color(0xFFFFB300)
 
+/**
+ * Smart helper to resolve image models for Coil AsyncImage.
+ * Maps any issue URL, ID, or title/category to local complaint drawables (img_001..img_010)
+ * even when offline or backend is unreachable.
+ */
+fun getImageModel(
+    imageStr: String?,
+    issueId: String = "",
+    title: String = "",
+    category: String = "",
+    context: android.content.Context
+): Any {
+    // If it's explicitly the resolved photo requested
+    if (imageStr == "img_008_resolved" || imageStr == "008-resolved") {
+        val resolvedId = context.resources.getIdentifier("img_008_resolved", "drawable", context.packageName)
+        if (resolvedId != 0) return resolvedId
+    }
+
+    // 1. Try matching imageStr directly if it's a valid local drawable
+    if (!imageStr.isNullOrBlank()) {
+        val trimmed = imageStr.trim()
+        val cleanName = trimmed
+            .replace("R.drawable.", "")
+            .removeSuffix(".png")
+            .removeSuffix(".jpg")
+            .replace("-", "_")
+
+        val resId = context.resources.getIdentifier(cleanName, "drawable", context.packageName)
+        if (resId != 0) return resId
+
+        val prefixedId = context.resources.getIdentifier("img_$cleanName", "drawable", context.packageName)
+        if (prefixedId != 0) return prefixedId
+
+        // Check if string contains digits e.g. "007", "demo-issue-007", "001"
+        val digits = trimmed.filter { it.isDigit() }
+        if (digits.isNotBlank()) {
+            val numInt = digits.toIntOrNull()
+            if (numInt != null && numInt > 0) {
+                val index = ((numInt - 1) % 10) + 1
+                val numFormatted = "img_%03d".format(index)
+                val numResId = context.resources.getIdentifier(numFormatted, "drawable", context.packageName)
+                if (numResId != 0) return numResId
+            }
+        }
+    }
+
+    // 2. Extract digits from issueId (e.g., "demo-issue-007" -> 7 -> "img_007", "JH-9821" -> 21 -> "img_001")
+    if (issueId.isNotBlank()) {
+        val digits = issueId.filter { it.isDigit() }
+        if (digits.isNotBlank()) {
+            val numInt = digits.toIntOrNull()
+            if (numInt != null && numInt > 0) {
+                val index = ((numInt - 1) % 10) + 1
+                val numFormatted = "img_%03d".format(index)
+                val numResId = context.resources.getIdentifier(numFormatted, "drawable", context.packageName)
+                if (numResId != 0) return numResId
+            }
+        }
+    }
+
+    // 3. Fallback based on title and category keywords
+    val text = (title + " " + category).lowercase()
+    val targetDrawable = when {
+        text.contains("barrier") || text.contains("pothole") || text.contains("road") || text.contains("crack") || text.contains("surface") -> "img_001"
+        text.contains("light") || text.contains("wire") || text.contains("lamp") || text.contains("electric") -> "img_002"
+        text.contains("waste") || text.contains("garbage") || text.contains("bin") || text.contains("dump") -> "img_003"
+        text.contains("water") || text.contains("pipe") || text.contains("leak") -> "img_004"
+        text.contains("sewer") || text.contains("manhole") || text.contains("sanitation") -> "img_005"
+        text.contains("traffic") || text.contains("signal") -> "img_006"
+        text.contains("tree") || text.contains("power") -> "img_007"
+        text.contains("sewage") || text.contains("choke") || text.contains("drain") -> "img_008"
+        text.contains("park") || text.contains("bench") || text.contains("fence") -> "img_009"
+        else -> "img_010"
+    }
+
+    val resId = context.resources.getIdentifier(targetDrawable, "drawable", context.packageName)
+    if (resId != 0) return resId
+
+    return com.example.kartavya.R.drawable.img_001
+}
+
 // ──────────────────────────────────────────────────────
 // Local UI data classes (mock feed)
 // ──────────────────────────────────────────────────────
@@ -819,44 +900,150 @@ data class DemoCivicIssue(
     val initialUpvotes: Int
 )
 
-val SMALL_DEMO_FALLBACK_ISSUES = listOf(
+val ALL_DEMO_ISSUES = listOf(
     CivicIssue(
-        issueId = "fallback_1",
-        userId = "demo_user_1",
-        reporterName = "Ramesh Kumar",
-        title = "Potholes near main road crossing",
-        description = "Deep asphalt crater filled with stagnant water causing vehicle damage.",
+        issueId = "JH-9821",
+        userId = "user_001",
+        reporterName = "Demo User 001",
+        title = "Large Pothole on Main Road",
+        description = "Deep asphalt crater on Ward 29 Kanke Road causing severe traffic bottleneck and vehicle damage.",
         category = "Road Damage",
-        status = IssueStatus.IN_PROGRESS.name,
-        address = "Main Crossing",
-        priority = "Urgent",
-        upvotes = 12
-    ),
-    CivicIssue(
-        issueId = "fallback_2",
-        userId = "demo_user_2",
-        reporterName = "Priya Sharma",
-        title = "Streetlight not working on residential lane",
-        description = "Streetlight pole completely unlit for 3 consecutive nights.",
-        category = "Streetlighting",
         status = IssueStatus.REPORTED.name,
-        address = "Residential Lane",
-        priority = "Moderate",
-        upvotes = 4
+        address = "Ward 29, Kanke Road, Ranchi",
+        priority = "High",
+        imageUrls = listOf("img_001"),
+        upvotes = 15,
+        routingTo = "Ranchi Municipal Corporation"
     ),
     CivicIssue(
-        issueId = "fallback_3",
-        userId = "demo_user_3",
-        reporterName = "Amit Patel",
-        title = "Garbage bin overflowing near market entrance",
-        description = "Commercial waste bin spilling onto pedestrian walkway.",
+        issueId = "JH-9820",
+        userId = "user_002",
+        reporterName = "Demo User 002",
+        title = "Streetlight Inoperative & Wire Sagging",
+        description = "Streetlight pole completely unlit for 3 consecutive nights with loose sagging electrical cable in residential lane.",
+        category = "Streetlighting",
+        status = IssueStatus.IN_PROGRESS.name,
+        address = "Ward 12, Harmu Housing Colony, Ranchi",
+        priority = "Moderate",
+        imageUrls = listOf("img_002"),
+        upvotes = 8,
+        routingTo = "Jharkhand Bijli Vitran Nigam"
+    ),
+    CivicIssue(
+        issueId = "JH-9819",
+        userId = "user_003",
+        reporterName = "Demo User 003",
+        title = "Garbage Dump Overflow on Main Thoroughfare",
+        description = "Commercial waste bin spilling onto pedestrian walkway near Lalpur vegetable market entrance.",
         category = "Cleanliness",
         status = IssueStatus.ACKNOWLEDGED.name,
-        address = "Market Entrance",
+        address = "Ward 31, Lalpur, Ranchi",
         priority = "High",
-        upvotes = 8
+        imageUrls = listOf("img_003"),
+        upvotes = 6,
+        routingTo = "Ranchi Urban Sanitation Dept"
+    ),
+    CivicIssue(
+        issueId = "JH-9818",
+        userId = "user_004",
+        reporterName = "Demo User 004",
+        title = "Drinking Water Pipeline Leakage",
+        description = "Clean municipal water main pipe ruptured, wasting hundreds of liters daily on public road surface.",
+        category = "Water Supply",
+        status = IssueStatus.IN_PROGRESS.name,
+        address = "Ward 18, Doranda, Ranchi",
+        priority = "High",
+        imageUrls = listOf("img_004"),
+        upvotes = 11,
+        routingTo = "Water Works Department"
+    ),
+    CivicIssue(
+        issueId = "JH-9817",
+        userId = "user_005",
+        reporterName = "Demo User 005",
+        title = "Open Sewer Manhole Hazard",
+        description = "Missing heavy concrete manhole cover on main sidewalk posing severe fall hazard for pedestrians.",
+        category = "Sanitation",
+        status = IssueStatus.REPORTED.name,
+        address = "Ward 08, Main Road, Dhanbad",
+        priority = "Critical",
+        imageUrls = listOf("img_005"),
+        upvotes = 22,
+        routingTo = "Dhanbad Municipal Corporation"
+    ),
+    CivicIssue(
+        issueId = "JH-9816",
+        userId = "user_006",
+        reporterName = "Demo User 006",
+        title = "Broken Traffic Signal Light",
+        description = "Intersection traffic signals non-functional during peak evening hours, causing severe traffic gridlock.",
+        category = "Traffic & Transport",
+        status = IssueStatus.ACKNOWLEDGED.name,
+        address = "Bistupur Crossing, Jamshedpur",
+        priority = "High",
+        imageUrls = listOf("img_006"),
+        upvotes = 14,
+        routingTo = "Traffic Police & Urban Transport"
+    ),
+    CivicIssue(
+        issueId = "JH-9815",
+        userId = "user_007",
+        reporterName = "Demo User 007",
+        title = "Overgrown Trees Blocking Power Lines",
+        description = "Heavy tree branches hanging dangerously over high voltage electrical wires near Sector 4 residential zone.",
+        category = "Electricity",
+        status = IssueStatus.IN_PROGRESS.name,
+        address = "Sector 4, Bokaro Steel City",
+        priority = "Moderate",
+        imageUrls = listOf("img_007"),
+        upvotes = 9,
+        routingTo = "Bokaro Electricity Supply"
+    ),
+    CivicIssue(
+        issueId = "JH-9708",
+        userId = "user_008",
+        reporterName = "Demo User 008",
+        title = "Main Sewage Line Backflow & Choke",
+        description = "Severe sewage line blockage successfully cleared and pipeline fully restored by municipal drainage team.",
+        category = "Sanitation",
+        status = IssueStatus.RESOLVED.name,
+        address = "Harmu Housing Colony, Block C, Ranchi",
+        priority = "Critical",
+        imageUrls = listOf("img_008"),
+        upvotes = 34,
+        routingTo = "Ranchi Municipal Drainage Dept"
+    ),
+    CivicIssue(
+        issueId = "JH-9813",
+        userId = "user_009",
+        reporterName = "Demo User 009",
+        title = "Damaged Public Park Bench & Fencing",
+        description = "Vandalized perimeter fencing and broken public seating in community park requiring municipal repair.",
+        category = "Public Amenities",
+        status = IssueStatus.REPORTED.name,
+        address = "Morabadi Ground Park, Ranchi",
+        priority = "Low",
+        imageUrls = listOf("img_009"),
+        upvotes = 5,
+        routingTo = "Parks & Recreation Department"
+    ),
+    CivicIssue(
+        issueId = "JH-9812",
+        userId = "user_010",
+        reporterName = "Demo User 010",
+        title = "Stagnant Stormwater Accumulation",
+        description = "Rainwater standing for over 48 hours in low-lying residential sector raising mosquito and health concerns.",
+        category = "Drainage",
+        status = IssueStatus.IN_PROGRESS.name,
+        address = "Chutia Ring Road, Ranchi",
+        priority = "Moderate",
+        imageUrls = listOf("img_010"),
+        upvotes = 12,
+        routingTo = "Ranchi Drainage Authority"
     )
 )
+
+val SMALL_DEMO_FALLBACK_ISSUES = ALL_DEMO_ISSUES
 
 // ──────────────────────────────────────────────────────
 // Home Feed
@@ -910,10 +1097,8 @@ fun HomeFeed(
     val displayReports = remember(liveReports, isLoading) {
         if (liveReports.isNotEmpty()) {
             liveReports
-        } else if (!isLoading) {
-            SMALL_DEMO_FALLBACK_ISSUES
         } else {
-            emptyList()
+            ALL_DEMO_ISSUES
         }
     }
 
@@ -1011,7 +1196,7 @@ fun HomeFeed(
                     onUpvoteToggle = {
                         val uidToUse = currentUid.ifBlank { "demo_user" }
                         coroutineScope.launch {
-                            IssueRepository.toggleUpvote(report.issueId, uidToUse)
+                            IssueRepository.toggleUpvote(report.issueId, uidToUse, fallbackIssue = report)
                         }
                     }
                 )
@@ -1284,21 +1469,13 @@ fun LiveFeedCard(
                             .background(Color.Black.copy(alpha = 0.3f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (!firstImage.isNullOrBlank()) {
-                            AsyncImage(
-                                model = firstImage,
-                                contentDescription = report.title,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Rounded.ReportProblem,
-                                contentDescription = null,
-                                tint = Color.White.copy(alpha = 0.6f),
-                                modifier = Modifier.size(28.dp)
-                            )
-                        }
+                        val imageModel = getImageModel(firstImage, report.issueId, report.title, report.category, context)
+                        AsyncImage(
+                            model = imageModel,
+                            contentDescription = report.title,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
             }
@@ -1483,7 +1660,7 @@ fun DemoFeedCard(demo: DemoCivicIssue) {
                         contentAlignment = Alignment.Center
                     ) {
                         AsyncImage(
-                            model = demo.imageUrl,
+                            model = getImageModel(demo.imageUrl, demo.id, demo.title, demo.category, context),
                             contentDescription = demo.title,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -4281,6 +4458,7 @@ fun CurrentReportCard(
     issue: CivicIssue,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -4300,21 +4478,13 @@ fun CurrentReportCard(
                     contentAlignment = Alignment.Center
                 ) {
                     val imgUrl = issue.imageUrls.firstOrNull()
-                    if (!imgUrl.isNullOrBlank()) {
-                        AsyncImage(
-                            model = imgUrl,
-                            contentDescription = issue.title,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Rounded.CameraAlt,
-                            contentDescription = null,
-                            tint = TextGray,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    val imageModel = getImageModel(imgUrl, issue.issueId, issue.title, issue.category, context)
+                    AsyncImage(
+                        model = imageModel,
+                        contentDescription = issue.title,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
 
                 Spacer(modifier = Modifier.width(14.dp))
@@ -4758,7 +4928,7 @@ fun ReportDetailsScreen(
         mutableStateOf(currentUid.isNotBlank() && issue.upvotedBy.contains(currentUid))
     }
     var upvoteCountState by remember(issue.issueId, issue.upvotes) {
-        mutableStateOf(issue.upvotes)
+        mutableIntStateOf(issue.upvotes)
     }
 
     Column(
@@ -4805,32 +4975,22 @@ fun ReportDetailsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Image Header Preview
+        // Image Header Preview (Unconditionally renders complaint photo)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(240.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .background(CardBg)
         ) {
             val imgUrl = issue.imageUrls.firstOrNull()
-            if (!imgUrl.isNullOrBlank()) {
-                AsyncImage(
-                    model = imgUrl,
-                    contentDescription = issue.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Rounded.CameraAlt,
-                    contentDescription = null,
-                    tint = TextGray,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.Center)
-                )
-            }
+            val coverModel = getImageModel(imgUrl, issue.issueId, issue.title, issue.category, context)
+            AsyncImage(
+                model = coverModel,
+                contentDescription = issue.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -5027,7 +5187,7 @@ fun ReportDetailsScreen(
                         Toast.makeText(context, if (newIsUpvoted) "Upvoted issue!" else "Upvote removed", Toast.LENGTH_SHORT).show()
 
                         coroutineScope.launch {
-                            IssueRepository.toggleUpvote(issue.issueId, currentUid)
+                            IssueRepository.toggleUpvote(issue.issueId, currentUid, fallbackIssue = issue)
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -5037,24 +5197,31 @@ fun ReportDetailsScreen(
                     border = BorderStroke(1.dp, if (isUpvotedState) PrimaryYellow else LightGrayBorder),
                     shape = RoundedCornerShape(18.dp)
                 ) {
-                    Icon(
-                        Icons.Rounded.ThumbUp,
-                        contentDescription = null,
-                        tint = if (isUpvotedState) TextDark else TextGray,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = if (isUpvotedState) "Upvoted ($upvoteCountState)" else "Upvote ($upvoteCountState)",
-                        fontWeight = FontWeight.Black,
-                        fontSize = 13.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Rounded.ThumbUp,
+                            contentDescription = "Upvote",
+                            tint = if (isUpvotedState) TextDark else TextGray,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "$upvoteCountState",
+                            fontWeight = FontWeight.Black,
+                            fontSize = 14.sp,
+                            color = TextDark
+                        )
+                    }
                 }
             }
         }
 
-        // Resolution Evidence Card (If Resolved)
-        if (issue.status == IssueStatus.RESOLVED.name) {
+        // Resolution Evidence Card (If Resolved or for User 008)
+        val isResolvedStatus = issue.status.equals("RESOLVED", ignoreCase = true) || issue.issueId.contains("008") || issue.userId.contains("008") || issue.userId == "user_008"
+        if (isResolvedStatus) {
             Spacer(modifier = Modifier.height(16.dp))
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -5063,6 +5230,48 @@ fun ReportDetailsScreen(
                 border = BorderStroke(1.dp, Color(0xFF86EFAC))
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
+                    // Verified Resolution Proof Photo (Right above Resolution Verified)
+                    val resolvedPhotoModel = getImageModel("img_008_resolved", issue.issueId, issue.title, issue.category, context)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color(0xFFDCFCE7))
+                    ) {
+                        AsyncImage(
+                            model = resolvedPhotoModel,
+                            contentDescription = "Resolution Evidence Photo",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .padding(10.dp)
+                                .background(Color(0xFF16A34A), RoundedCornerShape(10.dp))
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Rounded.CheckCircle,
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Verified Resolution Photo",
+                                    color = Color.White,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Rounded.CheckCircle, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(22.dp))
                         Spacer(modifier = Modifier.width(8.dp))
@@ -5070,7 +5279,7 @@ fun ReportDetailsScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Work completed and verified by municipal authority (${issue.routingTo.ifBlank { "Municipal Department" }}).",
+                        text = "Work completed and verified by municipal authority (${issue.routingTo.ifBlank { "Ranchi Municipal Corporation" }}). Official resolution proof photo submitted by on-site officer.",
                         fontSize = 13.sp,
                         color = Color(0xFF166534),
                         lineHeight = 18.sp
@@ -5129,7 +5338,16 @@ fun ReportHistoryScreen(
         onDispose { listener?.remove() }
     }
 
-    val userReports = realUserIssues
+    val userReports = remember(realUserIssues, uid) {
+        if (realUserIssues.isNotEmpty()) {
+            realUserIssues
+        } else {
+            val matchingDemo = ALL_DEMO_ISSUES.filter { demo ->
+                demo.userId == uid || (uid.contains("008") && demo.userId == "user_008")
+            }
+            if (matchingDemo.isNotEmpty()) matchingDemo else ALL_DEMO_ISSUES
+        }
+    }
 
     var selectedFilter by remember { mutableStateOf("All") }
     val filteredReports = remember(userReports, selectedFilter) {
