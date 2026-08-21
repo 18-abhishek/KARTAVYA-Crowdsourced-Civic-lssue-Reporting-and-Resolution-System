@@ -170,8 +170,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
 
       {/* Main Split Content: Left Filters & Summaries + Right Breach Cards List */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column (col-span-4 on lg) */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* Left Column (col-span-4 on lg, sticky position) */}
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-22 self-start">
           {/* Card 1: Alert Filters */}
           <div className="bg-transparent p-3 space-y-4">
             <h3 className="text-sm font-bold text-stone-900">Alert Filters</h3>

@@ -631,8 +631,8 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 items-start">
-      {/* Left Secondary Sidebar (w-56 breadth) */}
-      <div className="w-full lg:w-60 shrink-0 space-y-4">
+      {/* Left Secondary Sidebar (w-56 breadth, sticky position) */}
+      <div className="w-full lg:w-60 shrink-0 space-y-4 lg:sticky lg:top-22 self-start">
         <div className="glass-panel rounded-3xl p-3 border border-stone-200/50 space-y-1 bg-white">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
