@@ -80,7 +80,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
 
   return (
     <div
-      className="space-y-3.5 max-w-[1260px] mx-auto pb-8 animate-in fade-in duration-300"
+      className="space-y-3.5 w-full pb-8 animate-in fade-in duration-300"
       onClick={() => setActiveMenuId(null)}
     >
       {/* ─── Top Header Zone ─── */}
@@ -124,11 +124,11 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
           return (
             <div
               key={issue.id}
-              className="bg-white rounded-2xl border border-stone-200/80 border-l-[5px] border-l-[#dc2626] p-3.5 sm:p-4 shadow-xs transition-shadow hover:shadow-sm"
+              className="bg-white rounded-2xl border border-stone-200/80 border-l-[5px] border-l-[#dc2626] p-3.5 sm:p-4 shadow-xs transition-shadow hover:shadow-sm overflow-x-auto"
             >
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-5 xl:gap-7">
+              <div className="min-w-[1000px] flex items-center gap-5 xl:gap-7">
                 {/* 1. Left Zone: Photo, ID, Title, Location, Reported date */}
-                <div className="flex items-center gap-3 min-w-0 lg:w-[310px] xl:w-[330px] shrink-0">
+                <div className="flex items-center gap-3 w-[300px] xl:w-[330px] shrink-0">
                   <img
                     src={issue.photoUrl}
                     alt={issue.title}
@@ -156,10 +156,10 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                   </div>
                 </div>
 
-                {/* 2. Department & Assigned Contractor (closely beside left zone) */}
-                <div className="space-y-2 lg:w-[185px] xl:w-[200px] shrink-0">
+                {/* 2. Department & Assigned Contractor (closely beside issue zone) */}
+                <div className="space-y-2.5 w-[180px] xl:w-[200px] shrink-0">
                   <div>
-                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
+                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
                       Department
                     </span>
                     <div className="flex items-center gap-2 text-xs sm:text-[13px] font-semibold text-stone-800 truncate">
@@ -168,7 +168,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                     </div>
                   </div>
                   <div>
-                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
+                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
                       Assigned Contractor
                     </span>
                     <div className="flex items-center gap-2 text-xs sm:text-[13px] font-semibold text-stone-800 truncate">
@@ -181,47 +181,47 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                 </div>
 
                 {/* 3. Circular Radial Gauge (closely beside department) */}
-                <div className="flex flex-col items-center justify-center text-center lg:w-[105px] xl:w-[115px] shrink-0">
-                  <div className="relative w-16 h-16 flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center text-center w-[110px] xl:w-[120px] shrink-0">
+                  <div className="relative w-17 h-17 flex items-center justify-center">
                     <svg className="w-full h-full -rotate-90">
                       <circle
-                        cx="32"
-                        cy="32"
-                        r="25"
+                        cx="34"
+                        cy="34"
+                        r={27}
                         fill="transparent"
                         stroke="#f1f5f9"
-                        strokeWidth="4"
+                        strokeWidth="4.5"
                       />
                       <circle
-                        cx="32"
-                        cy="32"
-                        r="25"
+                        cx="34"
+                        cy="34"
+                        r={27}
                         fill="transparent"
                         stroke="#dc2626"
-                        strokeWidth="4"
-                        strokeDasharray={157.08}
-                        strokeDashoffset={157.08 - (issue.timeElapsedPercent / 100) * 157.08}
+                        strokeWidth="4.5"
+                        strokeDasharray={169.65}
+                        strokeDashoffset={169.65 - (issue.timeElapsedPercent / 100) * 169.65}
                         strokeLinecap="round"
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-sm sm:text-base font-bold text-stone-900 leading-tight">
+                      <span className="text-base sm:text-lg font-bold text-stone-900 leading-tight">
                         {issue.timeElapsedPercent}%
                       </span>
-                      <span className="text-[8px] font-medium text-stone-500 leading-tight">
+                      <span className="text-[9px] font-medium text-stone-500 leading-tight">
                         Time Elapsed
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-medium text-stone-500 mt-0.5">
+                  <span className="text-[11px] font-medium text-stone-500 mt-0.5">
                     (No Progress)
                   </span>
                 </div>
 
                 {/* 4. SLA Time & Time Remaining (closely beside gauge) */}
-                <div className="space-y-2 lg:w-[105px] xl:w-[115px] shrink-0">
+                <div className="space-y-2.5 w-[110px] xl:w-[120px] shrink-0">
                   <div>
-                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
+                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
                       SLA Time
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-stone-800 block">
@@ -229,7 +229,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
+                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
                       Time Remaining
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -241,14 +241,14 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                   </div>
                 </div>
 
-                {/* 5. Rightmost Zone: 3 Stacked Buttons in exact order + 3-dots Menu */}
-                <div className="flex items-center gap-1.5 shrink-0 lg:w-[205px]">
+                {/* 5. Rightmost Corner: 3 Options Stacked One Below the Other + 3-dots Menu */}
+                <div className="ml-auto flex items-center gap-2.5 shrink-0">
                   {/* Stack of 3 action buttons in exact vertical order */}
-                  <div className="flex flex-col gap-1.5 w-[185px]">
+                  <div className="flex flex-col gap-1.5 w-[190px] xl:w-[205px]">
                     {/* 1. Issue Formal Warning (Top) */}
                     <button
                       onClick={() => onIssueFormalWarning(issue)}
-                      className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                      className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                     >
                       <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-white" />
                       <span>Issue Formal Warning</span>
@@ -257,7 +257,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                     {/* 2. Escalate to Commissioner (Middle) */}
                     <button
                       onClick={() => onEscalateCommissioner(issue)}
-                      className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                      className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                     >
                       <svg
                         className="w-3.5 h-3.5 text-[#dc2626] shrink-0"
@@ -278,7 +278,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                     {/* 3. Impose Penalty Fine (Bottom) */}
                     <button
                       onClick={() => onImposePenalty(issue)}
-                      className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                      className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                     >
                       <span className="text-xs font-bold leading-none">₹</span>
                       <span>Impose Penalty Fine</span>
@@ -292,7 +292,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                         e.stopPropagation();
                         setActiveMenuId(activeMenuId === issue.id ? null : issue.id);
                       }}
-                      className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors cursor-pointer"
+                      className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors cursor-pointer"
                       title="More options"
                     >
                       <MoreVertical className="w-4 h-4" />
