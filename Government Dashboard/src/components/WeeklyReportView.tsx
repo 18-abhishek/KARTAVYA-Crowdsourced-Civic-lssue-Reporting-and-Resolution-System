@@ -549,9 +549,18 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
   const weekRatio = currentReport.totalReported / 7850;
   const all24DistrictsData = districtList.map((d) => {
     const rawReported = d.reportedThisWeek || Math.round(d.totalIssues * 0.6);
-    const rawResolved = d.resolved || Math.round(d.totalIssues * 0.5);
+    const rawResolved =
+      d.resolvedThisWeek ||
+      (d.resolutionRate ? Math.round(rawReported * (d.resolutionRate / 100)) : Math.round(rawReported * 0.85));
+
+    // Ensure rawResolved is strictly less than rawReported
+    const boundedResolved = Math.min(rawResolved, Math.max(1, rawReported - 1));
+
     const adjustedReported = Math.max(20, Math.round(rawReported * weekRatio));
-    const adjustedResolved = Math.max(15, Math.round(rawResolved * weekRatio));
+    const adjustedResolved = Math.min(
+      Math.max(1, adjustedReported - 1),
+      Math.max(15, Math.round(boundedResolved * weekRatio))
+    );
     const rate = ((adjustedResolved / adjustedReported) * 100).toFixed(1);
     return {
       district: d.name.replace(/ \(.*?\)/, ''), // e.g. "Jamshedpur", "Palamu", "West Singhbhum"
@@ -1634,7 +1643,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                       name: d.name,
                       officer: d.nodalOfficer.name,
                       inflow: d.reportedThisWeek,
-                      resolved: Math.round(d.resolved * (d.reportedThisWeek / d.totalIssues) * 0.95),
+                      resolved: d.resolvedThisWeek || Math.round(d.reportedThisWeek * (d.resolutionRate / 100)),
                       rate: d.resolutionRate,
                     })))
                       .sort((a, b) => {
