@@ -235,23 +235,23 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
       </div>
 
       {/* ─── 4. Main Split Content: Left Sidebar + Right Breach Cards List ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* ─── LEFT COLUMN (col-span-4 on lg) ─── */}
-        <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-22 self-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* ─── LEFT COLUMN (col-span-4 on lg, col-span-3.5 on xl) ─── */}
+        <div className="lg:col-span-4 xl:col-span-3.5 space-y-4 lg:sticky lg:top-22 self-start">
           {/* Card 1: Alert Filters */}
-          <div className="bg-white/60 backdrop-blur-md p-4.5 rounded-3xl border border-white/60 shadow-xs space-y-4">
+          <div className="bg-white/60 backdrop-blur-md p-4 rounded-3xl border border-white/60 shadow-xs space-y-3.5">
             <h3 className="text-sm font-bold text-stone-900">Alert Filters</h3>
 
             {/* Department */}
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+              <label className="block text-xs font-bold text-stone-700 mb-1">
                 Department
               </label>
               <div className="relative">
                 <select
                   value={selectedDeptFilter}
                   onChange={(e) => setSelectedDeptFilter(e.target.value)}
-                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-2 text-xs font-semibold text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
+                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
                 >
                   <option value="All Departments">All Departments</option>
                   <option value="Road Works">Road Works Department</option>
@@ -272,7 +272,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                 <select
                   value={selectedBreachFilter}
                   onChange={(e) => setSelectedBreachFilter(e.target.value)}
-                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
+                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
                 >
                   <option value="> 80% Time Elapsed">&gt; 80% Time Elapsed</option>
                   <option value="60% - 80% Time Elapsed">60% - 80% Time Elapsed</option>
@@ -291,7 +291,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                 <select
                   value={selectedStatusFilter}
                   onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
+                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
                 >
                   <option value="All Status">All Status</option>
                   <option value="Assigned">Assigned</option>
@@ -303,7 +303,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
             </div>
 
             {/* Reset Filters Link */}
-            <div className="pt-1">
+            <div className="pt-0.5">
               <button
                 onClick={() => {
                   setSelectedDeptFilter('All Departments');
@@ -319,26 +319,26 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
           </div>
 
           {/* Card 2: Department Escalation Summary */}
-          <div className="bg-white/60 backdrop-blur-md p-4.5 rounded-3xl border border-white/60 shadow-xs space-y-3">
+          <div className="bg-white/60 backdrop-blur-md p-4 rounded-3xl border border-white/60 shadow-xs space-y-2.5">
             <h3 className="text-sm font-bold text-stone-900">
               Department Escalation Summary
             </h3>
 
-            <div className="space-y-2 pt-1">
+            <div className="space-y-1.5 pt-0.5">
               {/* Road Works */}
               <div
                 onClick={() => setSelectedDeptFilter('Road Works')}
-                className="flex items-center justify-between p-3 rounded-2xl bg-white/50 hover:bg-white/80 transition-colors border border-white/70 cursor-pointer group shadow-2xs"
+                className="flex items-center justify-between p-2.5 rounded-2xl bg-white/50 hover:bg-white/80 transition-colors border border-white/70 cursor-pointer group shadow-2xs"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0 border border-emerald-500/20">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0 border border-emerald-500/20">
                     R
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-stone-900 group-hover:text-[#ea580c] transition-colors">
                       Road Works Department
                     </h4>
-                    <p className="text-[11px] text-red-600 font-semibold mt-0.5">
+                    <p className="text-[10px] text-red-600 font-semibold">
                       7 Critical
                     </p>
                   </div>
@@ -349,17 +349,17 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               {/* Water & Sanitation */}
               <div
                 onClick={() => setSelectedDeptFilter('Water & Sanitation')}
-                className="flex items-center justify-between p-3 rounded-2xl bg-white/50 hover:bg-white/80 transition-colors border border-white/70 cursor-pointer group shadow-2xs"
+                className="flex items-center justify-between p-2.5 rounded-2xl bg-white/50 hover:bg-white/80 transition-colors border border-white/70 cursor-pointer group shadow-2xs"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0 border border-sky-500/20">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-xl bg-sky-500/10 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0 border border-sky-500/20">
                     W
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-stone-900 group-hover:text-[#ea580c] transition-colors">
                       Water &amp; Sanitation Dept.
                     </h4>
-                    <p className="text-[11px] text-red-600 font-semibold mt-0.5">
+                    <p className="text-[10px] text-red-600 font-semibold">
                       3 Critical
                     </p>
                   </div>
@@ -370,17 +370,17 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               {/* Electricity */}
               <div
                 onClick={() => setSelectedDeptFilter('Electricity')}
-                className="flex items-center justify-between p-3 rounded-2xl bg-white/50 hover:bg-white/80 transition-colors border border-white/70 cursor-pointer group shadow-2xs"
+                className="flex items-center justify-between p-2.5 rounded-2xl bg-white/50 hover:bg-white/80 transition-colors border border-white/70 cursor-pointer group shadow-2xs"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0 border border-amber-500/20">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0 border border-amber-500/20">
                     E
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-stone-900 group-hover:text-[#ea580c] transition-colors">
                       Electricity &amp; Lighting
                     </h4>
-                    <p className="text-[11px] text-red-600 font-semibold mt-0.5">
+                    <p className="text-[10px] text-red-600 font-semibold">
                       2 Critical
                     </p>
                   </div>
@@ -391,25 +391,25 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
           </div>
 
           {/* Card 3: 24x7 Command Control */}
-          <div className="bg-white/70 backdrop-blur-md rounded-3xl p-5 border-l-4 border-l-[#ea580c] shadow-xs border border-white/60">
-            <p className="text-xs font-semibold text-stone-500">24x7 Command Control</p>
-            <h4 className="text-sm font-bold text-stone-900 mt-0.5">
+          <div className="bg-white/70 backdrop-blur-md rounded-3xl p-4.5 border-l-4 border-l-[#ea580c] shadow-xs border border-white/60">
+            <p className="text-[11px] font-semibold text-stone-500">24x7 Command Control</p>
+            <h4 className="text-xs font-bold text-stone-900 mt-0.5">
               Contact Control Room
             </h4>
-            <div className="flex items-center gap-2 mt-2">
-              <Phone className="w-4 h-4 text-[#ea580c]" />
-              <span className="text-base font-extrabold text-[#c2410c] font-mono tracking-tight">
+            <div className="flex items-center gap-2 mt-1.5">
+              <Phone className="w-3.5 h-3.5 text-[#ea580c]" />
+              <span className="text-sm font-extrabold text-[#c2410c] font-mono tracking-tight">
                 1800-123-4567
               </span>
             </div>
           </div>
         </div>
 
-        {/* ─── RIGHT COLUMN: Breach Issues List (col-span-8 on lg) ─── */}
-        <div className="lg:col-span-8 space-y-3.5">
+        {/* ─── RIGHT COLUMN: Breach Issues List (col-span-8 on lg, col-span-8.5 on xl) ─── */}
+        <div className="lg:col-span-8 xl:col-span-8.5 space-y-3">
           {/* Header Row: Title + Sort */}
-          <div className="flex items-center justify-between pb-1">
-            <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-between pb-0.5">
+            <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-stone-900">
                 Critical SLA Breach Issues
               </h3>
@@ -419,13 +419,13 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
             </div>
 
             {/* Sort Dropdown */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <span className="text-xs text-stone-500 font-medium">Sort by:</span>
               <div className="relative">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white border border-stone-200 text-stone-800 text-xs font-medium py-1.5 pl-3 pr-8 rounded-lg shadow-2xs hover:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 cursor-pointer"
+                  className="appearance-none bg-white border border-stone-200 text-stone-800 text-xs font-medium py-1.5 pl-2.5 pr-7 rounded-lg shadow-2xs hover:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 cursor-pointer"
                 >
                   <option value="Time Elapsed (High to Low)">
                     Time Elapsed (High to Low)
@@ -435,72 +435,72 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                   </option>
                   <option value="Reported Date">Reported Date</option>
                 </select>
-                <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <ChevronDown className="w-3 h-3 text-stone-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
           </div>
 
           {/* Cards List */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {filteredIssues.map((issue) => {
               // Circular gauge
-              const radius = 28;
-              const circumference = 2 * Math.PI * radius; // ~175.93
+              const radius = 22;
+              const circumference = 2 * Math.PI * radius; // ~138.23
               const strokeDashoffset =
                 circumference - (issue.timeElapsedPercent / 100) * circumference;
 
               return (
                 <div
                   key={issue.id}
-                  className="bg-white rounded-2xl border border-stone-200/80 border-l-[5px] border-l-[#dc2626] p-3.5 sm:p-4 shadow-xs transition-shadow hover:shadow-sm overflow-x-auto"
+                  className="bg-white rounded-xl border border-stone-200/80 border-l-4 border-l-[#dc2626] p-3 shadow-xs transition-shadow hover:shadow-sm"
                 >
-                  <div className="min-w-[880px] flex items-center gap-4 xl:gap-6">
+                  <div className="flex items-center justify-between gap-2 sm:gap-3 xl:gap-4 w-full">
                     {/* 1. Left Zone: Photo, ID, Title, Location, Reported date */}
-                    <div className="flex items-center gap-3 w-[260px] xl:w-[280px] shrink-0">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1 max-w-[240px] xl:max-w-[270px] shrink-0">
                       <img
                         src={issue.photoUrl}
                         alt={issue.title}
                         onClick={() => onSelectIssueForDetails(issue.id)}
-                        className="w-18 h-18 sm:w-20 sm:h-20 rounded-xl object-cover ring-1 ring-stone-200/70 shrink-0 cursor-pointer hover:opacity-95 hover:scale-[1.02] transition-all shadow-2xs"
+                        className="w-14 h-14 sm:w-15 sm:h-15 rounded-lg object-cover ring-1 ring-stone-200/70 shrink-0 cursor-pointer hover:opacity-95 transition-all shadow-2xs"
                       />
                       <div className="min-w-0 space-y-0.5">
-                        <span className="text-xs sm:text-[13px] font-bold text-[#dc2626] font-mono tracking-tight block">
+                        <span className="text-[11px] font-bold text-[#dc2626] font-mono tracking-tight block">
                           {issue.id}
                         </span>
                         <h4
                           onClick={() => onSelectIssueForDetails(issue.id)}
-                          className="text-xs sm:text-sm font-bold text-stone-900 truncate hover:text-[#ea580c] cursor-pointer leading-tight"
+                          className="text-xs sm:text-[13px] font-bold text-stone-900 truncate hover:text-[#ea580c] cursor-pointer leading-tight"
                           title={issue.title}
                         >
                           {issue.title}
                         </h4>
-                        <div className="flex items-center gap-1 text-[11px] text-stone-500 truncate pt-0.5">
-                          <MapPin className="w-3 h-3 text-stone-400 shrink-0" />
+                        <div className="flex items-center gap-1 text-[10px] text-stone-500 truncate">
+                          <MapPin className="w-2.5 h-2.5 text-stone-400 shrink-0" />
                           <span className="truncate">{issue.ward}</span>
                         </div>
-                        <div className="text-[11px] text-stone-500 font-normal pt-0.5 truncate">
+                        <div className="text-[10px] text-stone-400 font-normal truncate">
                           Reported: {issue.reportedAt}
                         </div>
                       </div>
                     </div>
 
-                    {/* 2. Department & Assigned Contractor */}
-                    <div className="space-y-2 w-[165px] xl:w-[185px] shrink-0">
+                    {/* 2. Department & Assigned Contractor (compact width) */}
+                    <div className="space-y-1 w-[125px] xl:w-[145px] shrink-0">
                       <div>
-                        <span className="text-[10px] font-medium text-stone-400 block mb-0.5">
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           Department
                         </span>
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-800 truncate">
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800 truncate">
                           {renderDepartmentIcon(issue.assignedDept)}
                           <span className="truncate">{issue.assignedDept}</span>
                         </div>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium text-stone-400 block mb-0.5">
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           Assigned Contractor
                         </span>
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-800 truncate">
-                          <User className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800 truncate">
+                          <User className="w-3 h-3 text-stone-500 shrink-0" />
                           <span className="truncate">
                             {issue.assignedContractor || 'Government Unit'}
                           </span>
@@ -508,87 +508,87 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                       </div>
                     </div>
 
-                    {/* 3. Circular Radial Gauge */}
-                    <div className="flex flex-col items-center justify-center text-center w-[95px] xl:w-[105px] shrink-0">
-                      <div className="relative w-16 h-16 flex items-center justify-center">
+                    {/* 3. Circular Radial Gauge (compact width, sits close to department) */}
+                    <div className="flex flex-col items-center justify-center text-center w-[65px] xl:w-[75px] shrink-0">
+                      <div className="relative w-12 h-12 flex items-center justify-center">
                         <svg className="w-full h-full -rotate-90">
                           <circle
-                            cx="32"
-                            cy="32"
-                            r="25"
+                            cx="24"
+                            cy="24"
+                            r={radius}
                             fill="transparent"
                             stroke="#f1f5f9"
-                            strokeWidth="4"
+                            strokeWidth="3.5"
                           />
                           <circle
-                            cx="32"
-                            cy="32"
-                            r="25"
+                            cx="24"
+                            cy="24"
+                            r={radius}
                             fill="transparent"
                             stroke="#dc2626"
-                            strokeWidth="4"
-                            strokeDasharray={157.08}
-                            strokeDashoffset={157.08 - (issue.timeElapsedPercent / 100) * 157.08}
+                            strokeWidth="3.5"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={strokeDashoffset}
                             strokeLinecap="round"
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                          <span className="text-sm sm:text-base font-bold text-stone-900 leading-tight">
+                          <span className="text-xs sm:text-[13px] font-bold text-stone-900 leading-tight">
                             {issue.timeElapsedPercent}%
                           </span>
-                          <span className="text-[8px] font-medium text-stone-500 leading-tight">
-                            Time Elapsed
+                          <span className="text-[7px] font-medium text-stone-500 leading-none">
+                            Elapsed
                           </span>
                         </div>
                       </div>
-                      <span className="text-[10px] font-medium text-stone-500 mt-0.5">
+                      <span className="text-[9px] font-medium text-stone-400 mt-0.5 leading-none">
                         (No Progress)
                       </span>
                     </div>
 
-                    {/* 4. SLA Time & Time Remaining */}
-                    <div className="space-y-2 w-[95px] xl:w-[105px] shrink-0">
+                    {/* 4. SLA Time & Time Remaining (compact width, sits close to gauge) */}
+                    <div className="space-y-1 w-[70px] xl:w-[80px] shrink-0">
                       <div>
-                        <span className="text-[10px] font-medium text-stone-400 block mb-0.5">
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           SLA Time
                         </span>
-                        <span className="text-xs font-bold text-stone-800 block">
+                        <span className="text-[11px] font-bold text-stone-800 block">
                           {issue.slaTotalHours} Hours
                         </span>
                       </div>
                       <div>
-                        <span className="text-[10px] font-medium text-stone-400 block mb-0.5">
-                          Time Remaining
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
+                          Remaining
                         </span>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-bold text-[#dc2626] font-mono">
+                        <div className="flex items-center gap-1">
+                          <span className="text-[11px] font-bold text-[#dc2626] font-mono">
                             {issue.timeRemainingFormatted}
                           </span>
-                          <Clock className="w-3.5 h-3.5 text-[#dc2626] shrink-0" />
+                          <Clock className="w-2.5 h-2.5 text-[#dc2626] shrink-0" />
                         </div>
                       </div>
                     </div>
 
                     {/* 5. Rightmost Corner: 3 Options Stacked + 3 Dots Menu */}
-                    <div className="ml-auto flex items-center gap-2 shrink-0">
+                    <div className="ml-auto flex items-center gap-1.5 shrink-0">
                       {/* Stack of 3 action buttons */}
-                      <div className="flex flex-col gap-1.5 w-[175px] xl:w-[190px]">
+                      <div className="flex flex-col gap-1 w-[145px] xl:w-[155px]">
                         {/* 1. Issue Formal Warning (Top) */}
                         <button
                           onClick={() => onIssueFormalWarning(issue)}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                          className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-md text-[10px] xl:text-[11px] font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                         >
-                          <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-white" />
+                          <AlertTriangle className="w-3 h-3 shrink-0 text-white" />
                           <span>Issue Formal Warning</span>
                         </button>
 
                         {/* 2. Escalate to Commissioner (Middle) */}
                         <button
                           onClick={() => onEscalateCommissioner(issue)}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                          className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-md text-[10px] xl:text-[11px] font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                         >
                           <svg
-                            className="w-3.5 h-3.5 text-[#dc2626] shrink-0"
+                            className="w-3 h-3 text-[#dc2626] shrink-0"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -606,9 +606,9 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                         {/* 3. Impose Penalty Fine (Bottom) */}
                         <button
                           onClick={() => onImposePenalty(issue)}
-                          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                          className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-md text-[10px] xl:text-[11px] font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                         >
-                          <span className="text-xs font-bold leading-none">₹</span>
+                          <span className="text-[10px] font-bold leading-none">₹</span>
                           <span>Impose Penalty Fine</span>
                         </button>
                       </div>
@@ -623,21 +623,21 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                           className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors cursor-pointer"
                           title="More options"
                         >
-                          <MoreVertical className="w-4 h-4" />
+                          <MoreVertical className="w-3.5 h-3.5" />
                         </button>
 
                         {/* Context Menu Dropdown */}
                         {activeMenuId === issue.id && (
                           <div
                             onClick={(e) => e.stopPropagation()}
-                            className="absolute right-0 top-8 z-30 w-48 bg-white rounded-xl shadow-xl border border-stone-200 py-1 text-xs text-stone-700 animate-in fade-in zoom-in-95"
+                            className="absolute right-0 top-7 z-30 w-48 bg-white rounded-xl shadow-xl border border-stone-200 py-1 text-xs text-stone-700 animate-in fade-in zoom-in-95"
                           >
                             <button
                               onClick={() => {
                                 onSelectIssueForDetails(issue.id);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full text-left px-3 py-2 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium"
+                              className="w-full text-left px-3 py-1.5 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium"
                             >
                               <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
                               <span>View Full Grievance</span>
@@ -647,7 +647,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                                 onIssueFormalWarning(issue);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full text-left px-3 py-2 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium text-amber-700"
+                              className="w-full text-left px-3 py-1.5 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium text-amber-700"
                             >
                               <FileWarning className="w-3.5 h-3.5" />
                               <span>Dispatch Show Cause</span>
@@ -657,7 +657,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                                 onImposePenalty(issue);
                                 setActiveMenuId(null);
                               }}
-                              className="w-full text-left px-3 py-2 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium text-red-700"
+                              className="w-full text-left px-3 py-1.5 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium text-red-700"
                             >
                               <IndianRupee className="w-3.5 h-3.5" />
                               <span>Levy Default Penalty</span>
