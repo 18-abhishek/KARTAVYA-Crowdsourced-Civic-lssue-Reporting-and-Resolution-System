@@ -236,8 +236,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
 
       {/* ─── 4. Main Split Content: Left Sidebar + Right Breach Cards List ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* ─── LEFT COLUMN (col-span-4 on lg, col-span-3.5 on xl) ─── */}
-        <div className="lg:col-span-4 xl:col-span-3.5 space-y-4 lg:sticky lg:top-22 self-start">
+        {/* ─── LEFT COLUMN (col-span-4 on lg, col-span-3 on xl) ─── */}
+        <div className="lg:col-span-4 xl:col-span-3 space-y-4 lg:sticky lg:top-22 self-start">
           {/* Card 1: Alert Filters */}
           <div className="bg-white/60 backdrop-blur-md p-4 rounded-3xl border border-white/60 shadow-xs space-y-3.5">
             <h3 className="text-sm font-bold text-stone-900">Alert Filters</h3>
@@ -333,8 +333,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
           </div>
         </div>
 
-        {/* ─── RIGHT COLUMN: Breach Issues List (col-span-8 on lg, col-span-8.5 on xl) ─── */}
-        <div className="lg:col-span-8 xl:col-span-8.5 space-y-3">
+        {/* ─── RIGHT COLUMN: Breach Issues List (col-span-8 on lg, col-span-9 on xl) ─── */}
+        <div className="lg:col-span-8 xl:col-span-9 space-y-3">
           {/* Header Row: Title + Sort */}
           <div className="flex items-center justify-between pb-0.5">
             <div className="flex items-center gap-2">
@@ -380,16 +380,16 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
               return (
                 <div
                   key={issue.id}
-                  className="bg-white rounded-xl border border-stone-200/80 border-l-4 border-l-[#dc2626] p-3 shadow-xs transition-shadow hover:shadow-sm"
+                  className="bg-white rounded-xl border border-stone-200/80 border-l-4 border-l-[#dc2626] p-3 shadow-xs transition-shadow hover:shadow-sm overflow-x-auto"
                 >
-                  <div className="flex items-center justify-between gap-2 sm:gap-3 xl:gap-4 w-full">
+                  <div className="flex items-center justify-between gap-3 sm:gap-4 xl:gap-6 min-w-[700px] lg:min-w-0 w-full">
                     {/* 1. Left Zone: Photo, ID, Title, Location, Reported date */}
-                    <div className="flex items-center gap-2.5 min-w-0 flex-1 max-w-[240px] xl:max-w-[270px] shrink-0">
+                    <div className="flex items-center gap-2.5 min-w-0 max-w-[240px] xl:max-w-[270px] shrink-0">
                       <img
                         src={issue.photoUrl}
                         alt={issue.title}
                         onClick={() => onSelectIssueForDetails(issue.id)}
-                        className="w-14 h-14 sm:w-15 sm:h-15 rounded-lg object-cover ring-1 ring-stone-200/70 shrink-0 cursor-pointer hover:opacity-95 transition-all shadow-2xs"
+                        className="w-13 h-13 sm:w-14 sm:h-14 rounded-lg object-cover ring-1 ring-stone-200/70 shrink-0 cursor-pointer hover:opacity-95 transition-all shadow-2xs"
                       />
                       <div className="min-w-0 space-y-0.5">
                         <span className="text-[11px] font-bold text-[#dc2626] font-mono tracking-tight block">
@@ -412,13 +412,13 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                       </div>
                     </div>
 
-                    {/* 2. Department & Assigned Contractor (compact width) */}
-                    <div className="space-y-1 w-[125px] xl:w-[145px] shrink-0">
+                    {/* 2. Department & Assigned Contractor */}
+                    <div className="space-y-1 min-w-[155px] max-w-[185px] shrink-0">
                       <div>
                         <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           Department
                         </span>
-                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800 truncate">
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800">
                           {renderDepartmentIcon(issue.assignedDept)}
                           <span className="truncate">{issue.assignedDept}</span>
                         </div>
@@ -427,7 +427,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                         <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           Assigned Contractor
                         </span>
-                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800 truncate">
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800">
                           <User className="w-3 h-3 text-stone-500 shrink-0" />
                           <span className="truncate">
                             {issue.assignedContractor || 'Government Unit'}
@@ -436,8 +436,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                       </div>
                     </div>
 
-                    {/* 3. Circular Radial Gauge (compact width, sits close to department) */}
-                    <div className="flex flex-col items-center justify-center text-center w-[65px] xl:w-[75px] shrink-0">
+                    {/* 3. Circular Radial Gauge */}
+                    <div className="flex flex-col items-center justify-center text-center shrink-0">
                       <div className="relative w-12 h-12 flex items-center justify-center">
                         <svg className="w-full h-full -rotate-90">
                           <circle
@@ -474,8 +474,8 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                       </span>
                     </div>
 
-                    {/* 4. SLA Time & Time Remaining (compact width, sits close to gauge) */}
-                    <div className="space-y-1 w-[70px] xl:w-[80px] shrink-0">
+                    {/* 4. SLA Time & Time Remaining */}
+                    <div className="space-y-1 shrink-0">
                       <div>
                         <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           SLA Time
@@ -498,7 +498,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                     </div>
 
                     {/* 5. Rightmost Corner: 3 Options Stacked + 3 Dots Menu */}
-                    <div className="ml-auto flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       {/* Stack of 3 action buttons */}
                       <div className="flex flex-col gap-1 w-[145px] xl:w-[155px]">
                         {/* 1. Issue Formal Warning (Top) */}
