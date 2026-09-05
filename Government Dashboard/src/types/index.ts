@@ -73,6 +73,7 @@ export interface DistrictMetric {
   resolved: number;
   inProgress: number;
   reportedThisWeek: number;
+  resolvedThisWeek?: number;
   resolutionRate: number;
   density: 'High' | 'Medium' | 'Low';
   openIssuesCount: number;
