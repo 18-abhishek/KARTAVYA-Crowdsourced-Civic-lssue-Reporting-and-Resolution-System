@@ -80,7 +80,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
 
   return (
     <div
-      className="space-y-4 max-w-[1550px] mx-auto pb-8 animate-in fade-in duration-300"
+      className="space-y-3.5 max-w-[1260px] mx-auto pb-8 animate-in fade-in duration-300"
       onClick={() => setActiveMenuId(null)}
     >
       {/* ─── Top Header Zone ─── */}
@@ -113,7 +113,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
       </div>
 
       {/* ─── Cards List ─── */}
-      <div className="space-y-3.5">
+      <div className="space-y-3">
         {breachIssues.map((issue) => {
           // Circular radial gauge constants
           const radius = 28;
@@ -124,16 +124,16 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
           return (
             <div
               key={issue.id}
-              className="bg-white rounded-2xl border border-stone-200/80 border-l-[5px] border-l-[#dc2626] p-4 sm:p-5 shadow-xs transition-shadow hover:shadow-sm"
+              className="bg-white rounded-2xl border border-stone-200/80 border-l-[5px] border-l-[#dc2626] p-3.5 sm:p-4 shadow-xs transition-shadow hover:shadow-sm"
             >
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5 xl:gap-6">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-5 xl:gap-7">
                 {/* 1. Left Zone: Photo, ID, Title, Location, Reported date */}
-                <div className="flex items-center gap-3.5 min-w-0 xl:w-[320px] 2xl:w-[360px] shrink-0">
+                <div className="flex items-center gap-3 min-w-0 lg:w-[310px] xl:w-[330px] shrink-0">
                   <img
                     src={issue.photoUrl}
                     alt={issue.title}
                     onClick={() => onSelectIssueForDetails(issue.id)}
-                    className="w-20 h-20 sm:w-22 sm:h-22 rounded-xl object-cover ring-1 ring-stone-200/70 shrink-0 cursor-pointer hover:opacity-95 hover:scale-[1.02] transition-all shadow-2xs"
+                    className="w-18 h-18 sm:w-20 sm:h-20 rounded-xl object-cover ring-1 ring-stone-200/70 shrink-0 cursor-pointer hover:opacity-95 hover:scale-[1.02] transition-all shadow-2xs"
                   />
                   <div className="min-w-0 space-y-0.5">
                     <span className="text-xs sm:text-[13px] font-bold text-[#dc2626] font-mono tracking-tight block">
@@ -156,10 +156,10 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                   </div>
                 </div>
 
-                {/* 2. Middle-Left Zone: Department & Assigned Contractor */}
-                <div className="space-y-3 xl:w-[210px] 2xl:w-[230px] shrink-0">
+                {/* 2. Department & Assigned Contractor (closely beside left zone) */}
+                <div className="space-y-2 lg:w-[185px] xl:w-[200px] shrink-0">
                   <div>
-                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
+                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
                       Department
                     </span>
                     <div className="flex items-center gap-2 text-xs sm:text-[13px] font-semibold text-stone-800 truncate">
@@ -168,11 +168,11 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                     </div>
                   </div>
                   <div>
-                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
+                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
                       Assigned Contractor
                     </span>
                     <div className="flex items-center gap-2 text-xs sm:text-[13px] font-semibold text-stone-800 truncate">
-                      <User className="w-4 h-4 text-stone-500 shrink-0" />
+                      <User className="w-3.5 h-3.5 text-stone-500 shrink-0" />
                       <span className="truncate">
                         {issue.assignedContractor || 'Government Unit'}
                       </span>
@@ -180,48 +180,48 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                   </div>
                 </div>
 
-                {/* 3. Center Zone: Circular Radial Gauge (Time Elapsed) */}
-                <div className="flex flex-col items-center justify-center text-center xl:w-[130px] shrink-0">
-                  <div className="relative w-18 h-18 flex items-center justify-center">
+                {/* 3. Circular Radial Gauge (closely beside department) */}
+                <div className="flex flex-col items-center justify-center text-center lg:w-[105px] xl:w-[115px] shrink-0">
+                  <div className="relative w-16 h-16 flex items-center justify-center">
                     <svg className="w-full h-full -rotate-90">
                       <circle
-                        cx="36"
-                        cy="36"
-                        r={radius}
+                        cx="32"
+                        cy="32"
+                        r="25"
                         fill="transparent"
                         stroke="#f1f5f9"
-                        strokeWidth="4.5"
+                        strokeWidth="4"
                       />
                       <circle
-                        cx="36"
-                        cy="36"
-                        r={radius}
+                        cx="32"
+                        cy="32"
+                        r="25"
                         fill="transparent"
                         stroke="#dc2626"
-                        strokeWidth="4.5"
-                        strokeDasharray={circumference}
-                        strokeDashoffset={strokeDashoffset}
+                        strokeWidth="4"
+                        strokeDasharray={157.08}
+                        strokeDashoffset={157.08 - (issue.timeElapsedPercent / 100) * 157.08}
                         strokeLinecap="round"
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-base sm:text-lg font-bold text-stone-900 leading-tight">
+                      <span className="text-sm sm:text-base font-bold text-stone-900 leading-tight">
                         {issue.timeElapsedPercent}%
                       </span>
-                      <span className="text-[9px] font-medium text-stone-500 leading-tight">
+                      <span className="text-[8px] font-medium text-stone-500 leading-tight">
                         Time Elapsed
                       </span>
                     </div>
                   </div>
-                  <span className="text-[11px] font-medium text-stone-500 mt-1">
+                  <span className="text-[10px] font-medium text-stone-500 mt-0.5">
                     (No Progress)
                   </span>
                 </div>
 
-                {/* 4. Middle-Right Zone: SLA Time & Time Remaining */}
-                <div className="space-y-3 xl:w-[130px] shrink-0">
+                {/* 4. SLA Time & Time Remaining (closely beside gauge) */}
+                <div className="space-y-2 lg:w-[105px] xl:w-[115px] shrink-0">
                   <div>
-                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
+                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
                       SLA Time
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-stone-800 block">
@@ -229,7 +229,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                     </span>
                   </div>
                   <div>
-                    <span className="text-[11px] font-medium text-stone-400 block mb-0.5">
+                    <span className="text-[10px] font-medium text-stone-400 block mb-0.5 uppercase tracking-wide">
                       Time Remaining
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -241,23 +241,23 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                   </div>
                 </div>
 
-                {/* 5. Rightmost Zone: 3 Stacked Buttons + 3-dots Menu */}
-                <div className="flex items-center gap-2 xl:w-[245px] shrink-0 xl:justify-end">
-                  {/* Stack of 3 action buttons */}
-                  <div className="flex flex-col gap-1.5 w-[205px]">
-                    {/* Button 1: Issue Formal Warning */}
+                {/* 5. Rightmost Zone: 3 Stacked Buttons in exact order + 3-dots Menu */}
+                <div className="flex items-center gap-1.5 shrink-0 lg:w-[205px]">
+                  {/* Stack of 3 action buttons in exact vertical order */}
+                  <div className="flex flex-col gap-1.5 w-[185px]">
+                    {/* 1. Issue Formal Warning (Top) */}
                     <button
                       onClick={() => onIssueFormalWarning(issue)}
-                      className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                      className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                     >
                       <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-white" />
                       <span>Issue Formal Warning</span>
                     </button>
 
-                    {/* Button 2: Escalate to Commissioner */}
+                    {/* 2. Escalate to Commissioner (Middle) */}
                     <button
                       onClick={() => onEscalateCommissioner(issue)}
-                      className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                      className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                     >
                       <svg
                         className="w-3.5 h-3.5 text-[#dc2626] shrink-0"
@@ -275,10 +275,10 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                       <span>Escalate to Commissioner</span>
                     </button>
 
-                    {/* Button 3: Impose Penalty Fine */}
+                    {/* 3. Impose Penalty Fine (Bottom) */}
                     <button
                       onClick={() => onImposePenalty(issue)}
-                      className="inline-flex items-center justify-center gap-2 px-3.5 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                      className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
                     >
                       <span className="text-xs font-bold leading-none">₹</span>
                       <span>Impose Penalty Fine</span>
