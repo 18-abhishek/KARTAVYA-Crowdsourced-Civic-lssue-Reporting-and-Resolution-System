@@ -1638,14 +1638,27 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                       inflow: w.reported,
                       resolved: w.resolved,
                       rate: parseFloat(w.rate.replace('%', '')),
-                    })) : [...districtList].map((d) => ({
-                      id: d.id,
-                      name: d.name,
-                      officer: d.nodalOfficer.name,
-                      inflow: d.reportedThisWeek,
-                      resolved: d.resolvedThisWeek || Math.round(d.reportedThisWeek * (d.resolutionRate / 100)),
-                      rate: d.resolutionRate,
-                    })))
+                    })) : [...districtList].map((d) => {
+                      const rawReported = d.reportedThisWeek || Math.round(d.totalIssues * 0.6);
+                      const rawResolved =
+                        d.resolvedThisWeek ||
+                        (d.resolutionRate ? Math.round(rawReported * (d.resolutionRate / 100)) : Math.round(rawReported * 0.85));
+                      const boundedResolved = Math.min(rawResolved, Math.max(1, rawReported - 1));
+                      const adjustedReported = Math.max(20, Math.round(rawReported * weekRatio));
+                      const adjustedResolved = Math.min(
+                        Math.max(1, adjustedReported - 1),
+                        Math.max(15, Math.round(boundedResolved * weekRatio))
+                      );
+                      const rate = Number(((adjustedResolved / adjustedReported) * 100).toFixed(1));
+                      return {
+                        id: d.id,
+                        name: d.name,
+                        officer: d.nodalOfficer.name,
+                        inflow: adjustedReported,
+                        resolved: adjustedResolved,
+                        rate,
+                      };
+                    }))
                       .sort((a, b) => {
                         if (resolutionSortKey === 'rate') return b.rate - a.rate;
                         if (resolutionSortKey === 'resolved') return b.resolved - a.resolved;
@@ -1672,10 +1685,10 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                             <span
                               className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                                 item.rate >= 90
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : item.rate >= 85
-                                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : item.rate >= 85
+                                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
                               }`}
                             >
                               {item.rate >= 90 ? 'Top Performer' : item.rate >= 85 ? 'On Target' : 'Needs Focus'}
@@ -1735,23 +1748,29 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                   { dept: 'Sewage & Drainage Systems', compliance: 81.5, avgHrs: 46.5, target: '72h SLA', color: '#d97706' },
                   { dept: 'Electricity & Public Lighting', compliance: 89.0, avgHrs: 24.1, target: '48h SLA', color: '#0284c7' },
                   { dept: 'Drinking Water Supply (Jal Shakti)', compliance: 78.6, avgHrs: 52.0, target: '48h SLA', color: '#dc2626' },
-                ].map((item) => (
-                  <div key={item.dept} className="p-3.5 rounded-xl border border-stone-200/80 bg-stone-50/50 space-y-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-stone-900">{item.dept}</span>
-                        <span className="text-[10px] bg-stone-200 text-stone-700 px-2 py-0.5 rounded font-semibold">{item.target}</span>
+                ].map((item) => {
+                  const compScale = displayResolutionRate / 82.6;
+                  const compliance = Math.min(99, Math.max(60, Number((item.compliance * compScale).toFixed(1))));
+                  const avgScale = displayAvgSlaHours / 28.4;
+                  const avgHrs = Number((item.avgHrs * avgScale).toFixed(1));
+                  return (
+                    <div key={item.dept} className="p-3.5 rounded-xl border border-stone-200/80 bg-stone-50/50 space-y-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-stone-900">{item.dept}</span>
+                          <span className="text-[10px] bg-stone-200 text-stone-700 px-2 py-0.5 rounded font-semibold">{item.target}</span>
+                        </div>
+                        <div className="flex items-center gap-3 font-mono">
+                          <span className="text-stone-500">Avg: <strong className="text-stone-900">{avgHrs}h</strong></span>
+                          <span className="font-bold" style={{ color: item.color }}>{compliance}% on-time</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3 font-mono">
-                        <span className="text-stone-500">Avg: <strong className="text-stone-900">{item.avgHrs}h</strong></span>
-                        <span className="font-bold" style={{ color: item.color }}>{item.compliance}% on-time</span>
+                      <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${compliance}%`, backgroundColor: item.color }} />
                       </div>
                     </div>
-                    <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${item.compliance}%`, backgroundColor: item.color }} />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1762,163 +1781,236 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
         {/* ===================================================================== */}
         {sidebarTab === 'departments' && (
           <div className="space-y-6 animate-in fade-in duration-200">
-            {/* Department Switcher Pills */}
-            <div className="flex flex-wrap gap-2">
-              {[
-                { id: 'waste', name: 'Waste Management', icon: Trash2, count: '2,983' },
-                { id: 'roads', name: 'Roads & Potholes (PWD)', icon: Wrench, count: '2,120' },
-                { id: 'sewage', name: 'Sewage & Drainage', icon: Droplets, count: '1,570' },
-                { id: 'electricity', name: 'Electricity & Lighting (JSEB)', icon: Zap, count: '1,177' },
-              ].map((dept) => {
-                const Icon = dept.icon;
-                const isSelected = selectedDeptId === dept.id;
-                return (
-                  <button
-                    key={dept.id}
-                    onClick={() => setSelectedDeptId(dept.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                      isSelected
-                        ? 'bg-[#c2410c] text-white shadow-xs'
-                        : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{dept.name}</span>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                        isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-600'
-                      }`}
-                    >
-                      {dept.count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Department Profile */}
             {(() => {
-              const deptProfiles: Record<string, any> = {
-                waste: {
-                  name: 'Urban Waste Management & Sanitation Department',
-                  head: 'Dr. Neha Verma, IAS (Mission Director, Swachh Bharat)',
-                  inflow: 2983,
-                  resolved: 2680,
-                  rate: '89.8%',
-                  slaAvg: '18.6 hrs',
-                  teams: '68 Compactor Units, 142 Sweeper Squads',
-                  rating: '4.4 / 5',
-                  topIssues: [
-                    { issue: 'Overflowing Secondary Garbage Dumps', count: 1240, pct: '41.6%' },
-                    { issue: 'Uncollected Door-to-Door Household Waste', count: 890, pct: '29.8%' },
-                    { issue: 'Commercial Market Debris Dumping', count: 520, pct: '17.4%' },
-                    { issue: 'Animal Carcass & Bio-waste Disposal', count: 333, pct: '11.2%' },
+              const getDeptConfig = (name: string) => {
+                const n = name.toLowerCase();
+                if (n.includes('waste')) {
+                  return {
+                    id: 'waste',
+                    shortName: 'Waste Management',
+                    icon: Trash2,
+                    fullName: 'Urban Waste Management & Sanitation Department',
+                    head: 'Dr. Neha Verma, IAS (Mission Director, Swachh Bharat)',
+                    teams: '68 Compactor Units, 142 Sweeper Squads',
+                    baseRating: 4.4,
+                    baseSlaHours: 18.6,
+                    rateFactor: 1.087,
+                    subCategories: [
+                      { issue: 'Overflowing Secondary Garbage Dumps', ratio: 0.416 },
+                      { issue: 'Uncollected Door-to-Door Household Waste', ratio: 0.298 },
+                      { issue: 'Commercial Market Debris Dumping', ratio: 0.174 },
+                      { issue: 'Animal Carcass & Bio-waste Disposal', ratio: 0.112 },
+                    ],
+                  };
+                }
+                if (n.includes('road') || n.includes('pothole')) {
+                  return {
+                    id: 'roads',
+                    shortName: 'Roads & Potholes (PWD)',
+                    icon: Wrench,
+                    fullName: 'Road Construction Department (PWD Roads)',
+                    head: 'Er. Sunil Kumar Singh (Engineer-in-Chief, PWD)',
+                    teams: '32 Cold-Mix Bitumen Vans, 14 Roller Squads',
+                    baseRating: 4.1,
+                    baseSlaHours: 38.2,
+                    rateFactor: 0.994,
+                    subCategories: [
+                      { issue: 'Arterial Road Potholes > 1 foot depth', ratio: 0.462 },
+                      { issue: 'Trench Digging without Barricades', ratio: 0.255 },
+                      { issue: 'Broken Culvert & Bridge Joint Cracks', ratio: 0.184 },
+                      { issue: 'Paver Block Sinking on Footpaths', ratio: 0.099 },
+                    ],
+                  };
+                }
+                if (n.includes('sewage') || n.includes('drain')) {
+                  return {
+                    id: 'sewage',
+                    shortName: 'Sewage & Drainage',
+                    icon: Droplets,
+                    fullName: 'Drinking Water & Sanitation Department (Drainage Wing)',
+                    head: 'Shri Manoj Kumar, IAS (Secretary, DW&S)',
+                    teams: '24 Super-Sucker Jetting Tankers, 8 Desilting Cranes',
+                    baseRating: 3.9,
+                    baseSlaHours: 46.5,
+                    rateFactor: 0.987,
+                    subCategories: [
+                      { issue: 'Underground Sewer Line Choke & Backflow', ratio: 0.459 },
+                      { issue: 'Open Storm Drain Overflowing during Rain', ratio: 0.306 },
+                      { issue: 'Broken Concrete Manhole Slabs', ratio: 0.153 },
+                      { issue: 'Stagnant Water Vector Breeding Sites', ratio: 0.082 },
+                    ],
+                  };
+                }
+                if (n.includes('electric') || n.includes('light')) {
+                  return {
+                    id: 'electricity',
+                    shortName: 'Electricity & Lighting (JSEB)',
+                    icon: Zap,
+                    fullName: 'Jharkhand State Electricity Board (JSEB Distribution)',
+                    head: 'Shri Rahul Purwar, IAS (Managing Director, JBVNL)',
+                    teams: '48 Lineman Mobile Emergency Units',
+                    baseRating: 4.3,
+                    baseSlaHours: 24.1,
+                    rateFactor: 1.077,
+                    subCategories: [
+                      { issue: 'Street Light Inoperative > 48 Hours', ratio: 0.493 },
+                      { issue: 'Sagging 11kV Overhead Power Cables', ratio: 0.272 },
+                      { issue: 'Distribution Transformer Oil Leakage', ratio: 0.153 },
+                      { issue: 'Damaged Electric Feeder Poles', ratio: 0.082 },
+                    ],
+                  };
+                }
+                return {
+                  id: 'water',
+                  shortName: 'Drinking Water Supply',
+                  icon: Droplets,
+                  fullName: 'Drinking Water & Public Health Engineering Department',
+                  head: 'Shri Rajesh Sharma, IAS (Director, DW&S)',
+                  teams: '18 Tanker Fleets, 26 Valve Repair Squads',
+                  baseRating: 4.2,
+                  baseSlaHours: 32.4,
+                  rateFactor: 1.02,
+                  subCategories: [
+                    { issue: 'Main Pipeline Leakage & Water Wastage', ratio: 0.440 },
+                    { issue: 'Low Pressure in Municipal Supply', ratio: 0.280 },
+                    { issue: 'Contaminated or Turbid Tap Water', ratio: 0.180 },
+                    { issue: 'Defective Public Standpost Tap', ratio: 0.100 },
                   ],
-                },
-                roads: {
-                  name: 'Road Construction Department (PWD Roads)',
-                  head: 'Er. Sunil Kumar Singh (Engineer-in-Chief, PWD)',
-                  inflow: 2120,
-                  resolved: 1740,
-                  rate: '82.1%',
-                  slaAvg: '38.2 hrs',
-                  teams: '32 Cold-Mix Bitumen Vans, 14 Roller Squads',
-                  rating: '4.1 / 5',
-                  topIssues: [
-                    { issue: 'Arterial Road Potholes > 1 foot depth', count: 980, pct: '46.2%' },
-                    { issue: 'Trench Digging without Barricades', count: 540, pct: '25.5%' },
-                    { issue: 'Broken Culvert & Bridge Joint Cracks', count: 390, pct: '18.4%' },
-                    { issue: 'Paver Block Sinking on Footpaths', count: 210, pct: '9.9%' },
-                  ],
-                },
-                sewage: {
-                  name: 'Drinking Water & Sanitation Department (Drainage Wing)',
-                  head: 'Shri Manoj Kumar, IAS (Secretary, DW&S)',
-                  inflow: 1570,
-                  resolved: 1280,
-                  rate: '81.5%',
-                  slaAvg: '46.5 hrs',
-                  teams: '24 Super-Sucker Jetting Tankers, 8 Desilting Cranes',
-                  rating: '3.9 / 5',
-                  topIssues: [
-                    { issue: 'Underground Sewer Line Choke & Backflow', count: 720, pct: '45.9%' },
-                    { issue: 'Open Storm Drain Overflowing during Rain', count: 480, pct: '30.6%' },
-                    { issue: 'Broken Concrete Manhole Slabs', count: 240, pct: '15.3%' },
-                    { issue: 'Stagnant Water Vector Breeding Sites', count: 130, pct: '8.2%' },
-                  ],
-                },
-                electricity: {
-                  name: 'Jharkhand State Electricity Board (JSEB Distribution)',
-                  head: 'Shri Rahul Purwar, IAS (Managing Director, JBVNL)',
-                  inflow: 1177,
-                  resolved: 1048,
-                  rate: '89.0%',
-                  slaAvg: '24.1 hrs',
-                  teams: '48 Lineman Mobile Emergency Units',
-                  rating: '4.3 / 5',
-                  topIssues: [
-                    { issue: 'Street Light Inoperative > 48 Hours', count: 580, pct: '49.3%' },
-                    { issue: 'Sagging 11kV Overhead Power Cables', count: 320, pct: '27.2%' },
-                    { issue: 'Distribution Transformer Oil Leakage', count: 180, pct: '15.3%' },
-                    { issue: 'Damaged Electric Feeder Poles', count: 97, pct: '8.2%' },
-                  ],
-                },
+                };
               };
 
-              const prof = deptProfiles[selectedDeptId] || deptProfiles.waste;
+              // Map active departments in displayDeptStats to dynamic department data
+              const activeDepts = displayDeptStats.map((stat) => {
+                const config = getDeptConfig(stat.name);
+                const inflow = stat.count;
+
+                // Department resolution rate tied to the active week/city resolution rate
+                const calculatedRate = Math.min(
+                  96.0,
+                  Math.max(55.0, Number((displayResolutionRate * config.rateFactor).toFixed(1)))
+                );
+                // Resolved count is strictly less than inflow (rate < 100%)
+                const resolved = Math.min(Math.max(1, inflow - 1), Math.round(inflow * (calculatedRate / 100)));
+                const rate = `${((resolved / inflow) * 100).toFixed(1)}%`;
+
+                const slaTime = (config.baseSlaHours * (displayAvgSlaHours / 28.4)).toFixed(1);
+                const rating = Math.min(4.9, Math.max(3.5, Number((config.baseRating * (displayCitizenScore / 4.2)).toFixed(1)))).toFixed(1);
+
+                // Subcategory breakdown scaled dynamically to the current inflow
+                let remainingCount = inflow;
+                const topIssues = config.subCategories.map((sub, idx) => {
+                  const isLast = idx === config.subCategories.length - 1;
+                  const count = isLast ? Math.max(0, remainingCount) : Math.round(inflow * sub.ratio);
+                  remainingCount -= count;
+                  const pct = `${((count / inflow) * 100).toFixed(1)}%`;
+                  return { issue: sub.issue, count, pct };
+                });
+
+                return {
+                  id: config.id,
+                  name: config.shortName,
+                  fullName: config.fullName,
+                  icon: config.icon,
+                  head: config.head,
+                  teams: config.teams,
+                  inflow,
+                  resolved,
+                  rate,
+                  slaAvg: `${slaTime} hrs`,
+                  rating: `${rating} / 5`,
+                  topIssues,
+                };
+              });
+
+              // Active selected department or default to first department
+              const selectedDept = activeDepts.find((d) => d.id === selectedDeptId) || activeDepts[0];
 
               return (
-                <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-stone-100">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-5 h-5 text-[#c2410c]" />
-                        <h3 className="text-base font-bold text-stone-900">{prof.name}</h3>
+                <div className="space-y-6">
+                  {/* Department Switcher Pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {activeDepts.map((dept) => {
+                      const Icon = dept.icon;
+                      const isSelected = selectedDept.id === dept.id;
+                      return (
+                        <button
+                          key={dept.id}
+                          onClick={() => setSelectedDeptId(dept.id)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                            isSelected
+                              ? 'bg-[#c2410c] text-white shadow-xs'
+                              : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
+                          }`}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{dept.name}</span>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                              isSelected ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-600'
+                            }`}
+                          >
+                            {dept.inflow.toLocaleString()}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Department Profile */}
+                  <div className="bg-white rounded-2xl border border-stone-200 p-6 shadow-xs space-y-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-stone-100">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-5 h-5 text-[#c2410c]" />
+                          <h3 className="text-base font-bold text-stone-900">{selectedDept.fullName}</h3>
+                        </div>
+                        <p className="text-xs text-stone-500 font-medium mt-0.5">Nodal Head: {selectedDept.head}</p>
                       </div>
-                      <p className="text-xs text-stone-500 font-medium mt-0.5">Nodal Head: {prof.head}</p>
+                      <div className="bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200 text-center">
+                        <span className="text-[10px] text-stone-500 block font-semibold">Active Teams</span>
+                        <span className="text-xs font-bold text-stone-800">{selectedDept.teams}</span>
+                      </div>
                     </div>
-                    <div className="bg-stone-50 px-3 py-1.5 rounded-xl border border-stone-200 text-center">
-                      <span className="text-[10px] text-stone-500 block font-semibold">Active Teams</span>
-                      <span className="text-xs font-bold text-stone-800">{prof.teams}</span>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
-                      <span className="text-[11px] text-stone-500 font-semibold block">Weekly Inflow</span>
-                      <span className="text-lg font-bold font-mono text-stone-900">{prof.inflow}</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
+                        <span className="text-[11px] text-stone-500 font-semibold block">Weekly Inflow</span>
+                        <span className="text-lg font-bold font-mono text-stone-900">{selectedDept.inflow.toLocaleString()}</span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
+                        <span className="text-[11px] text-stone-500 font-semibold block">Resolved</span>
+                        <span className="text-lg font-bold font-mono text-emerald-600">
+                          {selectedDept.resolved.toLocaleString()} ({selectedDept.rate})
+                        </span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
+                        <span className="text-[11px] text-stone-500 font-semibold block">Average SLA Time</span>
+                        <span className="text-lg font-bold font-mono text-[#c2410c]">{selectedDept.slaAvg}</span>
+                      </div>
+                      <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
+                        <span className="text-[11px] text-stone-500 font-semibold block">Citizen Rating</span>
+                        <span className="text-lg font-bold font-mono text-amber-600">{selectedDept.rating} ★</span>
+                      </div>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
-                      <span className="text-[11px] text-stone-500 font-semibold block">Resolved</span>
-                      <span className="text-lg font-bold font-mono text-emerald-600">{prof.resolved} ({prof.rate})</span>
-                    </div>
-                    <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
-                      <span className="text-[11px] text-stone-500 font-semibold block">Average SLA Time</span>
-                      <span className="text-lg font-bold font-mono text-[#c2410c]">{prof.slaAvg}</span>
-                    </div>
-                    <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80">
-                      <span className="text-[11px] text-stone-500 font-semibold block">Citizen Rating</span>
-                      <span className="text-lg font-bold font-mono text-amber-600">{prof.rating} ★</span>
-                    </div>
-                  </div>
 
-                  <div className="space-y-3">
-                    <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider">Top Grievance Categories</h4>
-                    <div className="space-y-2.5">
-                      {prof.topIssues.map((sub: any) => (
-                        <div key={sub.issue} className="space-y-1">
-                          <div className="flex items-center justify-between text-xs font-semibold">
-                            <span className="text-stone-700">{sub.issue}</span>
-                            <div className="flex items-center gap-2 font-mono">
-                              <span className="text-stone-900 font-bold">{sub.count}</span>
-                              <span className="text-stone-400 text-[11px]">({sub.pct})</span>
+                    <div className="space-y-3">
+                      <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider">Top Grievance Categories</h4>
+                      <div className="space-y-2.5">
+                        {selectedDept.topIssues.map((sub) => (
+                          <div key={sub.issue} className="space-y-1">
+                            <div className="flex items-center justify-between text-xs font-semibold">
+                              <span className="text-stone-700">{sub.issue}</span>
+                              <div className="flex items-center gap-2 font-mono">
+                                <span className="text-stone-900 font-bold">{sub.count.toLocaleString()}</span>
+                                <span className="text-stone-400 text-[11px]">({sub.pct})</span>
+                              </div>
+                            </div>
+                            <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+                              <div className="bg-[#c2410c] h-full rounded-full" style={{ width: sub.pct }} />
                             </div>
                           </div>
-                          <div className="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                            <div className="bg-[#c2410c] h-full rounded-full" style={{ width: sub.pct }} />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
