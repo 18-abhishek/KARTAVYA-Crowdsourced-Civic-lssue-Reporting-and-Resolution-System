@@ -82,6 +82,16 @@ interface CityReportData {
   wards: WardData[];
   deptStats: { name: string; count: number; percentage: number; color: string }[];
   slaPoints: { day: string; avgHours: number }[];
+  citizenReviews?: CitizenFeedbackReview[];
+}
+
+interface CitizenFeedbackReview {
+  name: string;
+  ward: string;
+  category: string;
+  rating: number;
+  time: string;
+  comment: string;
 }
 
 interface WeeklyReportOption {
@@ -105,6 +115,7 @@ interface WeeklyReportOption {
   positiveRatingPercent: number;
   deptStats: { name: string; count: number; percentage: number; color: string }[];
   slaPoints: { day: string; avgHours: number }[];
+  citizenReviews: CitizenFeedbackReview[];
 }
 
 const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
@@ -146,6 +157,56 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { day: 'Sat', avgHours: 21.0 },
       { day: 'Sun', avgHours: 17.5 },
     ],
+    citizenReviews: [
+      {
+        name: 'Rameshwar Mahato',
+        ward: 'Ward 29, Kanke Road, Ranchi',
+        category: 'Roadways',
+        rating: 5,
+        time: '14 Aug 2025',
+        comment: 'Pothole was repaired within 24 hours of reporting! Smooth bitumen leveling restored along Kanke stretch.',
+      },
+      {
+        name: 'Sunita Devi',
+        ward: 'Harmu Housing Colony, Ward 18, Ranchi',
+        category: 'Electricity',
+        rating: 4,
+        time: '13 Aug 2025',
+        comment: 'Street light fixed and sagging wires tightened properly. Good response from lineman team.',
+      },
+      {
+        name: 'Geeta Rani',
+        ward: 'Doranda, Ward 35, Ranchi',
+        category: 'Sewage',
+        rating: 5,
+        time: '12 Aug 2025',
+        comment: 'Suction jetting tanker cleared the clogged drain near Doranda bazaar before evening market hours.',
+      },
+      {
+        name: 'Amit Kumar Verma',
+        ward: 'Lalpur Chowk, Ward 22, Ranchi',
+        category: 'Waste Management',
+        rating: 4,
+        time: '11 Aug 2025',
+        comment: 'Compactor vehicle arrived by afternoon and cleared the entire market garbage dump.',
+      },
+      {
+        name: 'Rohit Bhagat',
+        ward: 'Bariatu, Ward 4, Ranchi',
+        category: 'Roadways',
+        rating: 3,
+        time: '10 Aug 2025',
+        comment: 'Pothole filled with crushed stone, but asphalt sealing layer took two extra days.',
+      },
+      {
+        name: 'Mohan Lal Das',
+        ward: 'Ratu Road, Ward 12, Ranchi',
+        category: 'Sewage',
+        rating: 2,
+        time: '09 Aug 2025',
+        comment: 'Storm water drain overflowed twice during morning showers before the drainage squad arrived.',
+      },
+    ],
   },
   Dhanbad: {
     cityName: 'Dhanbad',
@@ -183,6 +244,56 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { day: 'Fri', avgHours: 33.4 },
       { day: 'Sat', avgHours: 25.6 },
       { day: 'Sun', avgHours: 21.0 },
+    ],
+    citizenReviews: [
+      {
+        name: 'Prakash Chandra Jha',
+        ward: 'Bank More, Ward 22, Dhanbad',
+        category: 'Sewage',
+        rating: 5,
+        time: '14 Aug 2025',
+        comment: 'Emergency drainage jetting van cleared knee-deep waterlogging near Bank More underpass.',
+      },
+      {
+        name: 'Binod Hansda',
+        ward: 'Station Road, Ward 14, Dhanbad',
+        category: 'Electricity',
+        rating: 4,
+        time: '13 Aug 2025',
+        comment: 'New LED streetlights installed along station road. Great visibility for night train commuters.',
+      },
+      {
+        name: 'Sanjay Sengupta',
+        ward: 'Hirapur, Ward 5, Dhanbad',
+        category: 'Roadways',
+        rating: 4,
+        time: '12 Aug 2025',
+        comment: 'Colliery road crater patched smoothly by municipal road maintenance squad.',
+      },
+      {
+        name: 'Manisha Rawat',
+        ward: 'Saraidhela, Ward 8, Dhanbad',
+        category: 'Waste Management',
+        rating: 5,
+        time: '11 Aug 2025',
+        comment: 'Door-to-door segregation vehicle arrives punctually at 7:30 AM every morning.',
+      },
+      {
+        name: 'Harishankar Tiwari',
+        ward: 'Jharia Road, Ward 31, Dhanbad',
+        category: 'Electricity',
+        rating: 3,
+        time: '10 Aug 2025',
+        comment: 'Feeder line repaired, but street lights in our back alley are still flickering occasionally.',
+      },
+      {
+        name: 'Niranjan Murmu',
+        ward: 'Bank More, Ward 22, Dhanbad',
+        category: 'Electricity',
+        rating: 2,
+        time: '09 Aug 2025',
+        comment: 'Transformer outage resolved after a 24-hour delay. Faster triage needed during monsoon storms.',
+      },
     ],
   },
   Jamshedpur: {
@@ -222,6 +333,56 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { day: 'Sat', avgHours: 24.1 },
       { day: 'Sun', avgHours: 21.8 },
     ],
+    citizenReviews: [
+      {
+        name: 'Dr. Vivek Sinha',
+        ward: 'Bistupur Market Sector, Jamshedpur',
+        category: 'Sewage',
+        rating: 5,
+        time: '14 Aug 2025',
+        comment: 'Super-sucker jetting machine arrived on time. Cleared manhole blockage completely.',
+      },
+      {
+        name: 'Naveen Kujur',
+        ward: 'Sakchi Sector 4, Jamshedpur',
+        category: 'Roadways',
+        rating: 5,
+        time: '13 Aug 2025',
+        comment: 'Mobile pothole repair van leveled Sakchi connecting road depression in under 3 hours!',
+      },
+      {
+        name: 'Manoj Tirkey',
+        ward: 'Kadma Zone 2, Jamshedpur',
+        category: 'Roadways',
+        rating: 4,
+        time: '12 Aug 2025',
+        comment: 'Cold-mix asphalt team repaired sharp edge crater near school before morning traffic.',
+      },
+      {
+        name: 'Anjali Mukhopadhyay',
+        ward: 'Sonari Town, Jamshedpur',
+        category: 'Waste Management',
+        rating: 5,
+        time: '11 Aug 2025',
+        comment: 'Green waste and fallen branches from storm removed promptly by TSUISL sanitation squad.',
+      },
+      {
+        name: 'Suraj Kumar',
+        ward: 'Golmuri Sector 1, Jamshedpur',
+        category: 'Sewage',
+        rating: 3,
+        time: '10 Aug 2025',
+        comment: 'Sewer jetting cleared main line, but roadside open drain still has silt deposits.',
+      },
+      {
+        name: 'Bikram Mahali',
+        ward: 'Sakchi Sector 4, Jamshedpur',
+        category: 'Waste Management',
+        rating: 2,
+        time: '09 Aug 2025',
+        comment: 'Bins emptied, but foul odor remains. Bleaching powder needs to be sprinkled regularly.',
+      },
+    ],
   },
   Bokaro: {
     cityName: 'Bokaro',
@@ -259,6 +420,56 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { day: 'Fri', avgHours: 22.0 },
       { day: 'Sat', avgHours: 18.2 },
       { day: 'Sun', avgHours: 14.5 },
+    ],
+    citizenReviews: [
+      {
+        name: 'Pooja Kumari',
+        ward: 'Sector 4 City Centre, Bokaro',
+        category: 'Waste Management',
+        rating: 5,
+        time: '14 Aug 2025',
+        comment: 'Door-to-door sanitation truck came first thing in the morning after Kartavya alert.',
+      },
+      {
+        name: 'Deepak Agarwal',
+        ward: 'Chas Ward 4, Bokaro',
+        category: 'Roadways',
+        rating: 5,
+        time: '13 Aug 2025',
+        comment: 'Bitumen patch van did clean work on bus stand crater. Smooth ride restored.',
+      },
+      {
+        name: 'Vijay Kumar Gupta',
+        ward: 'Sector 1 Market, Bokaro',
+        category: 'Waste Management',
+        rating: 4,
+        time: '12 Aug 2025',
+        comment: 'Market vegetable waste cleared by compactor unit promptly. App tracking worked well.',
+      },
+      {
+        name: 'Swati Soren',
+        ward: 'Chas Ward 11, Bokaro',
+        category: 'Electricity',
+        rating: 4,
+        time: '11 Aug 2025',
+        comment: 'Overhead cable tension adjusted and tree branches trimmed away from power line.',
+      },
+      {
+        name: 'Rajeev Ranjan',
+        ward: 'Chas Ward 11, Bokaro',
+        category: 'Sewage',
+        rating: 3,
+        time: '10 Aug 2025',
+        comment: 'Drain desilting was completed, but sludge was left beside pavement for a day.',
+      },
+      {
+        name: 'Kishore Mandal',
+        ward: 'Sector 9 Ext, Bokaro',
+        category: 'Roadways',
+        rating: 2,
+        time: '09 Aug 2025',
+        comment: 'Loose gravel was dumped on pothole without roller compaction; needs proper finishing.',
+      },
     ],
   },
   Deoghar: {
@@ -298,6 +509,56 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { day: 'Sat', avgHours: 22.0 },
       { day: 'Sun', avgHours: 15.5 },
     ],
+    citizenReviews: [
+      {
+        name: 'Sudhir Kumar Singh',
+        ward: 'Jasidih Jn Area, Deoghar',
+        category: 'Electricity',
+        rating: 5,
+        time: '14 Aug 2025',
+        comment: 'High tension wire isolated and repaired promptly by JSEB emergency squad.',
+      },
+      {
+        name: 'Meena Hembrom',
+        ward: 'Tower Chowk Sector, Deoghar',
+        category: 'Waste Management',
+        rating: 5,
+        time: '13 Aug 2025',
+        comment: 'Special pilgrimage sanitation workers cleared wet refuse quickly despite crowd surges.',
+      },
+      {
+        name: 'Baidyanath Sharma',
+        ward: 'Baidyanath Dham Rd, Deoghar',
+        category: 'Roadways',
+        rating: 4,
+        time: '12 Aug 2025',
+        comment: 'Pilgrim corridor potholes leveled smoothly before the weekend rush.',
+      },
+      {
+        name: 'Satyanarayan Prasad',
+        ward: 'Castairs Town, Deoghar',
+        category: 'Electricity',
+        rating: 4,
+        time: '11 Aug 2025',
+        comment: 'Transformer oil leakage replaced promptly; power supply stabilized.',
+      },
+      {
+        name: 'Gita Kumari',
+        ward: 'Shivganga Ward 2, Deoghar',
+        category: 'Sewage',
+        rating: 3,
+        time: '10 Aug 2025',
+        comment: 'Drain overflow stopped after suction tanker arrived. Regular cleaning needed.',
+      },
+      {
+        name: 'Anuradha Soren',
+        ward: 'Baidyanath Dham Rd, Deoghar',
+        category: 'Roadways',
+        rating: 2,
+        time: '09 Aug 2025',
+        comment: 'Crater near temple crossing barricaded quickly, but asphalt top coat was delayed.',
+      },
+    ],
   },
   Hazaribagh: {
     cityName: 'Hazaribagh',
@@ -335,6 +596,56 @@ const CITY_METRICS_DATABASE: Record<string, CityReportData> = {
       { day: 'Fri', avgHours: 31.0 },
       { day: 'Sat', avgHours: 26.2 },
       { day: 'Sun', avgHours: 18.0 },
+    ],
+    citizenReviews: [
+      {
+        name: 'Nandini Singh',
+        ward: 'Matwari Ward 14, Hazaribagh',
+        category: 'Water Supply',
+        rating: 5,
+        time: '14 Aug 2025',
+        comment: 'Drinking water pipeline crack on Main Road was fixed. Tanker supplied water during repair.',
+      },
+      {
+        name: 'Rajeshwar Prasad',
+        ward: 'Main Road Ward 7, Hazaribagh',
+        category: 'Roadways',
+        rating: 5,
+        time: '13 Aug 2025',
+        comment: 'Deep trench dug for utility line filled and rolled level with road surface.',
+      },
+      {
+        name: 'Sandhya Toppo',
+        ward: 'Korrah Ward 9, Hazaribagh',
+        category: 'Waste Management',
+        rating: 4,
+        time: '12 Aug 2025',
+        comment: 'Overflowing dustbin near vegetable market cleared by sanitation tractor.',
+      },
+      {
+        name: 'Vikash Kumar',
+        ward: 'Bada Bazar Ward 3, Hazaribagh',
+        category: 'Electricity',
+        rating: 4,
+        time: '11 Aug 2025',
+        comment: 'Defective sodium street lamp replaced with bright energy-efficient LED fixture.',
+      },
+      {
+        name: 'Arvind Pandey',
+        ward: 'NawabGanj Ward 2, Hazaribagh',
+        category: 'Water Supply',
+        rating: 3,
+        time: '10 Aug 2025',
+        comment: 'Water pressure restored, though supply was delayed by 3 hours.',
+      },
+      {
+        name: 'Sunita Hansda',
+        ward: 'Korrah Ward 9, Hazaribagh',
+        category: 'Sewage',
+        rating: 2,
+        time: '09 Aug 2025',
+        comment: 'Open drain cleaning was requested twice before ward inspector visited site.',
+      },
     ],
   },
 };
@@ -375,6 +686,72 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
       { day: 'Sat', avgHours: 26.1 },
       { day: 'Sun', avgHours: 22.4 },
     ],
+    citizenReviews: [
+      {
+        name: 'Rameshwar Mahato',
+        ward: 'Ward 29, Kanke Road, Ranchi',
+        category: 'Roadways',
+        rating: 5,
+        time: '14 Aug 2025',
+        comment: 'Pothole was repaired within 24 hours of reporting! Smooth bitumen leveling restored along Kanke arterial stretch.',
+      },
+      {
+        name: 'Sunita Devi',
+        ward: 'Harmu Housing Colony, Ward 18, Ranchi',
+        category: 'Electricity',
+        rating: 4,
+        time: '13 Aug 2025',
+        comment: 'Street light fixed and sagging wires tightened properly. Good response from the lineman emergency unit.',
+      },
+      {
+        name: 'Dr. Vivek Sinha',
+        ward: 'Bistupur Market Sector, Jamshedpur',
+        category: 'Sewage',
+        rating: 5,
+        time: '12 Aug 2025',
+        comment: 'Super-sucker jetting machine arrived on time. Cleared the manhole blockage and drained stagnant monsoon overflow.',
+      },
+      {
+        name: 'Amit Kumar Verma',
+        ward: 'Lalpur Chowk, Ward 22, Ranchi',
+        category: 'Waste Management',
+        rating: 4,
+        time: '11 Aug 2025',
+        comment: 'Compactor vehicle arrived by afternoon and cleared the entire market garbage dump. Much cleaner now.',
+      },
+      {
+        name: 'Pooja Kumari',
+        ward: 'Sector 4 City Centre, Bokaro',
+        category: 'Waste Management',
+        rating: 5,
+        time: '11 Aug 2025',
+        comment: 'Door-to-door sanitation truck missed our street yesterday, but after reporting on Kartavya, team came first thing in the morning.',
+      },
+      {
+        name: 'Binod Hansda',
+        ward: 'Station Road, Ward 14, Dhanbad',
+        category: 'Electricity',
+        rating: 3,
+        time: '10 Aug 2025',
+        comment: 'Street light was finally replaced, but it took nearly 4 days to assign the lineman squad in our lane.',
+      },
+      {
+        name: 'Rajeev Ranjan',
+        ward: 'Chas Ward 11, Bokaro',
+        category: 'Sewage',
+        rating: 2,
+        time: '09 Aug 2025',
+        comment: 'Drain desilting was completed, but the sludge was left piled beside the pavement for two days before collection.',
+      },
+      {
+        name: 'Anuradha Soren',
+        ward: 'Baidyanath Dham Rd, Ward 6, Deoghar',
+        category: 'Roadways',
+        rating: 1,
+        time: '08 Aug 2025',
+        comment: 'Waterfilled crater near temple crossing was only barricaded with red tape, permanent patch work is still pending.',
+      },
+    ],
   },
   {
     id: 'w32',
@@ -407,6 +784,72 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
       { day: 'Fri', avgHours: 39.4 },
       { day: 'Sat', avgHours: 30.2 },
       { day: 'Sun', avgHours: 25.8 },
+    ],
+    citizenReviews: [
+      {
+        name: 'Prakash Chandra Jha',
+        ward: 'Bank More, Ward 22, Dhanbad',
+        category: 'Sewage',
+        rating: 5,
+        time: '07 Aug 2025',
+        comment: 'Emergency drainage jetting van cleared the knee-deep waterlogging near Bank More underpass within 4 hours.',
+      },
+      {
+        name: 'Kavita Soren',
+        ward: 'Morabadi Ground, Ward 4, Ranchi',
+        category: 'Waste Management',
+        rating: 4,
+        time: '06 Aug 2025',
+        comment: 'Rain washed secondary dump onto road. Quick response from municipal health officer to spray disinfectant and haul waste.',
+      },
+      {
+        name: 'Manoj Tirkey',
+        ward: 'Kadma Zone 2, Jamshedpur',
+        category: 'Roadways',
+        rating: 5,
+        time: '05 Aug 2025',
+        comment: 'Cold-mix asphalt team repaired sharp edge crater near school before morning traffic. Great proactive work.',
+      },
+      {
+        name: 'Sanjay Sengupta',
+        ward: 'Hirapur, Ward 5, Dhanbad',
+        category: 'Roadways',
+        rating: 3,
+        time: '04 Aug 2025',
+        comment: 'Erosion repair was done quickly with sandbags and gravel, but proper bituminous resurfacing is still required.',
+      },
+      {
+        name: 'Geeta Rani',
+        ward: 'Doranda, Ward 35, Ranchi',
+        category: 'Sewage',
+        rating: 4,
+        time: '03 Aug 2025',
+        comment: 'Storm drain inlet was blocked by tree branches. Sanitation workers cleared the blockage in heavy rain.',
+      },
+      {
+        name: 'Alok Pandey',
+        ward: 'Saraidhela, Ward 8, Dhanbad',
+        category: 'Electricity',
+        rating: 2,
+        time: '02 Aug 2025',
+        comment: 'Transformer spark triggered tripping during storm. Electricity restored after 18 hours; helpline was busy.',
+      },
+      {
+        name: 'Bikram Mahali',
+        ward: 'Sakchi Sector 4, Jamshedpur',
+        category: 'Waste Management',
+        rating: 3,
+        time: '02 Aug 2025',
+        comment: 'Bins emptied, but foul odor remains. Bleaching powder needs to be sprinkled regularly during monsoon.',
+      },
+      {
+        name: 'Mohan Lal Das',
+        ward: 'Ratu Road, Ward 12, Ranchi',
+        category: 'Sewage',
+        rating: 1,
+        time: '01 Aug 2025',
+        comment: 'Backflow into residential compound not addressed within 48h SLA. Water level dropped only when rain stopped.',
+      },
     ],
   },
   {
@@ -441,6 +884,72 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
       { day: 'Sat', avgHours: 34.0 },
       { day: 'Sun', avgHours: 28.5 },
     ],
+    citizenReviews: [
+      {
+        name: 'Naveen Kujur',
+        ward: 'Bistupur Market Sector, Jamshedpur',
+        category: 'Roadways',
+        rating: 5,
+        time: '31 Jul 2025',
+        comment: 'Mobile pothole repair van arrived and leveled the Sakchi-Bistupur connecting road depression in under 3 hours!',
+      },
+      {
+        name: 'Deepak Agarwal',
+        ward: 'Chas Ward 4, Bokaro',
+        category: 'Roadways',
+        rating: 4,
+        time: '30 Jul 2025',
+        comment: 'Bitumen patch van did clean work on the bus stand crater. Smooth ride restored for two-wheelers.',
+      },
+      {
+        name: 'Anjali Mukhopadhyay',
+        ward: 'Sonari Town, Jamshedpur',
+        category: 'Waste Management',
+        rating: 5,
+        time: '29 Jul 2025',
+        comment: 'Green waste and fallen branches from monsoon storm removed promptly. Clean footpaths now.',
+      },
+      {
+        name: 'Harishankar Tiwari',
+        ward: 'Jharia Road, Ward 31, Dhanbad',
+        category: 'Electricity',
+        rating: 3,
+        time: '28 Jul 2025',
+        comment: 'Feeder line repaired, but street lights in our back alley are still flickering on and off.',
+      },
+      {
+        name: 'Nandini Singh',
+        ward: 'Matwari, Ward 14, Hazaribagh',
+        category: 'Water Supply',
+        rating: 4,
+        time: '27 Jul 2025',
+        comment: 'Drinking water pipeline crack on Main Road was fixed. Tanker supplied water during the maintenance shutdown.',
+      },
+      {
+        name: 'Pradeep Murmu',
+        ward: 'Station Road, Ward 14, Dhanbad',
+        category: 'Waste Management',
+        rating: 2,
+        time: '26 Jul 2025',
+        comment: 'Door to door collection skipped 3 days in a row due to vehicle breakdown before a replacement van came.',
+      },
+      {
+        name: 'Suraj Kumar',
+        ward: 'Golmuri Sector 1, Jamshedpur',
+        category: 'Sewage',
+        rating: 3,
+        time: '26 Jul 2025',
+        comment: 'Sewer jetting cleared main line, but roadside open drain still has silt deposits.',
+      },
+      {
+        name: 'Kishore Mandal',
+        ward: 'Sector 9 Ext, Bokaro',
+        category: 'Roadways',
+        rating: 1,
+        time: '25 Jul 2025',
+        comment: 'Loose gravel was dumped on pothole without steam roller compaction, stones flying into car windshields.',
+      },
+    ],
   },
   {
     id: 'w30',
@@ -473,6 +982,72 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
       { day: 'Fri', avgHours: 46.8 },
       { day: 'Sat', avgHours: 38.5 },
       { day: 'Sun', avgHours: 32.8 },
+    ],
+    citizenReviews: [
+      {
+        name: 'Sudhir Kumar Singh',
+        ward: 'Jasidih Jn Area, Deoghar',
+        category: 'Electricity',
+        rating: 5,
+        time: '24 Jul 2025',
+        comment: 'High tension wire snapped near station market was isolated and repaired promptly by JSEB emergency squad.',
+      },
+      {
+        name: 'Meena Hembrom',
+        ward: 'Tower Chowk Sector, Deoghar',
+        category: 'Waste Management',
+        rating: 4,
+        time: '23 Jul 2025',
+        comment: 'Special pilgrimage sanitation workers cleared wet refuse quickly despite heavy continuous rainfall.',
+      },
+      {
+        name: 'Rohit Bhagat',
+        ward: 'Bariatu, Ward 4, Ranchi',
+        category: 'Roadways',
+        rating: 5,
+        time: '22 Jul 2025',
+        comment: 'Cave-in near hospital approach road was barricaded within 45 mins and cold-patch filled by night.',
+      },
+      {
+        name: 'Satyanarayan Prasad',
+        ward: 'Castairs Town, Deoghar',
+        category: 'Electricity',
+        rating: 3,
+        time: '21 Jul 2025',
+        comment: 'Transformer oil leakage took 2 days to get replaced, but power supply is finally stable now.',
+      },
+      {
+        name: 'Gita Kumari',
+        ward: 'Shivganga, Ward 2, Deoghar',
+        category: 'Sewage',
+        rating: 2,
+        time: '20 Jul 2025',
+        comment: 'Overflow from open drain entered footpath during peak morning crowd. Drain desilting should have been done pre-monsoon.',
+      },
+      {
+        name: 'Arjun Mahto',
+        ward: 'Main Road, Ward 12, Ranchi',
+        category: 'Electricity',
+        rating: 3,
+        time: '20 Jul 2025',
+        comment: 'Substation trip resolved, but fluctuating voltage caused our water pump to trip multiple times.',
+      },
+      {
+        name: 'Vijay Kumar Gupta',
+        ward: 'Sector 1 Market, Bokaro',
+        category: 'Waste Management',
+        rating: 4,
+        time: '19 Jul 2025',
+        comment: 'Market vegetable waste cleared by compactor unit on second reminder. App tracking was helpful.',
+      },
+      {
+        name: 'Niranjan Murmu',
+        ward: 'Bank More, Ward 22, Dhanbad',
+        category: 'Electricity',
+        rating: 1,
+        time: '18 Jul 2025',
+        comment: 'Whole commercial block was without power for over 36 hours after thunderstorm. SLA was badly breached.',
+      },
     ],
   },
 ];
@@ -562,6 +1137,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
   const displayAvgSlaHours = isCityMode ? activeCityData.avgSlaHours : currentReport.avgSlaHours;
   const displayCitizenScore = isCityMode ? activeCityData.citizenScore : currentReport.citizenScore;
   const displayPositivePercent = isCityMode ? activeCityData.positiveRatingPercent : currentReport.positiveRatingPercent;
+  const displayReviews = isCityMode && activeCityData.citizenReviews ? activeCityData.citizenReviews : currentReport.citizenReviews;
 
   // Build All 24 Districts dataset proportional to the active week
   const weekRatio = currentReport.totalReported / 7850;
@@ -2125,49 +2701,36 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
               </div>
 
               <div className="space-y-3">
-                {[
-                  {
-                    name: 'Rameshwar Mahato',
-                    ward: 'Ward 29, Kanke Road, Ranchi',
-                    category: 'Roadways',
-                    rating: 5,
-                    time: '14 Aug 2025',
-                    comment: 'Pothole was repaired within 24 hours of reporting! Smooth bitumen leveling restored.',
-                  },
-                  {
-                    name: 'Sunita Devi',
-                    ward: 'Harmu Housing Colony, Ranchi',
-                    category: 'Electricity',
-                    rating: 4,
-                    time: '13 Aug 2025',
-                    comment: 'Street light fixed and sagging wires tightened properly. Good response from lineman team.',
-                  },
-                  {
-                    name: 'Dr. Vivek Sinha',
-                    ward: 'Block C, Harmu, Ranchi',
-                    category: 'Sewage',
-                    rating: 5,
-                    time: '12 Aug 2025',
-                    comment: 'Sewage suction jetting was done efficiently. Cleared the manhole blockage completely.',
-                  },
-                  {
-                    name: 'Amit Kumar Verma',
-                    ward: 'Lalpur Chowk, Ranchi',
-                    category: 'Waste Management',
-                    rating: 4,
-                    time: '11 Aug 2025',
-                    comment: 'Compactor vehicle arrived by afternoon and cleared the entire overflow dump.',
-                  },
-                ]
-                  .filter((item) => {
+                {(() => {
+                  const filteredReviews = displayReviews.filter((item) => {
                     if (feedbackStarFilter !== 'all' && item.rating !== feedbackStarFilter) return false;
                     if (feedbackSearch.trim()) {
                       const q = feedbackSearch.toLowerCase();
-                      return item.comment.toLowerCase().includes(q) || item.ward.toLowerCase().includes(q) || item.name.toLowerCase().includes(q);
+                      return (
+                        item.comment.toLowerCase().includes(q) ||
+                        item.ward.toLowerCase().includes(q) ||
+                        item.name.toLowerCase().includes(q) ||
+                        item.category.toLowerCase().includes(q)
+                      );
                     }
                     return true;
-                  })
-                  .map((item, idx) => (
+                  });
+
+                  if (filteredReviews.length === 0) {
+                    return (
+                      <div className="p-8 text-center rounded-xl border border-dashed border-stone-200 bg-stone-50/50 space-y-2">
+                        <MessageSquareQuote className="w-8 h-8 text-stone-300 mx-auto" />
+                        <p className="text-xs font-semibold text-stone-700">No citizen reviews found</p>
+                        <p className="text-[11px] text-stone-400">
+                          {feedbackSearch.trim()
+                            ? `No comments match "${feedbackSearch}". Try another query or clear filter.`
+                            : `No reviews found for ${feedbackStarFilter}★ rating in this period.`}
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  return filteredReviews.map((item, idx) => (
                     <div key={idx} className="p-4 rounded-xl border border-stone-200/80 bg-stone-50/50 space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -2176,19 +2739,32 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                             Citizen Verified
                           </span>
                         </div>
-                        <div className="flex items-center gap-1 text-amber-400">
-                          {Array.from({ length: item.rating }).map((_, i) => (
-                            <Star key={i} className="w-3 h-3 fill-amber-400" />
-                          ))}
+                        <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-0.5 text-amber-400">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-3 h-3 ${
+                                  star <= item.rating
+                                    ? 'fill-amber-400 text-amber-400'
+                                    : 'text-stone-200 fill-stone-100'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-[10px] font-bold font-mono text-stone-500 ml-1">
+                            {item.rating}.0
+                          </span>
                         </div>
                       </div>
                       <p className="text-xs text-stone-700 font-medium">"{item.comment}"</p>
                       <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-stone-200/40">
                         <span>{item.ward} • <strong className="text-stone-600">{item.category}</strong></span>
-                        <span className="font-mono">{item.time}</span>
+                        <span className="font-mono font-medium text-stone-500">{item.time}</span>
                       </div>
                     </div>
-                  ))}
+                  ));
+                })()}
               </div>
             </div>
           </div>
