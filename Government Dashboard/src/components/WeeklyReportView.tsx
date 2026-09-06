@@ -539,7 +539,25 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
   const displayRateChange = isCityMode ? activeCityData.rateChange : currentReport.rateChange;
   const displayRateIsUp = isCityMode ? activeCityData.rateIsUp : currentReport.rateIsUp;
   const displayDataInsight = isCityMode ? activeCityData.dataInsight : currentReport.dataInsight;
-  const displayDeptStats = isCityMode ? activeCityData.deptStats : currentReport.deptStats;
+  const rawDeptStats = isCityMode ? activeCityData.deptStats : currentReport.deptStats;
+  const DEPT_FIXED_WEIGHTS: Record<string, number> = {
+    waste: 1,
+    road: 2,
+    pothole: 2,
+    sewage: 3,
+    drain: 3,
+    electric: 4,
+    light: 4,
+    water: 5,
+  };
+  const getDeptWeight = (name: string) => {
+    const n = name.toLowerCase();
+    for (const [key, weight] of Object.entries(DEPT_FIXED_WEIGHTS)) {
+      if (n.includes(key)) return weight;
+    }
+    return 99;
+  };
+  const displayDeptStats = [...rawDeptStats].sort((a, b) => getDeptWeight(a.name) - getDeptWeight(b.name));
   const displaySlaPoints = isCityMode ? activeCityData.slaPoints : currentReport.slaPoints;
   const displayAvgSlaHours = isCityMode ? activeCityData.avgSlaHours : currentReport.avgSlaHours;
   const displayCitizenScore = isCityMode ? activeCityData.citizenScore : currentReport.citizenScore;
@@ -1244,7 +1262,14 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                 <div className="mt-4 p-3 rounded-xl bg-[#fffbf6] border border-[#fed7aa]/50 flex items-start gap-2.5">
                   <Info className="w-4 h-4 text-[#ea580c] shrink-0 mt-0.5" />
                   <p className="text-xs text-stone-600 leading-relaxed font-medium">
-                    <strong className="text-stone-900">{displayDeptStats[0]?.name || 'Waste Management'}</strong> is the primary grievance driver in {isCityMode ? selectedCity : currentReport.weekNumber} ({displayDeptStats[0]?.percentage || 38}% of local volume).
+                    {(() => {
+                      const primaryDept = [...displayDeptStats].sort((a, b) => b.count - a.count)[0];
+                      return (
+                        <>
+                          <strong className="text-stone-900">{primaryDept?.name || 'Waste Management'}</strong> is the primary grievance driver in {isCityMode ? selectedCity : currentReport.weekNumber} ({primaryDept?.percentage || 38}% of local volume).
+                        </>
+                      );
+                    })()}
                   </p>
                 </div>
               </div>
@@ -1879,48 +1904,57 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                 };
               };
 
+              // Fixed stable order so department tabs and sections never jump around when changing weeks
+              const FIXED_DEPT_ORDER = ['waste', 'roads', 'sewage', 'electricity', 'water'];
+
               // Map active departments in displayDeptStats to dynamic department data
-              const activeDepts = displayDeptStats.map((stat) => {
-                const config = getDeptConfig(stat.name);
-                const inflow = stat.count;
+              const activeDepts = displayDeptStats
+                .map((stat) => {
+                  const config = getDeptConfig(stat.name);
+                  const inflow = stat.count;
 
-                // Department resolution rate tied to the active week/city resolution rate
-                const calculatedRate = Math.min(
-                  96.0,
-                  Math.max(55.0, Number((displayResolutionRate * config.rateFactor).toFixed(1)))
-                );
-                // Resolved count is strictly less than inflow (rate < 100%)
-                const resolved = Math.min(Math.max(1, inflow - 1), Math.round(inflow * (calculatedRate / 100)));
-                const rate = `${((resolved / inflow) * 100).toFixed(1)}%`;
+                  // Department resolution rate tied to the active week/city resolution rate
+                  const calculatedRate = Math.min(
+                    96.0,
+                    Math.max(55.0, Number((displayResolutionRate * config.rateFactor).toFixed(1)))
+                  );
+                  // Resolved count is strictly less than inflow (rate < 100%)
+                  const resolved = Math.min(Math.max(1, inflow - 1), Math.round(inflow * (calculatedRate / 100)));
+                  const rate = `${((resolved / inflow) * 100).toFixed(1)}%`;
 
-                const slaTime = (config.baseSlaHours * (displayAvgSlaHours / 28.4)).toFixed(1);
-                const rating = Math.min(4.9, Math.max(3.5, Number((config.baseRating * (displayCitizenScore / 4.2)).toFixed(1)))).toFixed(1);
+                  const slaTime = (config.baseSlaHours * (displayAvgSlaHours / 28.4)).toFixed(1);
+                  const rating = Math.min(4.9, Math.max(3.5, Number((config.baseRating * (displayCitizenScore / 4.2)).toFixed(1)))).toFixed(1);
 
-                // Subcategory breakdown scaled dynamically to the current inflow
-                let remainingCount = inflow;
-                const topIssues = config.subCategories.map((sub, idx) => {
-                  const isLast = idx === config.subCategories.length - 1;
-                  const count = isLast ? Math.max(0, remainingCount) : Math.round(inflow * sub.ratio);
-                  remainingCount -= count;
-                  const pct = `${((count / inflow) * 100).toFixed(1)}%`;
-                  return { issue: sub.issue, count, pct };
+                  // Subcategory breakdown scaled dynamically to the current inflow
+                  let remainingCount = inflow;
+                  const topIssues = config.subCategories.map((sub, idx) => {
+                    const isLast = idx === config.subCategories.length - 1;
+                    const count = isLast ? Math.max(0, remainingCount) : Math.round(inflow * sub.ratio);
+                    remainingCount -= count;
+                    const pct = `${((count / inflow) * 100).toFixed(1)}%`;
+                    return { issue: sub.issue, count, pct };
+                  });
+
+                  return {
+                    id: config.id,
+                    name: config.shortName,
+                    fullName: config.fullName,
+                    icon: config.icon,
+                    head: config.head,
+                    teams: config.teams,
+                    inflow,
+                    resolved,
+                    rate,
+                    slaAvg: `${slaTime} hrs`,
+                    rating: `${rating} / 5`,
+                    topIssues,
+                  };
+                })
+                .sort((a, b) => {
+                  const idxA = FIXED_DEPT_ORDER.indexOf(a.id);
+                  const idxB = FIXED_DEPT_ORDER.indexOf(b.id);
+                  return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
                 });
-
-                return {
-                  id: config.id,
-                  name: config.shortName,
-                  fullName: config.fullName,
-                  icon: config.icon,
-                  head: config.head,
-                  teams: config.teams,
-                  inflow,
-                  resolved,
-                  rate,
-                  slaAvg: `${slaTime} hrs`,
-                  rating: `${rating} / 5`,
-                  topIssues,
-                };
-              });
 
               // Active selected department or default to first department
               const selectedDept = activeDepts.find((d) => d.id === selectedDeptId) || activeDepts[0];
