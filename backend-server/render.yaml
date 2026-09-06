@@ -10,11 +10,15 @@ services:
         sync: false
       - key: SARVAM_API_KEY
         sync: false
+      # Using local storage on Render ephemeral disk (files live for the duration of the instance).
+      # Uploaded files are only needed for the duration of a single AI processing request,
+      # so ephemeral local storage is sufficient.
       - key: MEDIA_STORAGE_PROVIDER
-        value: firebase
-      - key: FIREBASE_STORAGE_BUCKET
-        sync: false
-      - key: FIREBASE_SERVICE_ACCOUNT_JSON
-        sync: false
+        value: local
       - key: STORAGE_DIR
         value: /app/data/uploads
+      # Firebase Firestore write support (optional - complaints still process without it)
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: FIREBASE_STORAGE_BUCKET
+        sync: false
