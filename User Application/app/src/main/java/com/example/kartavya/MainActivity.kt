@@ -171,7 +171,7 @@ fun getImageModel(
     val resId = context.resources.getIdentifier(targetDrawable, "drawable", context.packageName)
     if (resId != 0) return resId
 
-    return com.example.kartavya.R.drawable.img_001
+    return context.resources.getIdentifier("img_001", "drawable", context.packageName)
 }
 
 // ──────────────────────────────────────────────────────
