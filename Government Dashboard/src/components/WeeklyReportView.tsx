@@ -1054,6 +1054,133 @@ const HISTORICAL_WEEKLY_REPORTS: WeeklyReportOption[] = [
 
 type SidebarTabType = 'overview' | 'inflow' | 'resolution' | 'sla' | 'departments' | 'feedback' | 'comparative';
 
+// Dynamic weekly performance benchmarks for districts across all historical weeks
+const DISTRICT_WEEKLY_OVERRIDES: Record<
+  string,
+  Record<
+    string,
+    {
+      inflow: number;
+      rate: number;
+      pending: number;
+      breaches: number;
+      topSector: string;
+    }
+  >
+> = {
+  ranchi: {
+    w33: { inflow: 2300, rate: 91.3, pending: 1420, breaches: 42, topSector: 'Roadways & Potholes (34%)' },
+    w32: { inflow: 2480, rate: 82.9, pending: 1680, breaches: 64, topSector: 'Sewage & Drainage (38%)' },
+    w31: { inflow: 2360, rate: 80.5, pending: 1590, breaches: 55, topSector: 'Roadways & Potholes (37%)' },
+    w30: { inflow: 2280, rate: 78.9, pending: 1740, breaches: 58, topSector: 'Electricity & Lighting (36%)' },
+  },
+  dhanbad: {
+    w33: { inflow: 2000, rate: 85.0, pending: 770, breaches: 28, topSector: 'Electricity & Lighting (31%)' },
+    w32: { inflow: 2210, rate: 77.2, pending: 940, breaches: 45, topSector: 'Sewage & Drainage (41%)' },
+    w31: { inflow: 2050, rate: 75.0, pending: 880, breaches: 37, topSector: 'Roadways & Potholes (33%)' },
+    w30: { inflow: 1980, rate: 73.4, pending: 990, breaches: 41, topSector: 'Electricity & Lighting (39%)' },
+  },
+  jamshedpur: {
+    w33: { inflow: 1800, rate: 83.3, pending: 520, breaches: 19, topSector: 'Waste Management (36%)' },
+    w32: { inflow: 1920, rate: 76.5, pending: 640, breaches: 29, topSector: 'Sewage & Drainage (35%)' },
+    w31: { inflow: 1840, rate: 77.8, pending: 580, breaches: 22, topSector: 'Roadways & Potholes (42%)' },
+    w30: { inflow: 1760, rate: 72.8, pending: 680, breaches: 31, topSector: 'Electricity & Lighting (31%)' },
+  },
+  bokaro: {
+    w33: { inflow: 1500, rate: 93.3, pending: 124, breaches: 5, topSector: 'Sewage & Drainage (24%)' },
+    w32: { inflow: 1590, rate: 86.4, pending: 185, breaches: 12, topSector: 'Sewage & Drainage (36%)' },
+    w31: { inflow: 1530, rate: 88.2, pending: 160, breaches: 9, topSector: 'Roadways & Potholes (35%)' },
+    w30: { inflow: 1470, rate: 83.5, pending: 210, breaches: 14, topSector: 'Electricity & Lighting (28%)' },
+  },
+  deoghar: {
+    w33: { inflow: 900, rate: 88.8, pending: 220, breaches: 8, topSector: 'Waste Management (42%)' },
+    w32: { inflow: 940, rate: 81.2, pending: 275, breaches: 16, topSector: 'Sewage & Drainage (32%)' },
+    w31: { inflow: 910, rate: 79.5, pending: 290, breaches: 14, topSector: 'Roadways & Potholes (30%)' },
+    w30: { inflow: 980, rate: 76.7, pending: 330, breaches: 22, topSector: 'Electricity & Lighting (44%)' },
+  },
+  hazaribagh: {
+    w33: { inflow: 620, rate: 86.3, pending: 150, breaches: 6, topSector: 'Water Supply (29%)' },
+    w32: { inflow: 660, rate: 78.8, pending: 190, breaches: 12, topSector: 'Sewage & Drainage (34%)' },
+    w31: { inflow: 635, rate: 77.2, pending: 195, breaches: 10, topSector: 'Roadways & Potholes (31%)' },
+    w30: { inflow: 610, rate: 74.5, pending: 220, breaches: 15, topSector: 'Electricity & Lighting (32%)' },
+  },
+  giridih: {
+    w33: { inflow: 510, rate: 88.0, pending: 110, breaches: 4, topSector: 'Roadways / Potholes (28%)' },
+    w32: { inflow: 545, rate: 80.2, pending: 140, breaches: 8, topSector: 'Sewage & Drainage (35%)' },
+    w31: { inflow: 520, rate: 78.5, pending: 145, breaches: 7, topSector: 'Roadways & Potholes (32%)' },
+    w30: { inflow: 505, rate: 75.6, pending: 160, breaches: 10, topSector: 'Electricity & Lighting (33%)' },
+  },
+  ramgarh: {
+    w33: { inflow: 380, rate: 89.2, pending: 80, breaches: 2, topSector: 'Roadways & Potholes (33%)' },
+    w32: { inflow: 410, rate: 81.5, pending: 105, breaches: 6, topSector: 'Sewage & Drainage (33%)' },
+    w31: { inflow: 390, rate: 79.8, pending: 110, breaches: 5, topSector: 'Roadways & Potholes (36%)' },
+    w30: { inflow: 375, rate: 76.4, pending: 125, breaches: 7, topSector: 'Electricity & Lighting (30%)' },
+  },
+  dumka: {
+    w33: { inflow: 290, rate: 89.6, pending: 60, breaches: 1, topSector: 'Waste Management (30%)' },
+    w32: { inflow: 310, rate: 80.6, pending: 80, breaches: 4, topSector: 'Sewage & Drainage (31%)' },
+    w31: { inflow: 295, rate: 78.4, pending: 85, breaches: 4, topSector: 'Roadways & Potholes (32%)' },
+    w30: { inflow: 335, rate: 74.0, pending: 105, breaches: 8, topSector: 'Electricity & Lighting (41%)' },
+  },
+  palamu: {
+    w33: { inflow: 260, rate: 85.0, pending: 70, breaches: 2, topSector: 'Water Supply (35%)' },
+    w32: { inflow: 275, rate: 77.5, pending: 90, breaches: 5, topSector: 'Sewage & Drainage (32%)' },
+    w31: { inflow: 265, rate: 75.8, pending: 92, breaches: 4, topSector: 'Roadways & Potholes (34%)' },
+    w30: { inflow: 255, rate: 73.2, pending: 102, breaches: 6, topSector: 'Electricity & Lighting (33%)' },
+  },
+  chaibasa: {
+    w33: { inflow: 210, rate: 88.5, pending: 45, breaches: 1, topSector: 'Roadways & Potholes (38%)' },
+    w32: { inflow: 225, rate: 80.4, pending: 60, breaches: 3, topSector: 'Sewage & Drainage (34%)' },
+    w31: { inflow: 215, rate: 78.8, pending: 62, breaches: 3, topSector: 'Roadways & Potholes (40%)' },
+    w30: { inflow: 205, rate: 75.5, pending: 70, breaches: 4, topSector: 'Electricity & Lighting (29%)' },
+  },
+};
+
+const getDistrictWeeklyPerformance = (d: any, weekId: string) => {
+  const overrides = DISTRICT_WEEKLY_OVERRIDES[d.id]?.[weekId];
+  if (overrides) {
+    return overrides;
+  }
+
+  const baseInflow = d.reportedThisWeek || Math.round(d.totalIssues * 0.6);
+  const baseRate = d.resolutionRate || 85.0;
+  const basePending = d.openIssuesCount || Math.round(d.totalIssues * 0.35);
+  const baseBreaches = d.criticalIssuesCount || 2;
+
+  let weekRatio = 1.0;
+  let rateFactor = 1.0;
+  let pendingFactor = 1.0;
+  let breachesFactor = 1.0;
+  let topSector = d.topDepartmentIssue;
+
+  if (weekId === 'w32') {
+    weekRatio = 1.066;
+    rateFactor = 0.908;
+    pendingFactor = 1.25;
+    breachesFactor = 1.6;
+    topSector = 'Sewage & Drainage (36%)';
+  } else if (weekId === 'w31') {
+    weekRatio = 1.024;
+    rateFactor = 0.882;
+    pendingFactor = 1.18;
+    breachesFactor = 1.35;
+    topSector = 'Roadways & Potholes (35%)';
+  } else if (weekId === 'w30') {
+    weekRatio = 0.996;
+    rateFactor = 0.864;
+    pendingFactor = 1.28;
+    breachesFactor = 1.45;
+    topSector = 'Electricity & Lighting (32%)';
+  }
+
+  const inflow = Math.round(baseInflow * weekRatio);
+  const rate = Number(Math.min(96, Math.max(60, baseRate * rateFactor)).toFixed(1));
+  const pending = Math.round(basePending * pendingFactor);
+  const breaches = Math.round(baseBreaches * breachesFactor);
+
+  return { inflow, rate, pending, breaches, topSector };
+};
+
 export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf }) => {
   const [sidebarTab, setSidebarTab] = useState<SidebarTabType>('overview');
   const [viewScope, setViewScope] = useState<'state' | 'city'>('state');
@@ -2812,12 +2939,15 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                 const distA = districtList.find((d) => d.id === compDistrictA) || districtList[0];
                 const distB = districtList.find((d) => d.id === compDistrictB) || districtList[1];
 
+                const perfA = getDistrictWeeklyPerformance(distA, currentReport.id);
+                const perfB = getDistrictWeeklyPerformance(distB, currentReport.id);
+
                 const compMetrics = [
-                  { label: 'Weekly Inflow Volume', valA: `${distA.reportedThisWeek} tickets`, valB: `${distB.reportedThisWeek} tickets` },
-                  { label: 'Resolution Rate (%)', valA: `${distA.resolutionRate}%`, valB: `${distB.resolutionRate}%` },
-                  { label: 'Pending Open Issues', valA: `${distA.openIssuesCount}`, valB: `${distB.openIssuesCount}` },
-                  { label: 'Critical Breaches', valA: `${distA.criticalIssuesCount}`, valB: `${distB.criticalIssuesCount}` },
-                  { label: 'Top Sector', valA: distA.topDepartmentIssue, valB: distB.topDepartmentIssue },
+                  { label: 'Weekly Inflow Volume', valA: `${perfA.inflow.toLocaleString()} tickets`, valB: `${perfB.inflow.toLocaleString()} tickets` },
+                  { label: 'Resolution Rate (%)', valA: `${perfA.rate}%`, valB: `${perfB.rate}%` },
+                  { label: 'Pending Open Issues', valA: `${perfA.pending.toLocaleString()}`, valB: `${perfB.pending.toLocaleString()}` },
+                  { label: 'Critical Breaches', valA: `${perfA.breaches}`, valB: `${perfB.breaches}` },
+                  { label: 'Top Sector', valA: perfA.topSector, valB: perfB.topSector },
                   { label: 'Nodal Officer', valA: distA.nodalOfficer.name, valB: distB.nodalOfficer.name },
                 ];
 
@@ -2827,12 +2957,12 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                       <div className="p-4 rounded-xl border border-[#fed7aa] bg-[#fff7ed] text-center">
                         <span className="text-[10px] font-bold uppercase text-[#c2410c] tracking-wider block">District A</span>
                         <h4 className="text-base font-extrabold text-stone-900">{distA.name}</h4>
-                        <span className="text-xs text-stone-500 font-medium font-mono">{distA.resolutionRate}% SLA Rate</span>
+                        <span className="text-xs text-stone-500 font-medium font-mono">{perfA.rate}% SLA Rate</span>
                       </div>
                       <div className="p-4 rounded-xl border border-sky-200 bg-sky-50 text-center">
                         <span className="text-[10px] font-bold uppercase text-sky-700 tracking-wider block">District B</span>
                         <h4 className="text-base font-extrabold text-stone-900">{distB.name}</h4>
-                        <span className="text-xs text-stone-500 font-medium font-mono">{distB.resolutionRate}% SLA Rate</span>
+                        <span className="text-xs text-stone-500 font-medium font-mono">{perfB.rate}% SLA Rate</span>
                       </div>
                     </div>
 
