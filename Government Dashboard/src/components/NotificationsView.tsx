@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { CivicIssue } from '../types';
 import {
   AlertTriangle,
@@ -25,6 +25,7 @@ interface NotificationsViewProps {
   onEscalateCommissioner: (issue: CivicIssue) => void;
   onImposePenalty: (issue: CivicIssue) => void;
   onSelectIssueForDetails: (issueId: string) => void;
+  onNavigateToDetails?: () => void;
 }
 
 export const NotificationsView: React.FC<NotificationsViewProps> = ({
@@ -33,12 +34,36 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
   onEscalateCommissioner,
   onImposePenalty,
   onSelectIssueForDetails,
+  onNavigateToDetails,
 }) => {
   const [selectedDeptFilter, setSelectedDeptFilter] = useState('All Departments');
   const [selectedBreachFilter, setSelectedBreachFilter] = useState('> 80% Time Elapsed');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('All Status');
   const [sortBy, setSortBy] = useState('Time Elapsed (High to Low)');
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  const criticalSectionRef = useRef<HTMLDivElement>(null);
+
+  const handleViewAllCritical = () => {
+    setSelectedBreachFilter('> 80% Time Elapsed');
+    setSelectedDeptFilter('All Departments');
+    setSelectedStatusFilter('All Status');
+    if (criticalSectionRef.current) {
+      criticalSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setIsHighlighted(true);
+      setTimeout(() => setIsHighlighted(false), 2200);
+    }
+  };
+
+  const handleSelectTier = (tier: string) => {
+    setSelectedBreachFilter(tier);
+    if (criticalSectionRef.current) {
+      criticalSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setIsHighlighted(true);
+      setTimeout(() => setIsHighlighted(false), 2000);
+    }
+  };
 
   // Filter issues based on selections
   const filteredIssues = useMemo(() => {
@@ -141,24 +166,32 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            setSelectedBreachFilter('> 80% Time Elapsed');
-            setSelectedDeptFilter('All Departments');
-            setSelectedStatusFilter('All Status');
-          }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-red-50 text-[#dc2626] border border-[#fca5a5] rounded-xl text-xs font-bold shrink-0 transition-colors shadow-2xs cursor-pointer"
-        >
-          <span>View All Critical Issues</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleViewAllCritical}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-red-50 text-[#dc2626] border border-[#fca5a5] rounded-xl text-xs font-bold shrink-0 transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+          >
+            <span>View All Critical Issues</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+          {onNavigateToDetails && (
+            <button
+              onClick={onNavigateToDetails}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-xl text-xs font-bold shrink-0 transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+              title="Open Grievance Details Table"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Open in Table</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* ─── 3. 4 SLA Tier Status Cards ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Critical Card */}
         <div
-          onClick={() => setSelectedBreachFilter('> 80% Time Elapsed')}
+          onClick={() => handleSelectTier('> 80% Time Elapsed')}
           className={`p-3.5 rounded-2xl transition-all flex items-center gap-3.5 cursor-pointer border ${
             selectedBreachFilter === '> 80% Time Elapsed'
               ? 'bg-white/80 shadow-xs border-red-300 ring-2 ring-red-400/20'
@@ -179,7 +212,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
 
         {/* High Card */}
         <div
-          onClick={() => setSelectedBreachFilter('60% - 80% Time Elapsed')}
+          onClick={() => handleSelectTier('60% - 80% Time Elapsed')}
           className={`p-3.5 rounded-2xl transition-all flex items-center gap-3.5 cursor-pointer border ${
             selectedBreachFilter === '60% - 80% Time Elapsed'
               ? 'bg-white/80 shadow-xs border-amber-300 ring-2 ring-amber-400/20'
@@ -200,7 +233,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
 
         {/* Medium Card */}
         <div
-          onClick={() => setSelectedBreachFilter('All Breaches')}
+          onClick={() => handleSelectTier('All Breaches')}
           className={`p-3.5 rounded-2xl transition-all flex items-center gap-3.5 cursor-pointer border ${
             selectedBreachFilter === 'All Breaches'
               ? 'bg-white/80 shadow-xs border-yellow-300 ring-2 ring-yellow-400/20'
@@ -334,7 +367,13 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
         </div>
 
         {/* ─── RIGHT COLUMN: Breach Issues List (col-span-8 on lg, col-span-9 on xl) ─── */}
-        <div className="lg:col-span-8 xl:col-span-9 space-y-3">
+        <div
+          ref={criticalSectionRef}
+          id="critical-issues-section"
+          className={`lg:col-span-8 xl:col-span-9 space-y-3 scroll-mt-28 transition-all duration-500 rounded-2xl p-1 ${
+            isHighlighted ? 'ring-2 ring-red-500/70 bg-red-50/50 shadow-md' : ''
+          }`}
+        >
           {/* Header Row: Title + Sort */}
           <div className="flex items-center justify-between pb-0.5">
             <div className="flex items-center gap-2">

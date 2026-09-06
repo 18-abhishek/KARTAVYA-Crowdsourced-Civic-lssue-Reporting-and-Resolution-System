@@ -180,6 +180,7 @@ export function App() {
               setSelectedIssueId(id);
               setActiveTab('details');
             }}
+            onNavigateToDetails={() => setActiveTab('details')}
           />
         )}
       </main>
