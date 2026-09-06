@@ -14,14 +14,11 @@ COPY settings.gradle.kts settings.gradle.kts
 # Fix Windows CRLF line endings and grant execute permissions
 RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
-# Download dependencies
-RUN ./gradlew dependencies --no-daemon || true
-
 # Copy source code
 COPY src src
 
 # Build executable fat JAR (bootJar)
-RUN ./gradlew bootJar --no-daemon -x test
+RUN ./gradlew clean bootJar --no-daemon -x test --stacktrace --console=plain
 
 # ==============================================================================
 # Stage 2: Lightweight Production JRE 21 Runtime Container
