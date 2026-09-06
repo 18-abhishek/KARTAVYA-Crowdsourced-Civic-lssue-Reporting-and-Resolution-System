@@ -23,7 +23,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94311 88201',
     status: 'Assigned',
     priority: 'Critical',
-    photoUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/poteholes.png',
     coordinates: {
       lat: 23.3441,
       lng: 85.3096,
@@ -156,7 +156,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94313 44091',
     status: 'Assigned',
     priority: 'Critical',
-    photoUrl: 'https://images.unsplash.com/photo-1605600659908-0ef719419d41?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/garbage.png',
     coordinates: {
       lat: 23.3214,
       lng: 85.3195,
@@ -199,7 +199,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94317 33901',
     status: 'In Progress',
     priority: 'Critical',
-    photoUrl: '/resource/streetlight.jpg',
+    photoUrl: '/resource/cable wire 2.jpeg',
     coordinates: {
       lat: 23.7957,
       lng: 86.4304,
@@ -236,7 +236,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94312 99014',
     status: 'Assigned',
     priority: 'High',
-    photoUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/cable wire.jpeg',
     coordinates: {
       lat: 22.8046,
       lng: 86.2029,
@@ -310,7 +310,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94314 22001',
     status: 'Assigned',
     priority: 'High',
-    photoUrl: 'https://images.unsplash.com/photo-1605600659908-0ef719419d41?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/garbage.png',
     coordinates: {
       lat: 24.4826,
       lng: 86.7001,
@@ -384,7 +384,7 @@ export const initialIssues: CivicIssue[] = [
     contractorContact: '+91 94316 44109',
     status: 'In Progress',
     priority: 'High',
-    photoUrl: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=600&auto=format&fit=crop&q=80',
+    photoUrl: '/resource/cable wire 3.jpeg',
     coordinates: {
       lat: 24.1852,
       lng: 86.3075,
