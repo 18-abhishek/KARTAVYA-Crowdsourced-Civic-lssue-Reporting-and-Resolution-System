@@ -61,7 +61,7 @@ object AuthRepository {
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
                 .setServerClientId(webClientId)
-                .setAutoSelectEnabled(true)
+                .setAutoSelectEnabled(false)
                 .build()
 
             val request = GetCredentialRequest.Builder()
@@ -79,7 +79,7 @@ object AuthRepository {
             Result.failure(Exception("Sign-in was cancelled."))
         } catch (e: NoCredentialException) {
             Log.w(TAG, "No Google credentials available", e)
-            Result.failure(Exception("No Google accounts found on this device. Please add a Google account in Settings."))
+            Result.failure(Exception("No eligible Google account found. Please ensure this machine's debug SHA-1 is added in Firebase Console."))
         } catch (e: GetCredentialException) {
             Log.e(TAG, "Credential Manager error", e)
             Result.failure(Exception("Could not sign in with Google. Please try again."))
