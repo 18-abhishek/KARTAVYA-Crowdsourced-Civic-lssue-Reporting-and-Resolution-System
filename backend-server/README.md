@@ -10,7 +10,7 @@ This is the backend server microservice for the **KARTAVYA Crowdsourced Civic Is
 - **Multipart Uploads**: High-speed image and audio endpoints:
   - `POST /upload/image` -> returns `{"success": true, "path": "/files/images/<filename>"}`
   - `POST /upload/audio` -> returns `{"success": true, "path": "/files/audio/<filename>"}`
-- **Static Asset Serving**: Serves files directly under `/files/**` (e.g. `/files/images/...`, `/files/audio/...`).
+- **Remote Media Storage**: Stores images and audio in Firebase Storage on Render; local disk is used only when `MEDIA_STORAGE_PROVIDER=local` for development.
 - **AI Processing Pipeline**:
   - `POST /ai/process-complaint`: Integrates with Google Gemini 1.5 Flash Vision for civic image authenticity and classification, Sarvam STT for audio transcription, and contains a reliable fallback civic categorization engine.
 - **Health Checks**:
@@ -83,9 +83,13 @@ docker run -p 8080:8080 -e PORT=8080 kartavya-backend-server
    - **Root Directory**: `backend-server`
    - **Dockerfile Path**: `./Dockerfile` (or leave default since root dir is set)
    - **Instance Type**: `Free`
-6. (Optional) Under **Environment Variables**, add:
+6. Under **Environment Variables**, add:
    - `GEMINI_API_KEY`: *(Your Google Gemini API key)*
    - `SARVAM_API_KEY`: *(Your Sarvam AI API key)*
+  - `MEDIA_STORAGE_PROVIDER`: `firebase`
+  - `FIREBASE_STORAGE_BUCKET`: *(Your Firebase Storage bucket name)*
+  - `FIREBASE_SERVICE_ACCOUNT_JSON`: *(The complete Firebase Admin service-account JSON)*
+  - The Firebase service account needs Storage object read/write and Firestore access.
    - *Note: Render automatically injects `PORT` (usually 10000); our Docker container handles this automatically!*
 7. Click **Create Web Service**.
 8. Once deployed, Render will provide a public URL, for example:

@@ -1,0 +1,5 @@
+node_modules/
+.env
+npm-debug.log*
+uploads/**/*.tmp
+kartavya-deca3-firebase-adminsdk-fbsvc-947056b9eb.json

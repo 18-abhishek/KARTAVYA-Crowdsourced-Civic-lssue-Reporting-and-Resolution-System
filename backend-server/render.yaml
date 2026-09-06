@@ -7,8 +7,14 @@ services:
     region: oregon
     envVars:
       - key: GEMINI_API_KEY
-        value: AIzaSyADjvknSiVO5hSfsevGj4noi5VKKVOu0H0
+        sync: false
       - key: SARVAM_API_KEY
-        value: sk_xxivlmol_9VkYQj9XsD0vUjQDQYHfinYL
+        sync: false
+      - key: MEDIA_STORAGE_PROVIDER
+        value: firebase
+      - key: FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
       - key: STORAGE_DIR
         value: /app/data/uploads
