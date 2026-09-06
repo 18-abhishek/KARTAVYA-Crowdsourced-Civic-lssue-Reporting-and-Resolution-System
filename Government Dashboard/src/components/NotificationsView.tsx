@@ -1,31 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CivicIssue } from '../types';
 import {
   AlertTriangle,
   Clock,
   CheckCircle,
-  Building2,
-  Phone,
+  MapPin,
+  User,
+  ChevronDown,
+  ChevronRight,
   ArrowRight,
   RotateCcw,
-  ChevronDown,
-  ShieldAlert,
-  ArrowUpRight,
-  IndianRupee,
+  Phone,
   MoreVertical,
-  SlidersHorizontal,
-  FileWarning,
-  Flame,
-  Check,
-  Building,
-  User,
   ExternalLink,
-  ChevronRight,
-  Inbox,
-  CheckCircle2,
-  Activity,
-  MessageSquareQuote,
-  LayoutDashboard,
+  FileWarning,
+  IndianRupee,
+  Zap,
+  Trash2,
 } from 'lucide-react';
 
 interface NotificationsViewProps {
@@ -47,49 +38,101 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
   const [selectedBreachFilter, setSelectedBreachFilter] = useState('> 80% Time Elapsed');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('All Status');
   const [sortBy, setSortBy] = useState('Time Elapsed (High to Low)');
-  const [activeSidebarTab, setActiveSidebarTab] = useState('alerts');
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
-  // Filter critical / high breach items
-  const breachIssues = issues.filter((issue) => {
-    if (selectedDeptFilter !== 'All Departments' && !issue.assignedDept.includes(selectedDeptFilter)) {
-      return false;
-    }
-    if (selectedBreachFilter === '> 80% Time Elapsed' && issue.timeElapsedPercent < 80) {
-      return false;
-    }
-    return true;
-  });
+  // Filter issues based on selections
+  const filteredIssues = useMemo(() => {
+    let list = issues.filter((issue) => {
+      // Dept filter
+      if (
+        selectedDeptFilter !== 'All Departments' &&
+        !issue.assignedDept.toLowerCase().includes(selectedDeptFilter.toLowerCase())
+      ) {
+        return false;
+      }
+      // Breach filter
+      if (selectedBreachFilter === '> 80% Time Elapsed' && issue.timeElapsedPercent < 80) {
+        return false;
+      }
+      if (
+        selectedBreachFilter === '60% - 80% Time Elapsed' &&
+        (issue.timeElapsedPercent < 60 || issue.timeElapsedPercent >= 80)
+      ) {
+        return false;
+      }
+      // Status filter
+      if (selectedStatusFilter !== 'All Status' && issue.status !== selectedStatusFilter) {
+        return false;
+      }
+      return true;
+    });
 
-  const sidebarLinks = [
-    { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { id: 'inflow', label: 'Issues Inflow', icon: Inbox },
-    { id: 'resolution', label: 'Resolution', icon: CheckCircle2 },
-    { id: 'sla', label: 'SLA Performance', icon: Activity },
-    { id: 'departments', label: 'Departments', icon: Building2 },
-    { id: 'feedback', label: 'Citizen Feedback', icon: MessageSquareQuote },
-  ];
+    if (sortBy === 'Time Remaining (Urgent)') {
+      return [...list].sort((a, b) => a.timeRemainingHours - b.timeRemainingHours);
+    }
+    if (sortBy === 'Reported Date') {
+      return [...list].sort((a, b) => b.id.localeCompare(a.id));
+    }
+    // Default / 'Time Elapsed (High to Low)'
+    return [...list];
+  }, [issues, selectedDeptFilter, selectedBreachFilter, selectedStatusFilter, sortBy]);
+
+  // Helper for Department Icon matching the reference screenshot
+  const renderDepartmentIcon = (dept: string) => {
+    const d = dept.toLowerCase();
+    if (d.includes('water') || d.includes('sanitation')) {
+      return (
+        <svg
+          className="w-4 h-4 text-[#0284c7] shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+        </svg>
+      );
+    }
+    if (d.includes('electr') || d.includes('urja') || d.includes('light')) {
+      return <Zap className="w-4 h-4 text-stone-800 shrink-0" />;
+    }
+    if (d.includes('waste') || d.includes('garbage') || d.includes('clean')) {
+      return <Trash2 className="w-4 h-4 text-emerald-600 shrink-0" />;
+    }
+    // Road Works / Default: arch/milestone letter A from reference
+    return (
+      <div className="w-4 h-4 rounded border border-stone-400/90 flex items-center justify-center text-stone-700 font-bold text-[10px] shrink-0 leading-none">
+        A
+      </div>
+    );
+  };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Top Header & Subtitle */}
+    <div
+      className="space-y-6 w-full pb-8 animate-in fade-in duration-300"
+      onClick={() => setActiveMenuId(null)}
+    >
+      {/* ─── 1. Top Header & Subtitle ─── */}
       <div>
-        <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
           SLA Escalation &amp; Warning Notification Center
         </h2>
-        <p className="text-xs text-stone-500 font-medium mt-0.5">
+        <p className="text-xs sm:text-sm text-stone-500 font-medium mt-0.5">
           Real-time alerts for critical SLA breaches and zero-progress issues
         </p>
       </div>
 
-      {/* Critical SLA Red Banner */}
-      <div className="bg-[#fef2f2] border border-[#fecaca] rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-[#dc2626] text-white flex items-center justify-center shrink-0 shadow-sm">
-            <AlertTriangle className="w-6 h-6" />
+      {/* ─── 2. Critical SLA Red Banner ─── */}
+      <div className="bg-[#fef2f2] border border-[#fecaca] rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-full bg-[#dc2626] text-white flex items-center justify-center shrink-0 shadow-sm">
+            <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-stone-900 leading-snug">
-              <span className="text-[#dc2626] font-mono text-lg mr-1">12</span>
+            <h3 className="text-sm sm:text-base font-bold text-stone-900 leading-snug">
+              <span className="text-[#dc2626] font-mono text-base sm:text-lg mr-1.5 font-bold">12</span>
               Critical Issues Exceeded 80% SLA Time Limit with No Progress
             </h3>
             <p className="text-xs text-[#991b1b] font-medium mt-0.5">
@@ -101,97 +144,123 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
         <button
           onClick={() => {
             setSelectedBreachFilter('> 80% Time Elapsed');
+            setSelectedDeptFilter('All Departments');
+            setSelectedStatusFilter('All Status');
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-red-50 text-[#dc2626] border border-[#fca5a5] rounded-xl text-xs font-bold shrink-0 transition-colors shadow-2xs"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-red-50 text-[#dc2626] border border-[#fca5a5] rounded-xl text-xs font-bold shrink-0 transition-colors shadow-2xs cursor-pointer"
         >
           <span>View All Critical Issues</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* 4 SLA Tier Status Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ─── 3. 4 SLA Tier Status Cards ─── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Critical Card */}
-        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-red-600 shrink-0 shadow-xs">
+        <div
+          onClick={() => setSelectedBreachFilter('> 80% Time Elapsed')}
+          className={`p-3.5 rounded-2xl transition-all flex items-center gap-3.5 cursor-pointer border ${
+            selectedBreachFilter === '> 80% Time Elapsed'
+              ? 'bg-white/80 shadow-xs border-red-300 ring-2 ring-red-400/20'
+              : 'bg-white/40 hover:bg-white/60 border-white/60 shadow-2xs'
+          }`}
+        >
+          <div className="w-10 h-10 rounded-xl bg-white/90 border border-stone-200/60 flex items-center justify-center text-red-600 shrink-0 shadow-2xs">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl font-bold text-stone-900 font-mono">12</span>
-            </div>
-            <p className="text-xs font-bold text-stone-700">Critical ( &gt; 80% )</p>
+            <span className="text-xl sm:text-2xl font-bold text-stone-900 font-mono leading-none block">
+              12
+            </span>
+            <p className="text-xs font-bold text-stone-700 mt-0.5">Critical ( &gt; 80% )</p>
             <p className="text-[11px] font-semibold text-red-600">No Progress</p>
           </div>
         </div>
 
         {/* High Card */}
-        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-amber-600 shrink-0 shadow-xs">
+        <div
+          onClick={() => setSelectedBreachFilter('60% - 80% Time Elapsed')}
+          className={`p-3.5 rounded-2xl transition-all flex items-center gap-3.5 cursor-pointer border ${
+            selectedBreachFilter === '60% - 80% Time Elapsed'
+              ? 'bg-white/80 shadow-xs border-amber-300 ring-2 ring-amber-400/20'
+              : 'bg-white/40 hover:bg-white/60 border-white/60 shadow-2xs'
+          }`}
+        >
+          <div className="w-10 h-10 rounded-xl bg-white/90 border border-stone-200/60 flex items-center justify-center text-amber-600 shrink-0 shadow-2xs">
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl font-bold text-stone-900 font-mono">18</span>
-            </div>
-            <p className="text-xs font-bold text-stone-700">High ( 60% - 80% )</p>
+            <span className="text-xl sm:text-2xl font-bold text-stone-900 font-mono leading-none block">
+              18
+            </span>
+            <p className="text-xs font-bold text-stone-700 mt-0.5">High ( 60% - 80% )</p>
             <p className="text-[11px] font-semibold text-amber-600">At Risk</p>
           </div>
         </div>
 
         {/* Medium Card */}
-        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-yellow-700 shrink-0 shadow-xs">
+        <div
+          onClick={() => setSelectedBreachFilter('All Breaches')}
+          className={`p-3.5 rounded-2xl transition-all flex items-center gap-3.5 cursor-pointer border ${
+            selectedBreachFilter === 'All Breaches'
+              ? 'bg-white/80 shadow-xs border-yellow-300 ring-2 ring-yellow-400/20'
+              : 'bg-white/40 hover:bg-white/60 border-white/60 shadow-2xs'
+          }`}
+        >
+          <div className="w-10 h-10 rounded-xl bg-white/90 border border-stone-200/60 flex items-center justify-center text-yellow-600 shrink-0 shadow-2xs">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl font-bold text-stone-900 font-mono">25</span>
-            </div>
-            <p className="text-xs font-bold text-stone-700">Medium ( 40% - 60% )</p>
+            <span className="text-xl sm:text-2xl font-bold text-stone-900 font-mono leading-none block">
+              25
+            </span>
+            <p className="text-xs font-bold text-stone-700 mt-0.5">Medium ( 40% - 60% )</p>
             <p className="text-[11px] font-semibold text-yellow-700">Monitor</p>
           </div>
         </div>
 
         {/* Within SLA Card */}
-        <div className="bg-transparent p-3.5 rounded-2xl hover:bg-white/20 transition-all flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl glass-pill flex items-center justify-center text-emerald-600 shrink-0 shadow-xs">
+        <div className="p-3.5 rounded-2xl bg-white/40 border border-white/60 shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-white/90 border border-stone-200/60 flex items-center justify-center text-emerald-600 shrink-0 shadow-2xs">
             <CheckCircle className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl font-bold text-stone-900 font-mono">98</span>
-            </div>
-            <p className="text-xs font-bold text-stone-700">Within SLA</p>
+            <span className="text-xl sm:text-2xl font-bold text-stone-900 font-mono leading-none block">
+              98
+            </span>
+            <p className="text-xs font-bold text-stone-700 mt-0.5">Within SLA</p>
             <p className="text-[11px] font-semibold text-emerald-600">On Track</p>
           </div>
         </div>
       </div>
 
-      {/* Main Split Content: Left Filters & Summaries + Right Breach Cards List */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column (col-span-4 on lg, sticky position) */}
-        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-22 self-start">
+      {/* ─── 4. Main Split Content: Left Sidebar + Right Breach Cards List ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* ─── LEFT COLUMN (col-span-4 on lg, col-span-3 on xl) ─── */}
+        <div className="lg:col-span-4 xl:col-span-3 space-y-4 lg:sticky lg:top-22 self-start">
           {/* Card 1: Alert Filters */}
-          <div className="bg-transparent p-3 space-y-4">
+          <div className="bg-white/60 backdrop-blur-md p-4 rounded-3xl border border-white/60 shadow-xs space-y-3.5">
             <h3 className="text-sm font-bold text-stone-900">Alert Filters</h3>
 
             {/* Department */}
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1.5">
+              <label className="block text-xs font-bold text-stone-700 mb-1">
                 Department
               </label>
-              <select
-                value={selectedDeptFilter}
-                onChange={(e) => setSelectedDeptFilter(e.target.value)}
-                className="w-full glass-pill rounded-xl px-3 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-              >
-                <option value="All Departments">All Departments</option>
-                <option value="Road Works">Road Works Department</option>
-                <option value="Water & Sanitation">Water &amp; Sanitation Dept.</option>
-                <option value="Electricity">Electricity &amp; Lighting</option>
-                <option value="Waste Management">Waste Management</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={selectedDeptFilter}
+                  onChange={(e) => setSelectedDeptFilter(e.target.value)}
+                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
+                >
+                  <option value="All Departments">All Departments</option>
+                  <option value="Road Works">Road Works Department</option>
+                  <option value="Water & Sanitation">Water &amp; Sanitation Dept.</option>
+                  <option value="Electricity">Electricity Board</option>
+                  <option value="Solid Waste">Solid Waste Management</option>
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
 
             {/* SLA Breach Level */}
@@ -203,7 +272,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                 <select
                   value={selectedBreachFilter}
                   onChange={(e) => setSelectedBreachFilter(e.target.value)}
-                  className="w-full appearance-none glass-pill rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none"
+                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
                 >
                   <option value="> 80% Time Elapsed">&gt; 80% Time Elapsed</option>
                   <option value="60% - 80% Time Elapsed">60% - 80% Time Elapsed</option>
@@ -222,7 +291,7 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
                 <select
                   value={selectedStatusFilter}
                   onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                  className="w-full appearance-none glass-pill rounded-xl px-3 py-2 text-xs font-medium text-stone-800 pr-8 focus:outline-none"
+                  className="w-full appearance-none bg-white/90 border border-stone-200 rounded-xl px-3 py-1.5 text-xs font-medium text-stone-800 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500/20 shadow-2xs cursor-pointer"
                 >
                   <option value="All Status">All Status</option>
                   <option value="Assigned">Assigned</option>
@@ -234,14 +303,14 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
             </div>
 
             {/* Reset Filters Link */}
-            <div className="pt-1">
+            <div className="pt-0.5">
               <button
                 onClick={() => {
                   setSelectedDeptFilter('All Departments');
                   setSelectedBreachFilter('> 80% Time Elapsed');
                   setSelectedStatusFilter('All Status');
                 }}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-[#ea580c] transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-[#ea580c] transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset Filters</span>
@@ -249,272 +318,298 @@ export const NotificationsView: React.FC<NotificationsViewProps> = ({
             </div>
           </div>
 
-          {/* Card 2: Department Escalation Summary */}
-          <div className="bg-transparent p-3 space-y-3">
-            <h3 className="text-sm font-bold text-stone-900">
-              Department Escalation Summary
-            </h3>
-
-            <div className="space-y-2 pt-1">
-              {/* Road Works */}
-              <div
-                onClick={() => setSelectedDeptFilter('Road Works')}
-                className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/60 transition-colors border border-white/50 cursor-pointer group glass-pill"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-800 font-bold text-xs flex items-center justify-center shrink-0 border border-emerald-500/20">
-                    R
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-stone-900 group-hover:text-[#ea580c] transition-colors">
-                      Road Works Department
-                    </h4>
-                    <p className="text-[11px] text-red-600 font-semibold mt-0.5">
-                      7 Critical
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-700" />
-              </div>
-
-              {/* Water & Sanitation */}
-              <div
-                onClick={() => setSelectedDeptFilter('Water & Sanitation')}
-                className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/60 transition-colors border border-white/50 cursor-pointer group glass-pill"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-800 font-bold text-xs flex items-center justify-center shrink-0 border border-sky-500/20">
-                    W
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-stone-900 group-hover:text-[#ea580c] transition-colors">
-                      Water &amp; Sanitation Dept.
-                    </h4>
-                    <p className="text-[11px] text-red-600 font-semibold mt-0.5">
-                      3 Critical
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-700" />
-              </div>
-
-              {/* Electrical */}
-              <div
-                onClick={() => setSelectedDeptFilter('Electricity')}
-                className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/60 transition-colors border border-white/50 cursor-pointer group glass-pill"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-800 font-bold text-xs flex items-center justify-center shrink-0 border border-amber-500/20">
-                    E
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-stone-900 group-hover:text-[#ea580c] transition-colors">
-                      Electricity &amp; Lighting
-                    </h4>
-                    <p className="text-[11px] text-red-600 font-semibold mt-0.5">
-                      2 Critical
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-700" />
-              </div>
-            </div>
-          </div>
-
-          {/* Emergency Helpline Card */}
-          <div className="glass-card rounded-3xl p-5 border-l-4 border-l-[#ea580c]">
-            <p className="text-xs font-semibold text-stone-500">24x7 Command Control</p>
-            <h4 className="text-sm font-bold text-stone-900 mt-0.5">
+          {/* Card 2: 24x7 Command Control */}
+          <div className="bg-white/70 backdrop-blur-md rounded-3xl p-4.5 border-l-4 border-l-[#ea580c] shadow-xs border border-white/60">
+            <p className="text-[11px] font-semibold text-stone-500">24x7 Command Control</p>
+            <h4 className="text-xs font-bold text-stone-900 mt-0.5">
               Contact Control Room
             </h4>
-            <div className="flex items-center gap-2 mt-2">
-              <Phone className="w-4 h-4 text-[#ea580c]" />
-              <span className="text-base font-extrabold text-[#c2410c] font-mono tracking-tight">
+            <div className="flex items-center gap-2 mt-1.5">
+              <Phone className="w-3.5 h-3.5 text-[#ea580c]" />
+              <span className="text-sm font-extrabold text-[#c2410c] font-mono tracking-tight">
                 1800-123-4567
               </span>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Critical SLA Breach Issues List (col-span-8 on lg) */}
-        <div className="lg:col-span-8 space-y-4">
-          <div className="flex items-center justify-between pb-1">
+        {/* ─── RIGHT COLUMN: Breach Issues List (col-span-8 on lg, col-span-9 on xl) ─── */}
+        <div className="lg:col-span-8 xl:col-span-9 space-y-3">
+          {/* Header Row: Title + Sort */}
+          <div className="flex items-center justify-between pb-0.5">
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-stone-900">
                 Critical SLA Breach Issues
               </h3>
-              <span className="w-6 h-6 rounded-full bg-[#dc2626] text-white font-bold text-xs flex items-center justify-center font-mono">
-                12
+              <span className="w-5 h-5 rounded-full bg-[#dc2626] text-white text-xs font-bold flex items-center justify-center font-mono shrink-0 shadow-2xs">
+                {filteredIssues.length}
               </span>
             </div>
 
             {/* Sort Dropdown */}
-            <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none glass-pill rounded-xl px-3 py-1.5 text-xs font-semibold text-stone-700 pr-7 focus:outline-none"
-              >
-                <option value="Time Elapsed (High to Low)">
-                  Sort by: Time Elapsed (High to Low)
-                </option>
-                <option value="Time Remaining (Low to High)">
-                  Sort by: Time Remaining (Urgent)
-                </option>
-                <option value="Warnings Count">Sort by: Warnings Count</option>
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-stone-500 font-medium">Sort by:</span>
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="appearance-none bg-white border border-stone-200 text-stone-800 text-xs font-medium py-1.5 pl-2.5 pr-7 rounded-lg shadow-2xs hover:border-stone-300 focus:outline-none focus:ring-1 focus:ring-stone-400 cursor-pointer"
+                >
+                  <option value="Time Elapsed (High to Low)">
+                    Time Elapsed (High to Low)
+                  </option>
+                  <option value="Time Remaining (Urgent)">
+                    Time Remaining (Urgent)
+                  </option>
+                  <option value="Reported Date">Reported Date</option>
+                </select>
+                <ChevronDown className="w-3 h-3 text-stone-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
           </div>
 
-          {/* Breach Cards List */}
-          <div className="space-y-4">
-            {breachIssues.map((issue) => {
-              // Calculate circular gauge stroke
-              const radius = 24;
-              const circumference = 2 * Math.PI * radius;
+          {/* Cards List */}
+          <div className="space-y-2.5">
+            {filteredIssues.map((issue) => {
+              // Circular gauge
+              const radius = 22;
+              const circumference = 2 * Math.PI * radius; // ~138.23
               const strokeDashoffset =
                 circumference - (issue.timeElapsedPercent / 100) * circumference;
 
               return (
                 <div
                   key={issue.id}
-                  className="glass-card rounded-3xl border-l-4 border-l-[#dc2626] p-5 glass-card-hover"
+                  className="bg-white rounded-xl border border-stone-200/80 border-l-4 border-l-[#dc2626] p-3 shadow-xs transition-shadow hover:shadow-sm overflow-x-auto"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
-                    {/* Left details + Photo (col-span-5) */}
-                    <div className="md:col-span-5 flex items-start gap-3.5">
+                  <div className="flex items-center justify-between gap-3 sm:gap-4 xl:gap-6 min-w-[700px] lg:min-w-0 w-full">
+                    {/* 1. Left Zone: Photo, ID, Title, Location, Reported date */}
+                    <div className="flex items-center gap-2.5 min-w-0 max-w-[240px] xl:max-w-[270px] shrink-0">
                       <img
                         src={issue.photoUrl}
                         alt={issue.title}
                         onClick={() => onSelectIssueForDetails(issue.id)}
-                        className="w-20 h-18 rounded-xl object-cover ring-1 ring-stone-200 shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                        className="w-13 h-13 sm:w-14 sm:h-14 rounded-lg object-cover ring-1 ring-stone-200/70 shrink-0 cursor-pointer hover:opacity-95 transition-all shadow-2xs"
                       />
-                      <div className="min-w-0">
-                        <span className="text-xs font-bold text-[#c2410c] font-mono">
+                      <div className="min-w-0 space-y-0.5">
+                        <span className="text-[11px] font-bold text-[#dc2626] font-mono tracking-tight block">
                           {issue.id}
                         </span>
                         <h4
                           onClick={() => onSelectIssueForDetails(issue.id)}
-                          className="text-xs font-bold text-stone-900 truncate hover:text-[#ea580c] cursor-pointer"
+                          className="text-xs sm:text-[13px] font-bold text-stone-900 truncate hover:text-[#ea580c] cursor-pointer leading-tight"
+                          title={issue.title}
                         >
                           {issue.title}
                         </h4>
-                        <div className="flex items-center gap-1 text-[11px] text-stone-500 mt-1 truncate">
-                          <Building className="w-3 h-3 text-stone-400 shrink-0" />
+                        <div className="flex items-center gap-1 text-[10px] text-stone-500 truncate">
+                          <MapPin className="w-2.5 h-2.5 text-stone-400 shrink-0" />
                           <span className="truncate">{issue.ward}</span>
                         </div>
-                        <div className="flex items-center gap-1 text-[10px] text-stone-400 mt-0.5">
-                          <Clock className="w-3 h-3 text-stone-400 shrink-0" />
-                          <span>Reported: {issue.reportedAt}</span>
+                        <div className="text-[10px] text-stone-400 font-normal truncate">
+                          Reported: {issue.reportedAt}
                         </div>
                       </div>
                     </div>
 
-                    {/* Middle Department & Contractor (col-span-3) */}
-                    <div className="md:col-span-3 text-xs space-y-1.5 border-l border-stone-100 pl-3">
+                    {/* 2. Department & Assigned Contractor */}
+                    <div className="space-y-1 min-w-[155px] max-w-[185px] shrink-0">
                       <div>
-                        <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           Department
                         </span>
-                        <span className="font-bold text-stone-800 truncate block">
-                          {issue.assignedDept}
-                        </span>
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800">
+                          {renderDepartmentIcon(issue.assignedDept)}
+                          <span className="truncate">{issue.assignedDept}</span>
+                        </div>
                       </div>
-
-                      <div className="pt-1">
-                        <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider block">
+                      <div>
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
                           Assigned Contractor
                         </span>
-                        <div className="flex items-center gap-1 text-stone-800 font-semibold truncate">
-                          <User className="w-3 h-3 text-stone-400 shrink-0" />
-                          <span className="truncate">{issue.assignedContractor || 'Government Unit'}</span>
+                        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-stone-800">
+                          <User className="w-3 h-3 text-stone-500 shrink-0" />
+                          <span className="truncate">
+                            {issue.assignedContractor || 'Government Unit'}
+                          </span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Circular Radial Meter (col-span-2) */}
-                    <div className="md:col-span-2 flex flex-col items-center justify-center text-center">
-                      <div className="relative w-14 h-14 flex items-center justify-center">
+                    {/* 3. Circular Radial Gauge */}
+                    <div className="flex flex-col items-center justify-center text-center shrink-0">
+                      <div className="relative w-12 h-12 flex items-center justify-center">
                         <svg className="w-full h-full -rotate-90">
                           <circle
-                            cx="28"
-                            cy="28"
+                            cx="24"
+                            cy="24"
                             r={radius}
                             fill="transparent"
                             stroke="#f1f5f9"
-                            strokeWidth="5"
+                            strokeWidth="3.5"
                           />
                           <circle
-                            cx="28"
-                            cy="28"
+                            cx="24"
+                            cy="24"
                             r={radius}
                             fill="transparent"
                             stroke="#dc2626"
-                            strokeWidth="5"
+                            strokeWidth="3.5"
                             strokeDasharray={circumference}
                             strokeDashoffset={strokeDashoffset}
                             strokeLinecap="round"
                           />
                         </svg>
-                        <span className="absolute font-mono font-bold text-xs text-stone-900">
-                          {issue.timeElapsedPercent}%
-                        </span>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                          <span className="text-xs sm:text-[13px] font-bold text-stone-900 leading-tight">
+                            {issue.timeElapsedPercent}%
+                          </span>
+                          <span className="text-[7px] font-medium text-stone-500 leading-none">
+                            Elapsed
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-[10px] font-bold text-stone-600 mt-1">
-                        Time Elapsed
-                      </span>
-                      <span className="text-[9px] font-semibold text-red-600">
+                      <span className="text-[9px] font-medium text-stone-400 mt-0.5 leading-none">
                         (No Progress)
                       </span>
                     </div>
 
-                    {/* SLA Time Remaining & Warning Buttons (col-span-2) */}
-                    <div className="md:col-span-2 flex flex-col justify-between items-end gap-2 text-xs">
-                      <div className="text-right">
-                        <span className="text-[10px] text-stone-400 block">
-                          SLA: {issue.slaTotalHours} Hours
+                    {/* 4. SLA Time & Time Remaining */}
+                    <div className="space-y-1 shrink-0">
+                      <div>
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
+                          SLA Time
                         </span>
-                        <div className="flex items-center gap-1 font-mono font-bold text-red-600 text-xs">
-                          <span>{issue.timeRemainingFormatted}</span>
-                          <Clock className="w-3.5 h-3.5" />
+                        <span className="text-[11px] font-bold text-stone-800 block">
+                          {issue.slaTotalHours} Hours
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[9px] font-medium text-stone-400 block uppercase tracking-wider">
+                          Remaining
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[11px] font-bold text-[#dc2626] font-mono">
+                            {issue.timeRemainingFormatted}
+                          </span>
+                          <Clock className="w-2.5 h-2.5 text-[#dc2626] shrink-0" />
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Bottom 3 Action Buttons */}
-                  <div className="mt-4 pt-3 border-t border-stone-100 flex flex-wrap items-center justify-end gap-2.5">
-                    {/* 1. Issue Formal Warning */}
-                    <button
-                      onClick={() => onIssueFormalWarning(issue)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#9a3412] hover:bg-[#7c2d12] text-white rounded-xl text-xs font-bold shadow-2xs transition-colors"
-                    >
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      <span>Issue Formal Warning</span>
-                    </button>
+                    {/* 5. Rightmost Corner: 3 Options Stacked + 3 Dots Menu */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {/* Stack of 3 action buttons */}
+                      <div className="flex flex-col gap-1 w-[145px] xl:w-[155px]">
+                        {/* 1. Issue Formal Warning (Top) */}
+                        <button
+                          onClick={() => onIssueFormalWarning(issue)}
+                          className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-md text-[10px] xl:text-[11px] font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                        >
+                          <AlertTriangle className="w-3 h-3 shrink-0 text-white" />
+                          <span>Issue Formal Warning</span>
+                        </button>
 
-                    {/* 2. Escalate to Commissioner */}
-                    <button
-                      onClick={() => onEscalateCommissioner(issue)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-stone-50 text-[#c2410c] border border-[#ea580c]/40 rounded-xl text-xs font-bold transition-colors"
-                    >
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                      <span>Escalate to Commissioner</span>
-                    </button>
+                        {/* 2. Escalate to Commissioner (Middle) */}
+                        <button
+                          onClick={() => onEscalateCommissioner(issue)}
+                          className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-md text-[10px] xl:text-[11px] font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                        >
+                          <svg
+                            className="w-3 h-3 text-[#dc2626] shrink-0"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="m16 12-4-4-4 4" />
+                            <path d="M12 16V8" />
+                          </svg>
+                          <span>Escalate to Commissioner</span>
+                        </button>
 
-                    {/* 3. Impose Penalty Fine */}
-                    <button
-                      onClick={() => onImposePenalty(issue)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-colors"
-                    >
-                      <IndianRupee className="w-3.5 h-3.5" />
-                      <span>Impose Penalty Fine</span>
-                    </button>
+                        {/* 3. Impose Penalty Fine (Bottom) */}
+                        <button
+                          onClick={() => onImposePenalty(issue)}
+                          className="inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50/50 text-[#dc2626] border border-red-300 rounded-md text-[10px] xl:text-[11px] font-semibold shadow-2xs transition-colors cursor-pointer active:scale-[0.99]"
+                        >
+                          <span className="text-[10px] font-bold leading-none">₹</span>
+                          <span>Impose Penalty Fine</span>
+                        </button>
+                      </div>
+
+                      {/* Vertical 3 dots menu */}
+                      <div className="relative">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenuId(activeMenuId === issue.id ? null : issue.id);
+                          }}
+                          className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors cursor-pointer"
+                          title="More options"
+                        >
+                          <MoreVertical className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Context Menu Dropdown */}
+                        {activeMenuId === issue.id && (
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute right-0 top-7 z-30 w-48 bg-white rounded-xl shadow-xl border border-stone-200 py-1 text-xs text-stone-700 animate-in fade-in zoom-in-95"
+                          >
+                            <button
+                              onClick={() => {
+                                onSelectIssueForDetails(issue.id);
+                                setActiveMenuId(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
+                              <span>View Full Grievance</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                onIssueFormalWarning(issue);
+                                setActiveMenuId(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium text-amber-700"
+                            >
+                              <FileWarning className="w-3.5 h-3.5" />
+                              <span>Dispatch Show Cause</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                onImposePenalty(issue);
+                                setActiveMenuId(null);
+                              }}
+                              className="w-full text-left px-3 py-1.5 hover:bg-stone-50 flex items-center gap-2 cursor-pointer font-medium text-red-700"
+                            >
+                              <IndianRupee className="w-3.5 h-3.5" />
+                              <span>Levy Default Penalty</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Bottom Note Banner */}
+          <div className="bg-[#fffbeb] border border-[#fef08a] rounded-xl p-3 sm:p-3.5 flex items-center gap-3 text-xs text-stone-700 shadow-2xs mt-2">
+            <div className="w-4.5 h-4.5 rounded-full border border-stone-400/90 text-stone-700 flex items-center justify-center shrink-0 font-serif font-bold text-[11px] italic">
+              i
+            </div>
+            <p className="text-stone-700 text-xs leading-relaxed">
+              <span className="font-bold text-stone-900">Note:</span> Zero progress reported on
+              these issues. Immediate escalation will help avoid SLA breach penalties and ensure
+              faster citizen resolution.
+            </p>
           </div>
         </div>
       </div>
