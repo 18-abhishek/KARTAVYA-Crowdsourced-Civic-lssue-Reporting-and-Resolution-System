@@ -11,8 +11,8 @@ COPY gradle gradle
 COPY build.gradle.kts build.gradle.kts
 COPY settings.gradle.kts settings.gradle.kts
 
-# Grant execute permissions to gradlew
-RUN chmod +x gradlew
+# Fix Windows CRLF line endings and grant execute permissions
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
 # Download dependencies
 RUN ./gradlew dependencies --no-daemon || true
