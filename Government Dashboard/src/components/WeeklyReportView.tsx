@@ -1361,8 +1361,8 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 items-start">
-      {/* Left Secondary Sidebar (w-56 breadth, sticky position) */}
-      <div className="w-full lg:w-60 shrink-0 space-y-4 lg:sticky lg:top-22 self-start">
+      {/* Left Secondary Sidebar (sticky position so it stays fixed during scrolling) */}
+      <div className="w-full lg:w-60 shrink-0 space-y-4 lg:sticky lg:top-[88px] self-start z-30 max-h-[calc(100vh-6.5rem)] overflow-y-auto no-scrollbar">
         <div className="glass-panel rounded-3xl p-3 border border-stone-200/50 space-y-1 bg-white">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
@@ -1373,7 +1373,7 @@ export const WeeklyReportView: React.FC<WeeklyReportViewProps> = ({ onExportPdf 
                 onClick={() => setSidebarTab(item.id as SidebarTabType)}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all text-left ${
                   isActive
-                    ? 'bg-[#c2410c] text-white shadow-md'
+                    ? 'bg-gradient-to-r from-[#ea580c] via-[#f97316] to-[#fb923c] text-white font-bold shadow-md shadow-orange-500/20 scale-[1.02]'
                     : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
                 }`}
               >
