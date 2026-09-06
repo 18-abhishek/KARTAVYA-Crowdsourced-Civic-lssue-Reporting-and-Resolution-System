@@ -112,7 +112,7 @@ export function App() {
   const unreadNotificationsCount = issues.filter((i) => i.timeElapsedPercent >= 80 && i.status !== 'Resolved').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fef4ec] via-[#fbeade] to-[#f3d4c3] text-stone-900 flex flex-col font-sans selection:bg-[#ea580c]/20 selection:text-[#9a3412] relative overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#fef4ec] via-[#fbeade] to-[#f3d4c3] text-stone-900 flex flex-col font-sans selection:bg-[#ea580c]/20 selection:text-[#9a3412] relative overflow-x-clip">
       {/* ─── Traditional Tribal Art Background with Soft Orange Blur & Transparency ─── */}
       <div
         className="fixed inset-0 pointer-events-none z-0 opacity-25 mix-blend-multiply filter blur-[0.5px] bg-repeat bg-center"
