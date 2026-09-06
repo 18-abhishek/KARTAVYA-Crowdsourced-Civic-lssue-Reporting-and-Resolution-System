@@ -1809,7 +1809,6 @@ fun ReportIssueFlow(
 
             // 0. Warm up the Render server (free plan sleeps after 15 min inactivity).
             //    This ensures the JVM is fully started before we upload files and call AI.
-            Log.d("KartavyaBackend", "Warming up server at ${SupabaseStorageRepository.BACKEND_BASE_URL}")
             SupabaseStorageRepository.warmUpServer(maxAttempts = 6, delayMs = 5000L)
 
             // 1. Upload Image to POST /upload/image
