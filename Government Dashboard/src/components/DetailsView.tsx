@@ -51,8 +51,8 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
   onResolve,
   onEscalate,
 }) => {
-  const [selectedCity, setSelectedCity] = useState('Ranchi Municipal Corporation');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(['Roadways']);
+  const [selectedCity, setSelectedCity] = useState('All Cities');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,11 +67,9 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
 
   const audioTimerRef = useRef<any>(null);
 
-  const selectedIssue =
-    issues.find((i) => i.id === selectedIssueId) || issues[0] || null;
-
   // Toggle category in multi-select
   const toggleCategory = (cat: string) => {
+    setCurrentPage(1);
     if (selectedCategories.includes(cat)) {
       setSelectedCategories(selectedCategories.filter((c) => c !== cat));
     } else {
@@ -84,18 +82,19 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
     setSelectedCategories([]);
     setSelectedStatus('All');
     setSearchQuery('');
+    setCurrentPage(1);
   };
 
   // Filter issues
   const filteredIssues = issues.filter((issue) => {
-    if (selectedCity !== 'All Cities' && !issue.city.includes(selectedCity)) {
-      // If user chose specific city
+    if (selectedCity !== 'All Cities' && !issue.city.toLowerCase().includes(selectedCity.toLowerCase())) {
+      return false;
     }
     if (
       selectedCategories.length > 0 &&
       !selectedCategories.includes(issue.category)
     ) {
-      // return false; // allow soft filter for demo rich view
+      return false;
     }
     if (selectedStatus !== 'All' && issue.status !== selectedStatus) {
       return false;
@@ -106,11 +105,27 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
         issue.id.toLowerCase().includes(q) ||
         issue.title.toLowerCase().includes(q) ||
         issue.ward.toLowerCase().includes(q) ||
+        issue.assignedDept.toLowerCase().includes(q) ||
         issue.description.toLowerCase().includes(q);
       if (!match) return false;
     }
     return true;
   });
+
+  const selectedIssue =
+    filteredIssues.find((i) => i.id === selectedIssueId) ||
+    filteredIssues[0] ||
+    issues.find((i) => i.id === selectedIssueId) ||
+    issues[0] ||
+    null;
+
+  const totalIssues = filteredIssues.length;
+  const totalPages = Math.max(1, Math.ceil(totalIssues / rowsPerPage));
+  const validCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedIssues = filteredIssues.slice(
+    (validCurrentPage - 1) * rowsPerPage,
+    validCurrentPage * rowsPerPage
+  );
 
   const handleCopyCoordinates = () => {
     if (selectedIssue) {
@@ -285,9 +300,13 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                   </div>
                   <select
                     value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedCity(e.target.value);
+                      setCurrentPage(1);
+                    }}
                     className="w-full appearance-none glass-pill rounded-xl pl-9 pr-8 py-2 text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
                   >
+                    <option value="All Cities">All Urban Local Bodies</option>
                     <option value="Ranchi Municipal Corporation">
                       Ranchi Municipal Corporation
                     </option>
@@ -301,7 +320,12 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                     <option value="Deoghar Municipal Corporation">
                       Deoghar Municipal Corp
                     </option>
-                    <option value="All Cities">All Urban Local Bodies</option>
+                    <option value="Hazaribagh Municipal Corporation">
+                      Hazaribagh Municipal Corp
+                    </option>
+                    <option value="Giridih Municipal Corporation">
+                      Giridih Municipal Corp
+                    </option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-stone-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
@@ -323,7 +347,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                           : 'glass-pill text-stone-700 hover:bg-white/90'
                       }`}
                     >
-                      <Zap className="w-3.5 h-3.5 text-amber-500" />
+                      <Zap className={`w-3.5 h-3.5 ${selectedCategories.includes('Electricity') ? 'text-white' : 'text-amber-500'}`} />
                       <span>Electricity</span>
                     </button>
 
@@ -335,8 +359,20 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                           : 'glass-pill text-stone-700 hover:bg-white/90'
                       }`}
                     >
-                      <Hammer className="w-3.5 h-3.5 text-amber-600" />
+                      <Hammer className={`w-3.5 h-3.5 ${selectedCategories.includes('Roadways') ? 'text-white' : 'text-amber-600'}`} />
                       <span>Roadways</span>
+                    </button>
+
+                    <button
+                      onClick={() => toggleCategory('Sewage')}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                        selectedCategories.includes('Sewage')
+                          ? 'bg-[#ea580c] text-white border-[#ea580c] shadow-xs'
+                          : 'glass-pill text-stone-700 hover:bg-white/90'
+                      }`}
+                    >
+                      <Droplets className={`w-3.5 h-3.5 ${selectedCategories.includes('Sewage') ? 'text-white' : 'text-sky-500'}`} />
+                      <span>Sewage</span>
                     </button>
 
                     <button
@@ -347,7 +383,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                           : 'glass-pill text-stone-700 hover:bg-white/90'
                       }`}
                     >
-                      <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                      <Droplets className={`w-3.5 h-3.5 ${selectedCategories.includes('Water Supply') ? 'text-white' : 'text-blue-500'}`} />
                       <span>Water Supply</span>
                     </button>
 
@@ -359,7 +395,7 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                           : 'glass-pill text-stone-700 hover:bg-white/90'
                       }`}
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-orange-600" />
+                      <Trash2 className={`w-3.5 h-3.5 ${selectedCategories.includes('Waste Management') ? 'text-white' : 'text-orange-600'}`} />
                       <span>Waste Mgmt</span>
                     </button>
                   </div>
@@ -370,7 +406,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-stone-700 mr-1">Status:</span>
                     <button
-                      onClick={() => setSelectedStatus(selectedStatus === 'Open' ? 'All' : 'Open')}
+                      onClick={() => {
+                        setSelectedStatus(selectedStatus === 'Open' ? 'All' : 'Open');
+                        setCurrentPage(1);
+                      }}
                       className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${
                         selectedStatus === 'Open'
                           ? 'bg-red-50/80 text-red-700 border-red-300 ring-1 ring-red-400'
@@ -382,7 +421,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                     </button>
 
                     <button
-                      onClick={() => setSelectedStatus(selectedStatus === 'In Progress' ? 'All' : 'In Progress')}
+                      onClick={() => {
+                        setSelectedStatus(selectedStatus === 'In Progress' ? 'All' : 'In Progress');
+                        setCurrentPage(1);
+                      }}
                       className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${
                         selectedStatus === 'In Progress'
                           ? 'bg-amber-50/80 text-amber-800 border-amber-300 ring-1 ring-amber-400'
@@ -394,7 +436,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                     </button>
 
                     <button
-                      onClick={() => setSelectedStatus(selectedStatus === 'Resolved' ? 'All' : 'Resolved')}
+                      onClick={() => {
+                        setSelectedStatus(selectedStatus === 'Resolved' ? 'All' : 'Resolved');
+                        setCurrentPage(1);
+                      }}
                       className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${
                         selectedStatus === 'Resolved'
                           ? 'bg-emerald-50/80 text-emerald-700 border-emerald-300 ring-1 ring-emerald-400'
@@ -427,7 +472,10 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                 type="text"
                 placeholder="Search by Issue ID, Location, or Keyword..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="w-full glass-pill rounded-xl pl-9 pr-4 py-2 text-xs font-medium text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#ea580c]"
               />
             </div>
@@ -468,76 +516,93 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/50">
-                  {filteredIssues.slice(0, rowsPerPage).map((issue) => {
-                    const isSelected = selectedIssue?.id === issue.id;
-                    return (
-                      <tr
-                        key={issue.id}
-                        onClick={() => onSelectIssue(issue.id)}
-                        className={`cursor-pointer transition-all ${
-                          isSelected
-                            ? 'bg-orange-500/10 hover:bg-orange-500/15'
-                            : 'hover:bg-white/50'
-                        }`}
-                      >
-                        {/* Issue ID */}
-                        <td className="py-3.5 px-4 font-mono font-bold text-[#c2410c] whitespace-nowrap">
-                          {issue.id}
-                        </td>
+                  {paginatedIssues.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="py-12 text-center text-stone-500">
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <Search className="w-8 h-8 text-stone-300" />
+                          <p className="font-semibold text-stone-700">No issues found matching your filters</p>
+                          <button
+                            onClick={handleClearFilters}
+                            className="text-xs text-[#ea580c] font-semibold hover:underline cursor-pointer"
+                          >
+                            Clear filters
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedIssues.map((issue) => {
+                      const isSelected = selectedIssue?.id === issue.id;
+                      return (
+                        <tr
+                          key={issue.id}
+                          onClick={() => onSelectIssue(issue.id)}
+                          className={`cursor-pointer transition-all ${
+                            isSelected
+                              ? 'bg-orange-500/10 hover:bg-orange-500/15'
+                              : 'hover:bg-white/50'
+                          }`}
+                        >
+                          {/* Issue ID */}
+                          <td className="py-3.5 px-4 font-mono font-bold text-[#c2410c] whitespace-nowrap">
+                            {issue.id}
+                          </td>
 
-                        {/* Photo Thumbnail */}
-                        <td className="py-3.5 px-3">
-                          <img
-                            src={issue.photoUrl}
-                            alt={issue.title}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setFullscreenPhoto(issue.photoUrl);
-                            }}
-                            className="w-12 h-9 rounded-lg object-cover ring-1 ring-white/60 shadow-2xs hover:scale-105 transition-transform"
-                          />
-                        </td>
+                          {/* Photo Thumbnail */}
+                          <td className="py-3.5 px-3">
+                            <img
+                              src={issue.photoUrl}
+                              alt={issue.title}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFullscreenPhoto(issue.photoUrl);
+                              }}
+                              className="w-12 h-9 rounded-lg object-cover ring-1 ring-white/60 shadow-2xs hover:scale-105 transition-transform"
+                            />
+                          </td>
 
-                        {/* Category */}
-                        <td className="py-3.5 px-3 whitespace-nowrap">
-                          {getCategoryTag(issue.category)}
-                        </td>
+                          {/* Category */}
+                          <td className="py-3.5 px-3 whitespace-nowrap">
+                            {getCategoryTag(issue.category)}
+                          </td>
 
-                        {/* Ward / Location */}
-                        <td className="py-3.5 px-4 max-w-[200px]">
-                          <div className="font-bold text-stone-900 truncate">
-                            {issue.ward.split(',')[0]}
-                          </div>
-                          <div className="text-[11px] text-stone-500 truncate">
-                            {issue.ward.split(',').slice(1).join(',')}
-                          </div>
-                        </td>
+                          {/* Ward / Location */}
+                          <td className="py-3.5 px-4 max-w-[200px]">
+                            <div className="font-bold text-stone-900 truncate">
+                              {issue.ward.split(',')[0]}
+                            </div>
+                            <div className="text-[11px] text-stone-500 truncate">
+                              {issue.ward.split(',').slice(1).join(',')}
+                            </div>
+                          </td>
 
-                        {/* Time Reported */}
-                        <td className="py-3.5 px-3 whitespace-nowrap text-stone-700">
-                          <div className="font-medium text-stone-900">
-                            {issue.reportedAt.split(',')[0]}
-                          </div>
-                          <div className="text-[11px] text-stone-500">
-                            {issue.reportedAt.split(',')[1]}
-                          </div>
-                        </td>
+                          {/* Time Reported */}
+                          <td className="py-3.5 px-3 whitespace-nowrap text-stone-700">
+                            <div className="font-medium text-stone-900">
+                              {issue.reportedAt.split(',')[0]}
+                            </div>
+                            <div className="text-[11px] text-stone-500">
+                              {issue.reportedAt.split(',')[1]}
+                            </div>
+                          </td>
 
-                        {/* Assigned Department */}
-                        <td className="py-3.5 px-3 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5 text-stone-700 font-medium">
-                            <Building className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                            <span>{issue.assignedDept}</span>
-                          </div>
-                        </td>
+                          {/* Assigned Department */}
+                          <td className="py-3.5 px-3 whitespace-nowrap">
+                            <div className="flex items-center gap-1.5 text-stone-700 font-medium">
+                              <Building className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                              <span>{issue.assignedDept}</span>
+                            </div>
+                          </td>
 
-                        {/* Status */}
-                        <td className="py-3.5 px-3 whitespace-nowrap">
-                          {getStatusBadge(issue.status)}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          {/* Status */}
+                          <td className="py-3.5 px-3 whitespace-nowrap">
+                            {getStatusBadge(issue.status)}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -545,45 +610,47 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
             {/* Table Pagination Footer */}
             <div className="p-4 border-t border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
               <div>
-                Showing <strong className="text-stone-900">{(currentPage - 1) * 10 + 1}</strong> to{' '}
-                <strong className="text-stone-900">{Math.min(currentPage * 10, 50)}</strong> of{' '}
-                <strong className="text-stone-900 font-mono">50</strong> issues
+                Showing <strong className="text-stone-900">{totalIssues > 0 ? (validCurrentPage - 1) * rowsPerPage + 1 : 0}</strong> to{' '}
+                <strong className="text-stone-900">{Math.min(validCurrentPage * rowsPerPage, totalIssues)}</strong> of{' '}
+                <strong className="text-stone-900 font-mono">{totalIssues}</strong> issues
               </div>
 
-              {/* Pagination controls: exactly 5 pages */}
-              <div className="flex items-center gap-1">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 disabled:opacity-40 transition-colors"
-                  title="Previous Page"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </button>
-
-                {[1, 2, 3, 4, 5].map((pageNum) => (
+              {/* Pagination controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
                   <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${
-                      currentPage === pageNum
-                        ? 'bg-[#ea580c] text-white shadow-xs'
-                        : 'border border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
-                    }`}
+                    disabled={validCurrentPage === 1}
+                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 disabled:opacity-40 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                    title="Previous Page"
                   >
-                    {pageNum}
+                    <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
-                ))}
 
-                <button
-                  disabled={currentPage === 5}
-                  onClick={() => setCurrentPage((p) => Math.min(p + 1, 5))}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 disabled:opacity-40 transition-colors"
-                  title="Next Page"
-                >
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        validCurrentPage === pageNum
+                          ? 'bg-[#ea580c] text-white shadow-xs'
+                          : 'border border-stone-200 bg-white hover:bg-stone-50 text-stone-700'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+
+                  <button
+                    disabled={validCurrentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 disabled:opacity-40 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                    title="Next Page"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
