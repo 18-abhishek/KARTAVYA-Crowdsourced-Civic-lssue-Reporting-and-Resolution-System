@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -53,6 +54,37 @@ object SupabaseStorageRepository {
     private const val AI_PROCESS_PATH = "/ai/process-complaint"
 
     fun generateIssueId(): String = UUID.randomUUID().toString()
+
+    /**
+     * Pings the /health endpoint to wake up the Render free-plan server.
+     * Retries up to [maxAttempts] times with [delayMs] between attempts.
+     * Call this before any AI processing to ensure the server is awake.
+     */
+    suspend fun warmUpServer(maxAttempts: Int = 6, delayMs: Long = 5000L): Boolean =
+        withContext(Dispatchers.IO) {
+            val healthUrl = "$BACKEND_BASE_URL/health"
+            Log.d(TAG, "WARM-UP: Pinging $healthUrl (up to $maxAttempts attempts)")
+            repeat(maxAttempts) { attempt ->
+                try {
+                    val conn = (URL(healthUrl).openConnection() as HttpURLConnection).apply {
+                        requestMethod = "GET"
+                        connectTimeout = 10000
+                        readTimeout = 10000
+                    }
+                    val code = conn.responseCode
+                    conn.disconnect()
+                    if (code in 200..299) {
+                        Log.d(TAG, "WARM-UP: Server is awake after ${attempt + 1} attempt(s)")
+                        return@withContext true
+                    }
+                } catch (e: Exception) {
+                    Log.d(TAG, "WARM-UP attempt ${attempt + 1} failed: ${e.message} — retrying in ${delayMs}ms")
+                }
+                if (attempt < maxAttempts - 1) delay(delayMs)
+            }
+            Log.w(TAG, "WARM-UP: Server did not respond after $maxAttempts attempts")
+            false
+        }
 
     /**
      * Uploads an issue photo to the Node.js server endpoint: POST /upload/image
@@ -163,102 +195,110 @@ object SupabaseStorageRepository {
     ): Result<AiProcessResult> = withContext(Dispatchers.IO) {
         val endpoint = "$BACKEND_BASE_URL$AI_PROCESS_PATH"
         Log.d(TAG, "AI PROCESS START endpoint=$endpoint issueId=$issueId")
+        // Render free plan: retry up to 3 times on 404/503 (cold-start race condition)
+        val maxRetries = 3
+        var lastError: Exception = Exception("AI processing failed")
+        for (attempt in 1..maxRetries) {
+            val result = runCatching { doProcessComplaintWithAi(endpoint, issueId, userId, imageUrl, audioUrl, reporterName, latitude, longitude, address, routingTo) }
+            if (result.isSuccess) return@withContext result
+            val ex = result.exceptionOrNull()
+            val msg = ex?.message ?: ""
+            Log.w(TAG, "AI PROCESS attempt $attempt/$maxRetries failed: $msg")
+            if ((msg.contains("404") || msg.contains("503") || msg.contains("502")) && attempt < maxRetries) {
+                Log.d(TAG, "Render cold-start detected — waiting 6s before retry...")
+                delay(6000L)
+                continue
+            }
+            lastError = Exception(msg)
+            break
+        }
+        Result.failure(lastError)
+    }
+
+    /**
+     * Internal single-attempt AI processing call.
+     */
+    @Throws(Exception::class)
+    private fun doProcessComplaintWithAi(
+        endpoint: String,
+        issueId: String,
+        userId: String,
+        imageUrl: String,
+        audioUrl: String?,
+        reporterName: String?,
+        latitude: Double?,
+        longitude: Double?,
+        address: String?,
+        routingTo: String?
+    ): AiProcessResult {
+        val payload = JSONObject().apply {
+            put("issueId", issueId)
+            put("userId", userId)
+            put("imageUrl", imageUrl)
+            if (!audioUrl.isNullOrBlank()) put("audioUrl", audioUrl)
+            if (!reporterName.isNullOrBlank()) put("reporterName", reporterName)
+            if (latitude != null) put("latitude", latitude)
+            if (longitude != null) put("longitude", longitude)
+            if (!address.isNullOrBlank()) put("address", address)
+            if (!routingTo.isNullOrBlank()) put("routingTo", routingTo)
+        }
+
+        val jsonBytes = payload.toString().toByteArray(StandardCharsets.UTF_8)
+        val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"
+            doOutput = true
+            connectTimeout = 120000
+            readTimeout = 120000
+            setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+            setRequestProperty("Accept", "application/json")
+            setFixedLengthStreamingMode(jsonBytes.size)
+        }
+
         try {
-            val payload = JSONObject().apply {
-                put("issueId", issueId)
-                put("userId", userId)
-                put("imageUrl", imageUrl)
-                if (!audioUrl.isNullOrBlank()) {
-                    put("audioUrl", audioUrl)
-                }
-                if (!reporterName.isNullOrBlank()) put("reporterName", reporterName)
-                if (latitude != null) put("latitude", latitude)
-                if (longitude != null) put("longitude", longitude)
-                if (!address.isNullOrBlank()) put("address", address)
-                if (!routingTo.isNullOrBlank()) put("routingTo", routingTo)
+            connection.outputStream.use { os ->
+                os.write(jsonBytes)
+                os.flush()
+            }
+            val responseCode = connection.responseCode
+            val responseBody = readHttpResponse(connection, responseCode)
+            Log.d(TAG, "AI PROCESS RESPONSE CODE: $responseCode")
+            Log.d(TAG, "AI PROCESS BODY: $responseBody")
+
+            if (responseCode !in 200..299) {
+                throw IllegalStateException("Backend server error ($responseCode): $responseBody")
             }
 
-            val jsonBytes = payload.toString().toByteArray(StandardCharsets.UTF_8)
+            val json = JSONObject(responseBody)
+            val isSuccess = json.optBoolean("success", false)
+            val isApproved = json.optBoolean("approved", false)
+            val aiObj = json.optJSONObject("ai")
+            val imgVerObj = json.optJSONObject("imageVerification")
+            val firestoreObj = json.optJSONObject("firestore")
 
-            val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
-                requestMethod = "POST"
-                doOutput = true
-                connectTimeout = 120000 // 120s timeout for Gemini + Sarvam processing
-                readTimeout = 120000
-                setRequestProperty("Content-Type", "application/json; charset=UTF-8")
-                setRequestProperty("Accept", "application/json")
-                setFixedLengthStreamingMode(jsonBytes.size)
-            }
+            val category = aiObj?.optString("category") ?: imgVerObj?.optString("category") ?: json.optString("category", "")
+            val summary = aiObj?.optString("summary") ?: ""
+            val description = aiObj?.optString("description") ?: ""
+            val priority = aiObj?.optString("priority") ?: ""
+            val reason = aiObj?.optString("reason") ?: imgVerObj?.optString("reason") ?: json.optString("reason", "")
+            val transcript = aiObj?.optString("transcript") ?: json.optString("transcript", "")
+            val firestoreWritten = firestoreObj?.optBoolean("written", false) ?: false
+            val firestoreIssueId = firestoreObj?.optString("issueId") ?: json.optString("issueId", issueId)
 
-            try {
-                connection.outputStream.use { os ->
-                    os.write(jsonBytes)
-                    os.flush()
-                }
-
-                val responseCode = connection.responseCode
-                val responseBody = readHttpResponse(connection, responseCode)
-                Log.d(TAG, "AI PROCESS RESPONSE CODE: $responseCode")
-                Log.d(TAG, "AI PROCESS BODY: $responseBody")
-
-                if (responseCode !in 200..299) {
-                    return@withContext Result.failure(
-                        Exception("Backend server error ($responseCode): $responseBody")
-                    )
-                }
-
-                val json = JSONObject(responseBody)
-                val isSuccess = json.optBoolean("success", false)
-                val isApproved = json.optBoolean("approved", false)
-
-                val aiObj = json.optJSONObject("ai")
-                val imgVerObj = json.optJSONObject("imageVerification")
-                val firestoreObj = json.optJSONObject("firestore")
-
-                val category = aiObj?.optString("category")
-                    ?: imgVerObj?.optString("category")
-                    ?: json.optString("category", "")
-                val summary = aiObj?.optString("summary") ?: ""
-                val description = aiObj?.optString("description") ?: ""
-                val priority = aiObj?.optString("priority") ?: ""
-                val reason = aiObj?.optString("reason")
-                    ?: imgVerObj?.optString("reason")
-                    ?: json.optString("reason", "")
-                val transcript = aiObj?.optString("transcript")
-                    ?: json.optString("transcript", "")
-                val firestoreWritten = firestoreObj?.optBoolean("written", false) ?: false
-                val firestoreIssueId = firestoreObj?.optString("issueId") ?: json.optString("issueId", issueId)
-
-                val result = AiProcessResult(
-                    success = isSuccess,
-                    approved = isApproved,
-                    category = category,
-                    summary = summary,
-                    description = description,
-                    priority = priority,
-                    reason = reason,
-                    transcript = transcript,
-                    firestoreWritten = firestoreWritten,
-                    issueId = firestoreIssueId
-                )
-
-                Log.d(TAG, "AI PROCESS RESULT approved=$isApproved category=$category")
-                Result.success(result)
-            } finally {
-                connection.disconnect()
-            }
-        } catch (e: ConnectException) {
-            val errorMsg = "Could not connect to backend server at $BACKEND_BASE_URL. Please ensure server is running."
-            Log.e(TAG, "AI PROCESS FAILURE: $errorMsg", e)
-            Result.failure(Exception(errorMsg))
-        } catch (e: SocketTimeoutException) {
-            val errorMsg = "AI Processing timed out. The server took too long to process."
-            Log.e(TAG, "AI PROCESS FAILURE: $errorMsg", e)
-            Result.failure(Exception(errorMsg))
-        } catch (e: Exception) {
-            val errorMsg = e.message ?: "AI Processing error"
-            Log.e(TAG, "AI PROCESS FAILURE: $errorMsg", e)
-            Result.failure(Exception(errorMsg))
+            Log.d(TAG, "AI PROCESS RESULT approved=$isApproved category=$category")
+            return AiProcessResult(
+                success = isSuccess,
+                approved = isApproved,
+                category = category,
+                summary = summary,
+                description = description,
+                priority = priority,
+                reason = reason,
+                transcript = transcript,
+                firestoreWritten = firestoreWritten,
+                issueId = firestoreIssueId
+            )
+        } finally {
+            connection.disconnect()
         }
     }
 
