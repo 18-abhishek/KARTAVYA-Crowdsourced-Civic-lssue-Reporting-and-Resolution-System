@@ -647,12 +647,17 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                 <div className="rounded-xl border border-stone-200 bg-[#e8efe9] p-2.5 flex flex-col justify-between h-32 relative overflow-hidden">
                   <div className="flex items-center gap-1.5 z-10">
                     <MapPin className="w-4 h-4 text-[#dc2626] shrink-0" />
-                    <span className="text-xs font-bold text-stone-900 truncate">
-                      Kanke Road
+                    <span
+                      className="text-xs font-bold text-stone-900 truncate"
+                      title={selectedIssue.ward.split(',')[0].trim()}
+                    >
+                      {selectedIssue.ward.split(',')[0].trim()}
                     </span>
                   </div>
-                  <p className="text-[10px] text-stone-600 z-10">
-                    Ranchi, Jharkhand
+                  <p className="text-[10px] text-stone-600 z-10 truncate">
+                    {selectedIssue.city
+                      .replace(/(Municipal Corporation|Notified Area Committee|Steel City|Cantonment Board|Nagar Parishad)/gi, '')
+                      .trim() || 'Ranchi'}, Jharkhand
                   </p>
 
                   {/* GPS Box */}
@@ -679,12 +684,19 @@ export const DetailsView: React.FC<DetailsViewProps> = ({
                   </div>
 
                   {/* Decorative map grid background */}
-                  <svg className="absolute inset-0 w-full h-full opacity-30 pointer-events-none" viewBox="0 0 100 100">
-                    <line x1="0" y1="30" x2="100" y2="30" stroke="#94a3b8" strokeWidth="2" />
-                    <line x1="0" y1="70" x2="100" y2="70" stroke="#fde047" strokeWidth="3" />
-                    <line x1="40" y1="0" x2="40" y2="100" stroke="#94a3b8" strokeWidth="2" />
-                    <circle cx="40" cy="70" r="4" fill="#dc2626" />
-                  </svg>
+                  {(() => {
+                    const mapPinX = Math.round(25 + (Math.abs(selectedIssue.coordinates.lng * 1000) % 50));
+                    const mapPinY = Math.round(25 + (Math.abs(selectedIssue.coordinates.lat * 1000) % 50));
+                    return (
+                      <svg className="absolute inset-0 w-full h-full opacity-35 pointer-events-none" viewBox="0 0 100 100">
+                        <line x1="0" y1={mapPinY} x2="100" y2={mapPinY} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="3 2" />
+                        <line x1="0" y1="70" x2="100" y2="70" stroke="#fde047" strokeWidth="3" />
+                        <line x1={mapPinX} y1="0" x2={mapPinX} y2="100" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="3 2" />
+                        <circle cx={mapPinX} cy={mapPinY} r="4.5" fill="#dc2626" />
+                        <circle cx={mapPinX} cy={mapPinY} r="9" fill="#dc2626" fillOpacity="0.2" />
+                      </svg>
+                    );
+                  })()}
                 </div>
               </div>
 
