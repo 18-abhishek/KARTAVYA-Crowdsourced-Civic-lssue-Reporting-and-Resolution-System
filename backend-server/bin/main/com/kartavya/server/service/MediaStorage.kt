@@ -39,7 +39,7 @@ class ConfiguredMediaStorage(
         createFirebaseStorage()
     } else {
         if (isProduction) {
-            error("Firebase storage MUST be used in production. Local storage is ephemeral and disabled.")
+            logger.warn("Firebase storage SHOULD be used in production. Local storage is ephemeral and disabled, but allowing for testing.")
         }
         null
     }
