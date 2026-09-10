@@ -1,4 +1,4 @@
-﻿package com.example.kartavya.presentation.screens
+package com.example.kartavya.presentation.screens
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -18,6 +18,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import android.widget.Toast
+import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
+import com.example.kartavya.data.repository.IssueRepository
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.kartavya.core.ui.theme.*
@@ -437,3 +441,4 @@ fun ReportDetailsScreen(
         Spacer(modifier = Modifier.height(80.dp))
     }
 }
+
