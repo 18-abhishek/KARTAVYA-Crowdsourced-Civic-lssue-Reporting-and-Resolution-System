@@ -67,6 +67,13 @@ class ConfiguredMediaStorage(
     }
 
     override fun read(path: String, kind: String): StoredMedia {
+        if (path.startsWith("http://", ignoreCase = true) || path.startsWith("https://", ignoreCase = true)) {
+            val url = java.net.URL(path)
+            val bytes = url.readBytes()
+            val fileName = path.substringBefore('?').substringAfterLast('/')
+            return StoredMedia(bytes, fileName, contentType(fileName, kind))
+        }
+
         val objectName = objectName(path, kind)
         val bytes = if (firebaseStorage != null) {
             firebaseStorage.get(BlobId.of(configuredBucket, objectName))?.getContent()

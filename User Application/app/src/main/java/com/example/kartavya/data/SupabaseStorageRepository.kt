@@ -19,6 +19,8 @@ import java.util.UUID
 import com.example.kartavya.config.AppConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 /**
  * Result data class for AI Complaint Processing endpoint: POST /ai/process-complaint
@@ -99,9 +101,9 @@ object SupabaseStorageRepository {
         }
 
     /**
-     * Uploads an issue photo to the Node.js server endpoint: POST /upload/image
+     * Uploads an issue photo to Firebase Storage.
      *
-     * @return Result containing the relative image path (e.g., "/files/images/filename.jpg")
+     * @return Result containing the download URL.
      */
     suspend fun uploadIssueImage(
         uid: String,
@@ -113,32 +115,21 @@ object SupabaseStorageRepository {
         Log.d(TAG, "IMAGE UPLOAD START issueId=$issueId")
         try {
             onProgress?.invoke(0.1f)
-            val bytes = context.contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
-                ?: throw IllegalStateException("Could not read image content from URI: $imageUri")
-
-            onProgress?.invoke(0.3f)
-
-            val token = getAuthToken()
-            val imagePath = uploadFileToServer(
-                uploadUrl = "$BACKEND_BASE_URL$IMAGE_UPLOAD_PATH",
-                fieldName = "file",
-                fileName = "issue_${issueId}_image.jpg",
-                contentType = "image/jpeg",
-                data = bytes,
-                token = token
-            )
-
+            val storageRef = Firebase.storage.reference
+            val imageRef = storageRef.child("images/issue_${issueId}_image.jpg")
+            
+            val uploadTask = imageRef.putFile(imageUri)
+            uploadTask.addOnProgressListener { snapshot ->
+                val progress = (100.0 * snapshot.bytesTransferred) / snapshot.totalByteCount
+                onProgress?.invoke((progress / 100.0).toFloat())
+            }
+            
+            Tasks.await(uploadTask)
+            val downloadUri = Tasks.await(imageRef.downloadUrl)
+            
             onProgress?.invoke(1.0f)
-            Log.d(TAG, "IMAGE UPLOAD SUCCESS path: $imagePath")
-            Result.success(imagePath)
-        } catch (e: ConnectException) {
-            val errorMsg = "Could not connect to backend server at $BACKEND_BASE_URL. Please ensure server is running."
-            Log.e(TAG, "IMAGE UPLOAD FAILURE: $errorMsg", e)
-            Result.failure(Exception(errorMsg))
-        } catch (e: SocketTimeoutException) {
-            val errorMsg = "Image upload timed out. Please check your connection."
-            Log.e(TAG, "IMAGE UPLOAD FAILURE: $errorMsg", e)
-            Result.failure(Exception(errorMsg))
+            Log.d(TAG, "IMAGE UPLOAD SUCCESS url: $downloadUri")
+            Result.success(downloadUri.toString())
         } catch (e: Exception) {
             val errorMsg = e.message ?: "Image upload error"
             Log.e(TAG, "IMAGE UPLOAD FAILURE: $errorMsg", e)
@@ -147,9 +138,9 @@ object SupabaseStorageRepository {
     }
 
     /**
-     * Uploads a voice recording (.m4a) to the Node.js server endpoint: POST /upload/audio
+     * Uploads a voice recording to Firebase Storage.
      *
-     * @return Result containing the relative audio path (e.g., "/files/audio/filename.m4a")
+     * @return Result containing the download URL.
      */
     suspend fun uploadIssueAudio(
         uid: String,
@@ -161,30 +152,18 @@ object SupabaseStorageRepository {
             if (!audioFile.exists()) {
                 throw IllegalStateException("Audio file does not exist at ${audioFile.absolutePath}")
             }
-            val bytes = audioFile.readBytes()
-            val mimeType = resolveAudioMimeType(audioFile)
-            val fileName = "issue_${issueId}_voice.${audioFile.extension.ifBlank { "m4a" }}"
-
-            val token = getAuthToken()
-            val audioPath = uploadFileToServer(
-                uploadUrl = "$BACKEND_BASE_URL$AUDIO_UPLOAD_PATH",
-                fieldName = "file",
-                fileName = fileName,
-                contentType = mimeType,
-                data = bytes,
-                token = token
-            )
-
-            Log.d(TAG, "AUDIO UPLOAD SUCCESS path: $audioPath")
-            Result.success(audioPath)
-        } catch (e: ConnectException) {
-            val errorMsg = "Could not connect to backend server at $BACKEND_BASE_URL. Please ensure server is running."
-            Log.e(TAG, "AUDIO UPLOAD FAILURE: $errorMsg", e)
-            Result.failure(Exception(errorMsg))
-        } catch (e: SocketTimeoutException) {
-            val errorMsg = "Audio upload timed out. Please check connection."
-            Log.e(TAG, "AUDIO UPLOAD FAILURE: $errorMsg", e)
-            Result.failure(Exception(errorMsg))
+            val storageRef = Firebase.storage.reference
+            val extension = audioFile.extension.ifBlank { "m4a" }
+            val audioRef = storageRef.child("audio/issue_${issueId}_voice.$extension")
+            
+            val uri = Uri.fromFile(audioFile)
+            val uploadTask = audioRef.putFile(uri)
+            
+            Tasks.await(uploadTask)
+            val downloadUri = Tasks.await(audioRef.downloadUrl)
+            
+            Log.d(TAG, "AUDIO UPLOAD SUCCESS url: $downloadUri")
+            Result.success(downloadUri.toString())
         } catch (e: Exception) {
             val errorMsg = e.message ?: "Audio upload error"
             Log.e(TAG, "AUDIO UPLOAD FAILURE: $errorMsg", e)
@@ -326,149 +305,5 @@ object SupabaseStorageRepository {
         }
     }
 
-    /**
-     * Executes an HTTP multipart/form-data upload request with retry logic for cold-starts.
-     * Returns the relative path string (e.g. "/files/images/...") returned by the backend.
-     */
-    private suspend fun uploadFileToServer(
-        uploadUrl: String,
-        fieldName: String,
-        fileName: String,
-        contentType: String,
-        data: ByteArray,
-        token: String?
-    ): String {
-        val maxRetries = 3
-        var currentDelay = 2000L
-        var lastError: Exception = Exception("Upload failed")
-        for (attempt in 1..maxRetries) {
-            val result = runCatching { doUploadFileToServer(uploadUrl, fieldName, fileName, contentType, data, token) }
-            if (result.isSuccess) return result.getOrThrow()
-            
-            val ex = result.exceptionOrNull()
-            val msg = ex?.message ?: ""
-            Log.w(TAG, "UPLOAD attempt $attempt/$maxRetries failed: $msg")
-            
-            if ((msg.contains("404") || msg.contains("503") || msg.contains("502") || msg.contains("timeout")) && attempt < maxRetries) {
-                Log.d(TAG, "Render cold-start or timeout detected during upload — waiting ${currentDelay}ms before retry...")
-                delay(currentDelay)
-                currentDelay *= 2
-                continue
-            }
-            if ((ex is ConnectException || ex is SocketTimeoutException) && attempt < maxRetries) {
-                Log.d(TAG, "Network timeout during upload — waiting ${currentDelay}ms before retry...")
-                delay(currentDelay)
-                currentDelay *= 2
-                continue
-            }
-            lastError = Exception(msg, ex)
-            break
-        }
-        throw lastError
-    }
-    private fun doUploadFileToServer(
-        uploadUrl: String,
-        fieldName: String,
-        fileName: String,
-        contentType: String,
-        data: ByteArray,
-        token: String?
-    ): String {
-        val boundary = "KartavyaBoundary${UUID.randomUUID()}"
-        val multipartBody = buildMultipartBody(
-            boundary = boundary,
-            fieldName = fieldName,
-            fileName = fileName,
-            contentType = contentType,
-            data = data
-        )
 
-        val connection = (URL(uploadUrl).openConnection() as HttpURLConnection).apply {
-            requestMethod = "POST"
-            doOutput = true
-            connectTimeout = 60000 // 60s timeout for file uploads
-            readTimeout = 60000
-            setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
-            if (!token.isNullOrBlank()) {
-                setRequestProperty("Authorization", "Bearer $token")
-            }
-            setFixedLengthStreamingMode(multipartBody.size)
-        }
-
-        try {
-            connection.outputStream.use { os ->
-                os.write(multipartBody)
-                os.flush()
-            }
-
-            val responseCode = connection.responseCode
-            val responseBody = readHttpResponse(connection, responseCode)
-            Log.d(TAG, "UPLOAD HTTP STATUS: $responseCode for $uploadUrl")
-            Log.d(TAG, "UPLOAD RESPONSE BODY: $responseBody")
-
-            if (responseCode !in 200..299) {
-                throw IllegalStateException("Upload failed with HTTP $responseCode: $responseBody")
-            }
-
-            val json = JSONObject(responseBody)
-            if (!json.optBoolean("success", false)) {
-                val errorStr = json.optString("error", "Upload reported failure")
-                throw IllegalStateException(errorStr)
-            }
-
-            val returnedPath = json.optString("path", "").trim()
-            if (returnedPath.isBlank()) {
-                throw IllegalStateException("Server response did not include a file path.")
-            }
-
-            return if (returnedPath.startsWith("/")) returnedPath else "/$returnedPath"
-        } finally {
-            connection.disconnect()
-        }
-    }
-
-    private fun resolveAudioMimeType(audioFile: File): String {
-        return when (audioFile.extension.lowercase(Locale.US)) {
-            "m4a", "mp4" -> "audio/mp4"
-            "aac" -> "audio/aac"
-            "wav" -> "audio/wav"
-            "mp3" -> "audio/mpeg"
-            else -> "audio/mp4"
-        }
-    }
-
-    private fun buildMultipartBody(
-        boundary: String,
-        fieldName: String,
-        fileName: String,
-        contentType: String,
-        data: ByteArray
-    ): ByteArray {
-        val lineBreak = "\r\n"
-        val body = ByteArrayOutputStream()
-        body.write("--$boundary$lineBreak".toByteArray(StandardCharsets.UTF_8))
-        body.write(
-            "Content-Disposition: form-data; name=\"$fieldName\"; filename=\"$fileName\"$lineBreak"
-                .toByteArray(StandardCharsets.UTF_8)
-        )
-        body.write("Content-Type: $contentType$lineBreak$lineBreak".toByteArray(StandardCharsets.UTF_8))
-        body.write(data)
-        body.write(lineBreak.toByteArray(StandardCharsets.UTF_8))
-        body.write("--$boundary--$lineBreak".toByteArray(StandardCharsets.UTF_8))
-        return body.toByteArray()
-    }
-
-    private fun readHttpResponse(connection: HttpURLConnection, responseCode: Int): String {
-        val stream = if (responseCode in 200..299) {
-            connection.inputStream
-        } else {
-            connection.errorStream
-        }
-
-        return try {
-            stream?.use { String(it.readBytes()) } ?: "No response body"
-        } catch (_: Exception) {
-            "Unable to read response body"
-        }
-    }
 }
