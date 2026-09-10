@@ -1,4 +1,4 @@
-﻿package com.example.kartavya.presentation.screens
+package com.example.kartavya.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,9 +20,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.BorderStroke
 import com.example.kartavya.core.ui.theme.*
 import com.example.kartavya.core.utils.Issue
-import com.example.kartavya.core.utils.DEMO_USER_PROFILE_REPORTS
+import com.example.kartavya.model.CivicIssue
+import com.example.kartavya.model.IssueStatus
 enum class NotificationType {
     RESOLVED,
     IN_PROGRESS,

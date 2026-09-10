@@ -1,4 +1,4 @@
-﻿package com.example.kartavya
+package com.example.kartavya
 
 import com.example.kartavya.core.location.fetchDeviceLocation
 import android.Manifest
@@ -43,7 +43,7 @@ import com.example.kartavya.presentation.screens.UserProfileScreen
 import com.example.kartavya.presentation.screens.NotificationsScreen
 import com.example.kartavya.presentation.screens.ReportDetailsScreen
 import com.example.kartavya.presentation.screens.ReportHistoryScreen
-import com.example.kartavya.presentation.screens.mockNotifications
+import com.example.kartavya.presentation.screens.CivicNotification
 import com.example.kartavya.presentation.screens.CurrentReportCard
 import com.example.kartavya.presentation.components.StatusBadgePill
 import com.example.kartavya.presentation.components.StatusProgressTracker
@@ -510,4 +510,3 @@ fun BottomNavBar(
 // ──────────────────────────────────────────────────────
 // Report Details Screen
 // ──────────────────────────────────────────────────────
-}

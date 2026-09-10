@@ -23,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseUser
-import com.example.kartavya.data.models.UserProfile
-import com.example.kartavya.data.repository.IssueRepository
+import com.example.kartavya.model.UserProfile
+import com.example.kartavya.data.IssueRepository
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.kartavya.core.ui.theme.*

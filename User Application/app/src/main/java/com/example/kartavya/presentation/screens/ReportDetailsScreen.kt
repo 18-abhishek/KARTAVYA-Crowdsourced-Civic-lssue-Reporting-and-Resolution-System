@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import android.widget.Toast
 import kotlinx.coroutines.launch
 import com.google.firebase.auth.FirebaseAuth
-import com.example.kartavya.data.repository.IssueRepository
+import com.example.kartavya.data.IssueRepository
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.kartavya.core.ui.theme.*
