@@ -1,4 +1,4 @@
-﻿package com.example.kartavya.presentation.screens
+package com.example.kartavya.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +22,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseUser
+import com.example.kartavya.data.models.UserProfile
+import com.example.kartavya.data.repository.IssueRepository
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.kartavya.core.ui.theme.*
@@ -161,3 +164,4 @@ fun ReportHistoryScreen(
         }
     }
 }
+
