@@ -18,19 +18,27 @@ class FileUploadController(
 
     @PostMapping("/upload/image")
     fun uploadImage(@RequestParam("file") file: MultipartFile): ResponseEntity<UploadResponse> {
-        return handleUpload(file, "images", ".jpg")
+        return handleUpload(file, "images", ".jpg", listOf("image/jpeg", "image/png", "image/webp"))
     }
 
     @PostMapping("/upload/audio")
     fun uploadAudio(@RequestParam("file") file: MultipartFile): ResponseEntity<UploadResponse> {
-        return handleUpload(file, "audio", ".m4a")
+        return handleUpload(file, "audio", ".m4a", listOf("audio/mp4", "audio/mpeg", "audio/aac", "audio/wav", "audio/m4a", "audio/x-m4a"))
     }
 
-    private fun handleUpload(file: MultipartFile, subDirectory: String, defaultExt: String): ResponseEntity<UploadResponse> {
+    private fun handleUpload(file: MultipartFile, subDirectory: String, defaultExt: String, allowedMimeTypes: List<String>): ResponseEntity<UploadResponse> {
         if (file.isEmpty) {
             logger.warn("Upload failed: File is empty")
             return ResponseEntity.badRequest().body(
                 UploadResponse(success = false, error = "Uploaded file cannot be empty")
+            )
+        }
+
+        val contentType = file.contentType?.lowercase() ?: ""
+        if (allowedMimeTypes.none { contentType.startsWith(it) }) {
+            logger.warn("Upload failed: Invalid content type $contentType. Allowed: $allowedMimeTypes")
+            return ResponseEntity.badRequest().body(
+                UploadResponse(success = false, error = "Invalid file type. Allowed types: ${allowedMimeTypes.joinToString()}")
             )
         }
 

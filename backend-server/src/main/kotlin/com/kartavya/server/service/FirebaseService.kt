@@ -19,7 +19,8 @@ class FirebaseService(
     @Value("\${firebase.storage.bucket:}") private val storageBucket: String
 ) {
     private val logger = LoggerFactory.getLogger(FirebaseService::class.java)
-    private val enabled = serviceAccountJson.isNotBlank()
+    val isEnabled: Boolean = serviceAccountJson.isNotBlank()
+    private val enabled = isEnabled
 
     init {
         if (enabled && FirebaseApp.getApps().isEmpty()) {

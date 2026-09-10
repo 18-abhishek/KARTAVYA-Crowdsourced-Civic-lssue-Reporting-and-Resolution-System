@@ -110,8 +110,11 @@ class AiService(
                 logger.warn("Sarvam STT API returned status $status: $err")
                 return ""
             }
+        } catch (e: java.net.SocketTimeoutException) {
+            logger.warn("Sarvam STT API timed out: ${e.message}")
+            return ""
         } catch (e: Exception) {
-            logger.warn("Failed to transcribe audio via Sarvam STT: ${e.message}")
+            logger.warn("Failed to transcribe audio via Sarvam STT: ${e.message}", e)
             return ""
         }
     }
@@ -179,48 +182,56 @@ class AiService(
             os.write(jsonBody.toByteArray(StandardCharsets.UTF_8))
         }
 
-        val code = conn.responseCode
-        if (code in 200..299) {
-            val responseText = conn.inputStream.bufferedReader().use { it.readText() }
-            val root = objectMapper.readTree(responseText)
-            val candidateText = root.path("candidates").get(0)
-                .path("content").path("parts").get(0)
-                .path("text").asText()
+        try {
+            val code = conn.responseCode
+            if (code in 200..299) {
+                val responseText = conn.inputStream.bufferedReader().use { it.readText() }
+                val root = objectMapper.readTree(responseText)
+                val candidateText = root.path("candidates").get(0)
+                    .path("content").path("parts").get(0)
+                    .path("text").asText()
 
-            val aiJson = objectMapper.readTree(candidateText)
-            val approved = aiJson.path("approved").asBoolean(true)
-            val category = aiJson.path("category").asText("Road Damage")
-            val summary = aiJson.path("summary").asText("Reported Civic Issue")
-            val description = aiJson.path("description").asText("Civic issue detected and validated by AI.")
-            val priority = aiJson.path("priority").asText("Moderate")
-            val reason = aiJson.path("reason").asText("Valid civic infrastructure issue verified.")
+                val aiJson = objectMapper.readTree(candidateText)
+                val approved = aiJson.path("approved").asBoolean(true)
+                val category = aiJson.path("category").asText("Road Damage")
+                val summary = aiJson.path("summary").asText("Reported Civic Issue")
+                val description = aiJson.path("description").asText("Civic issue detected and validated by AI.")
+                val priority = aiJson.path("priority").asText("Moderate")
+                val reason = aiJson.path("reason").asText("Valid civic infrastructure issue verified.")
 
-            return AiProcessResponse(
-                success = true,
-                approved = approved,
-                category = category,
-                reason = reason,
-                ai = AiDetail(
-                    category = category,
-                    summary = summary,
-                    description = description,
-                    priority = priority,
-                    reason = reason,
-                    transcript = transcript
-                ),
-                imageVerification = ImageVerification(
+                return AiProcessResponse(
+                    success = true,
                     approved = approved,
                     category = category,
-                    reason = reason
-                ),
-                firestore = FirestoreResult(
-                    written = false,
-                    issueId = request.issueId
+                    reason = reason,
+                    ai = AiDetail(
+                        category = category,
+                        summary = summary,
+                        description = description,
+                        priority = priority,
+                        reason = reason,
+                        transcript = transcript
+                    ),
+                    imageVerification = ImageVerification(
+                        approved = approved,
+                        category = category,
+                        reason = reason
+                    ),
+                    firestore = FirestoreResult(
+                        written = false,
+                        issueId = request.issueId
+                    )
                 )
-            )
-        } else {
-            val errText = conn.errorStream?.bufferedReader()?.use { it.readText() }
-            logger.warn("Gemini API returned status $code: $errText")
+            } else {
+                val errText = conn.errorStream?.bufferedReader()?.use { it.readText() }
+                logger.warn("Gemini API returned status $code: $errText")
+                return null
+            }
+        } catch (e: java.net.SocketTimeoutException) {
+            logger.warn("Gemini API timed out: ${e.message}")
+            return null
+        } catch (e: Exception) {
+            logger.warn("Gemini API call failed: ${e.message}", e)
             return null
         }
     }

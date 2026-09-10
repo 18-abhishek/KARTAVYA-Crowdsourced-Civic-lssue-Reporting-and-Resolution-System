@@ -8,8 +8,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
+import jakarta.servlet.http.HttpServletRequest
+import org.springframework.http.HttpStatus
 
 @RestController
 @RequestMapping("/ai")
@@ -22,15 +23,14 @@ class AiProcessController(
     @PostMapping("/process-complaint")
     fun processComplaint(
         @RequestBody request: AiProcessRequest,
-        @RequestHeader("Authorization", required = false) authorization: String?
-    ): ResponseEntity<AiProcessResponse> {
-        try {
-            firebaseService.verifyBearerToken(authorization)
-        } catch (e: Exception) {
-            // Firebase Admin SDK may not be configured (e.g. no service account JSON set).
-            // Token verification is best-effort; AI processing continues regardless.
-            logger.warn("Bearer token verification skipped: ${e.message}")
+        httpRequest: HttpServletRequest
+    ): ResponseEntity<*> {
+        val uid = httpRequest.getAttribute("uid") as String?
+        if (firebaseService.isEnabled && uid != null && uid != request.userId) {
+            logger.warn("IDOR attempt detected: Authenticated UID $uid attempted to process issue for userId ${request.userId}")
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied: UID mismatch")
         }
+
         logger.info("Received complaint processing request for issueId=${request.issueId}, userId=${request.userId}")
         val response = aiService.processComplaint(request)
         return ResponseEntity.ok(response)

@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets
 import java.util.Locale
 import java.util.UUID
 import com.example.kartavya.config.AppConfig
+import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.tasks.Tasks
 
 /**
  * Result data class for AI Complaint Processing endpoint: POST /ai/process-complaint
@@ -54,6 +56,16 @@ object SupabaseStorageRepository {
     private const val AI_PROCESS_PATH = "/ai/process-complaint"
 
     fun generateIssueId(): String = UUID.randomUUID().toString()
+
+    private suspend fun getAuthToken(): String? = withContext(Dispatchers.IO) {
+        val user = FirebaseAuth.getInstance().currentUser ?: return@withContext null
+        try {
+            Tasks.await(user.getIdToken(false))?.token
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to fetch Firebase Auth token: ${e.message}")
+            null
+        }
+    }
 
     /**
      * Pings the /health endpoint to wake up the Render free-plan server.
@@ -106,12 +118,14 @@ object SupabaseStorageRepository {
 
             onProgress?.invoke(0.3f)
 
+            val token = getAuthToken()
             val imagePath = uploadFileToServer(
                 uploadUrl = "$BACKEND_BASE_URL$IMAGE_UPLOAD_PATH",
                 fieldName = "file",
                 fileName = "issue_${issueId}_image.jpg",
                 contentType = "image/jpeg",
-                data = bytes
+                data = bytes,
+                token = token
             )
 
             onProgress?.invoke(1.0f)
@@ -151,12 +165,14 @@ object SupabaseStorageRepository {
             val mimeType = resolveAudioMimeType(audioFile)
             val fileName = "issue_${issueId}_voice.${audioFile.extension.ifBlank { "m4a" }}"
 
+            val token = getAuthToken()
             val audioPath = uploadFileToServer(
                 uploadUrl = "$BACKEND_BASE_URL$AUDIO_UPLOAD_PATH",
                 fieldName = "file",
                 fileName = fileName,
                 contentType = mimeType,
-                data = bytes
+                data = bytes,
+                token = token
             )
 
             Log.d(TAG, "AUDIO UPLOAD SUCCESS path: $audioPath")
@@ -197,16 +213,20 @@ object SupabaseStorageRepository {
         Log.d(TAG, "AI PROCESS START endpoint=$endpoint issueId=$issueId")
         // Render free plan: retry up to 3 times on 404/503 (cold-start race condition)
         val maxRetries = 3
+        var currentDelay = 2000L
         var lastError: Exception = Exception("AI processing failed")
+        val token = getAuthToken()
+        
         for (attempt in 1..maxRetries) {
-            val result = runCatching { doProcessComplaintWithAi(endpoint, issueId, userId, imageUrl, audioUrl, reporterName, latitude, longitude, address, routingTo) }
+            val result = runCatching { doProcessComplaintWithAi(endpoint, issueId, userId, imageUrl, audioUrl, reporterName, latitude, longitude, address, routingTo, token) }
             if (result.isSuccess) return@withContext result
             val ex = result.exceptionOrNull()
             val msg = ex?.message ?: ""
             Log.w(TAG, "AI PROCESS attempt $attempt/$maxRetries failed: $msg")
-            if ((msg.contains("404") || msg.contains("503") || msg.contains("502")) && attempt < maxRetries) {
-                Log.d(TAG, "Render cold-start detected — waiting 6s before retry...")
-                delay(6000L)
+            if ((msg.contains("404") || msg.contains("503") || msg.contains("502") || msg.contains("timeout")) && attempt < maxRetries) {
+                Log.d(TAG, "Render cold-start or timeout detected — waiting ${currentDelay}ms before retry...")
+                delay(currentDelay)
+                currentDelay *= 2
                 continue
             }
             lastError = Exception(msg)
@@ -229,7 +249,8 @@ object SupabaseStorageRepository {
         latitude: Double?,
         longitude: Double?,
         address: String?,
-        routingTo: String?
+        routingTo: String?,
+        token: String?
     ): AiProcessResult {
         val payload = JSONObject().apply {
             put("issueId", issueId)
@@ -251,6 +272,9 @@ object SupabaseStorageRepository {
             readTimeout = 120000
             setRequestProperty("Content-Type", "application/json; charset=UTF-8")
             setRequestProperty("Accept", "application/json")
+            if (!token.isNullOrBlank()) {
+                setRequestProperty("Authorization", "Bearer $token")
+            }
             setFixedLengthStreamingMode(jsonBytes.size)
         }
 
@@ -303,15 +327,52 @@ object SupabaseStorageRepository {
     }
 
     /**
-     * Executes an HTTP multipart/form-data upload request.
+     * Executes an HTTP multipart/form-data upload request with retry logic for cold-starts.
      * Returns the relative path string (e.g. "/files/images/...") returned by the backend.
      */
-    private fun uploadFileToServer(
+    private suspend fun uploadFileToServer(
         uploadUrl: String,
         fieldName: String,
         fileName: String,
         contentType: String,
-        data: ByteArray
+        data: ByteArray,
+        token: String?
+    ): String {
+        val maxRetries = 3
+        var currentDelay = 2000L
+        var lastError: Exception = Exception("Upload failed")
+        for (attempt in 1..maxRetries) {
+            val result = runCatching { doUploadFileToServer(uploadUrl, fieldName, fileName, contentType, data, token) }
+            if (result.isSuccess) return result.getOrThrow()
+            
+            val ex = result.exceptionOrNull()
+            val msg = ex?.message ?: ""
+            Log.w(TAG, "UPLOAD attempt $attempt/$maxRetries failed: $msg")
+            
+            if ((msg.contains("404") || msg.contains("503") || msg.contains("502") || msg.contains("timeout")) && attempt < maxRetries) {
+                Log.d(TAG, "Render cold-start or timeout detected during upload — waiting ${currentDelay}ms before retry...")
+                delay(currentDelay)
+                currentDelay *= 2
+                continue
+            }
+            if ((ex is ConnectException || ex is SocketTimeoutException) && attempt < maxRetries) {
+                Log.d(TAG, "Network timeout during upload — waiting ${currentDelay}ms before retry...")
+                delay(currentDelay)
+                currentDelay *= 2
+                continue
+            }
+            lastError = Exception(msg, ex)
+            break
+        }
+        throw lastError
+    }
+    private fun doUploadFileToServer(
+        uploadUrl: String,
+        fieldName: String,
+        fileName: String,
+        contentType: String,
+        data: ByteArray,
+        token: String?
     ): String {
         val boundary = "KartavyaBoundary${UUID.randomUUID()}"
         val multipartBody = buildMultipartBody(
@@ -328,6 +389,9 @@ object SupabaseStorageRepository {
             connectTimeout = 60000 // 60s timeout for file uploads
             readTimeout = 60000
             setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+            if (!token.isNullOrBlank()) {
+                setRequestProperty("Authorization", "Bearer $token")
+            }
             setFixedLengthStreamingMode(multipartBody.size)
         }
 

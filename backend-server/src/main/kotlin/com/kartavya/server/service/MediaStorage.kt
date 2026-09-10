@@ -33,9 +33,14 @@ class ConfiguredMediaStorage(
     @Value("\${firebase.service-account-json:}") private val serviceAccountJson: String
 ) : MediaStorage {
     private val logger = LoggerFactory.getLogger(ConfiguredMediaStorage::class.java)
+    private val isProduction = System.getenv("RENDER") == "true" || System.getenv("NODE_ENV") == "production" || System.getenv("SPRING_PROFILES_ACTIVE") == "prod"
+
     private val firebaseStorage: Storage? = if (provider.equals("firebase", ignoreCase = true)) {
         createFirebaseStorage()
     } else {
+        if (isProduction) {
+            error("Firebase storage MUST be used in production. Local storage is ephemeral and disabled.")
+        }
         null
     }
 
